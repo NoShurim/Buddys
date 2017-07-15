@@ -6,6 +6,7 @@ using EloBuddy.SDK.Menu;
 using EloBuddy.SDK.Menu.Values;
 using EloBuddy.SDK.Rendering;
 using System.Linq;
+using EloBuddy.SDK.Enumerations;
 
 namespace Kayn
 {
@@ -26,7 +27,7 @@ namespace Kayn
 
         private static void Loading_On(EventArgs args)
         {
-            if (Player.Instance.Hero != Champion.Kayn) return;
+            if (Player.Instance.ChampionName != "Kayn") { return; }
 
             Chat.Print("[Addon]", System.Drawing.Color.LightBlue);
             Chat.Print("[Champion]", System.Drawing.Color.Red, "[Kayn]", System.Drawing.Color.Blue);
@@ -36,25 +37,6 @@ namespace Kayn
             E = new Spell.Active(SpellSlot.E);
             R = new Spell.Targeted(SpellSlot.R, 475);
             R2 = new Spell.Skillshot(SpellSlot.R, 150, EloBuddy.SDK.Enumerations.SkillShotType.Linear, 75, 37, 18);
-        }
-
-            public static float QDamage(Obj_AI_Base target)
-        {
-            if (!Player.GetSpell(SpellSlot.Q).IsLearned) return 0;
-            return Player.Instance.CalculateDamageOnUnit(target, DamageType.Physical,
-                (float)new double[] { 55, 75, 95, 115, 135 }[Q.Level - 1] + 1 * Player.Instance.FlatMagicDamageMod);
-        }
-        public static float WDamage(Obj_AI_Base target)
-        {
-            if (!Player.GetSpell(SpellSlot.W).IsLearned) return 0;
-            return Player.Instance.CalculateDamageOnUnit(target, DamageType.Physical,
-                (float)new double[] { 170, 215, 260 }[W.Level - 1] + 1 * Player.Instance.FlatMagicDamageMod);
-        }
-        public static float RDamage(Obj_AI_Base target)
-        {
-            if (!Player.GetSpell(SpellSlot.R).IsLearned) return 0;
-            return Player.Instance.CalculateDamageOnUnit(target, DamageType.Physical,
-                (float)new double[] { 150, 250, 350 }[R.Level - 1] + 1 * Player.Instance.FlatMagicDamageMod);
 
             Kmenu = MainMenu.AddMenu("Kayn", "Kayn");
             Combo = Kmenu.AddSubMenu("Combo");
@@ -81,6 +63,25 @@ namespace Kayn
             Misc.Add("KS", new CheckBox("Use R KillSteal"));
             Misc.Add("End", new CheckBox("Always use R to finish"));
             Misc.Add("Inter", new CheckBox("Interrupter"));
+        }
+
+            public static float QDamage(Obj_AI_Base target)
+        {
+            if (!Player.GetSpell(SpellSlot.Q).IsLearned) return 0;
+            return Player.Instance.CalculateDamageOnUnit(target, DamageType.Physical,
+                (float)new double[] { 55, 75, 95, 115, 135 }[Q.Level - 1] + 1 * Player.Instance.FlatMagicDamageMod);
+        }
+        public static float WDamage(Obj_AI_Base target)
+        {
+            if (!Player.GetSpell(SpellSlot.W).IsLearned) return 0;
+            return Player.Instance.CalculateDamageOnUnit(target, DamageType.Physical,
+                (float)new double[] { 170, 215, 260 }[W.Level - 1] + 1 * Player.Instance.FlatMagicDamageMod);
+        }
+        public static float RDamage(Obj_AI_Base target)
+        {
+            if (!Player.GetSpell(SpellSlot.R).IsLearned) return 0;
+            return Player.Instance.CalculateDamageOnUnit(target, DamageType.Physical,
+                (float)new double[] { 150, 250, 350 }[R.Level - 1] + 1 * Player.Instance.FlatMagicDamageMod);
 
             Drawing.OnDraw += Draws_Load;
             Game.OnTick += Game_OnTick;
@@ -91,9 +92,15 @@ namespace Kayn
 
         private static void Interrupter_Spell(Obj_AI_Base sender, Interrupter.InterruptableSpellEventArgs e)
         {
-            if (Misc["Inter"].Cast<CheckBox>().CurrentValue && W.IsReady())
+            var target = TargetSelector.GetTarget(W.Range, DamageType.Physical);
+            var wPred = W.GetPrediction(target);
+
+            if (Misc["Inter"].Cast<CheckBox>().CurrentValue && W.IsReady() && Q.GetPrediction(target).HitChance >= HitChance.High)
             {
-                W.Cast(e.Sender);
+                if (_Player.Distance(_Player.ServerPosition, true) <= W.Range && Q.GetPrediction(target).HitChance >= HitChance.High)
+                {
+                    W.Cast(target);
+                }
             }
         }
 
