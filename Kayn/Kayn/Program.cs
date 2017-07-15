@@ -121,9 +121,9 @@ namespace Kayn
             var target = TargetSelector.GetTarget(W.Range, DamageType.Physical);
             var wPred = W.GetPrediction(target);
 
-            if (Misc["Inter"].Cast<CheckBox>().CurrentValue && W.IsReady() && Q.GetPrediction(target).HitChance >= HitChance.High)
+            if (Misc["Inter"].Cast<CheckBox>().CurrentValue && W.IsReady() && W.GetPrediction(target).HitChance >= HitChance.High)
             {
-                if (_Player.Distance(_Player.ServerPosition, true) <= W.Range && Q.GetPrediction(target).HitChance >= HitChance.High)
+                if (_Player.Distance(_Player.ServerPosition, true) <= W.Range && W.GetPrediction(target).HitChance >= HitChance.High)
                 {
                     W.Cast(target);
                 }
