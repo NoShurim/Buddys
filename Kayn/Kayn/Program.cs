@@ -1,17 +1,17 @@
-﻿using System;
+using System;
+using System.Drawing;
+using System.Linq;
 using EloBuddy;
-using EloBuddy.SDK.Events;
 using EloBuddy.SDK;
+using EloBuddy.SDK.Enumerations;
+using EloBuddy.SDK.Events;
 using EloBuddy.SDK.Menu;
 using EloBuddy.SDK.Menu.Values;
 using EloBuddy.SDK.Rendering;
-using System.Linq;
-using EloBuddy.SDK.Enumerations;
-
 
 namespace Kayn
 {
-    class Program
+    internal class Program
     {
         public static Spell.Skillshot Q;
         public static Spell.Skillshot W;
@@ -25,38 +25,40 @@ namespace Kayn
         {
             if (!Player.GetSpell(SpellSlot.Q).IsLearned) return 0;
             return Player.Instance.CalculateDamageOnUnit(target, DamageType.Physical,
-                (float)new double[] { 55, 75, 95, 115, 135 }[Q.Level - 1] + 1 * Player.Instance.FlatMagicDamageMod);
+                (float) new double[] {55, 75, 95, 115, 135}[Q.Level - 1] + 1 * Player.Instance.FlatMagicDamageMod);
         }
+
         public static float WDamage(Obj_AI_Base target)
         {
             if (!Player.GetSpell(SpellSlot.W).IsLearned) return 0;
             return Player.Instance.CalculateDamageOnUnit(target, DamageType.Physical,
-                (float)new double[] { 170, 215, 260 }[W.Level - 1] + 1 * Player.Instance.FlatMagicDamageMod);
+                (float) new double[] {170, 215, 260}[W.Level - 1] + 1 * Player.Instance.FlatMagicDamageMod);
         }
+
         public static float RDamage(Obj_AI_Base target)
         {
             if (!Player.GetSpell(SpellSlot.R).IsLearned) return 0;
             return Player.Instance.CalculateDamageOnUnit(target, DamageType.Physical,
-                (float)new double[] { 150, 250, 350 }[R.Level - 1] + 1 * Player.Instance.FlatMagicDamageMod);
+                (float) new double[] {150, 250, 350}[R.Level - 1] + 1 * Player.Instance.FlatMagicDamageMod);
         }
 
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             Loading.OnLoadingComplete += Loading_On;
         }
 
         private static void Loading_On(EventArgs args)
         {
-            if (Player.Instance.ChampionName != "Kayn") { return; }
+            if (Player.Instance.ChampionName != "Kayn") return;
 
-            Chat.Print("[Addon]", System.Drawing.Color.LightBlue);
-            Chat.Print("[Champion]", System.Drawing.Color.Red, "[Kayn]", System.Drawing.Color.Blue);
+            Chat.Print("[Addon]", Color.LightBlue);
+            Chat.Print("[Champion]", Color.Red, "[Kayn]", Color.Blue);
 
-            Q = new Spell.Skillshot(SpellSlot.Q, 250, EloBuddy.SDK.Enumerations.SkillShotType.Linear, 150, 75, 37);
-            W = new Spell.Skillshot(SpellSlot.W, 700, EloBuddy.SDK.Enumerations.SkillShotType.Linear, 350, 175, 87);
+            Q = new Spell.Skillshot(SpellSlot.Q, 250, SkillShotType.Linear, 150, 75, 37);
+            W = new Spell.Skillshot(SpellSlot.W, 700, SkillShotType.Linear, 350, 175, 87);
             E = new Spell.Active(SpellSlot.E);
             R = new Spell.Targeted(SpellSlot.R, 475);
-            R2 = new Spell.Skillshot(SpellSlot.R, 150, EloBuddy.SDK.Enumerations.SkillShotType.Linear, 75, 37, 18);
+            R2 = new Spell.Skillshot(SpellSlot.R, 150, SkillShotType.Linear, 75, 37, 18);
 
             Kmenu = MainMenu.AddMenu("Kayn", "Kayn");
 
@@ -98,26 +100,23 @@ namespace Kayn
             Evade = Kmenu.AddSubMenu("Evade");
             Evade.Add("ER", new CheckBox("Enabled Evade"));
             Evade.AddLabel("Evade In Faze Beta");
-        
+
             Drawing.OnDraw += Draws_Load;
             Game.OnTick += Game_OnTick;
             Interrupter.OnInterruptableSpell += Interrupter_Spell;
-            AIHeroClient.OnProcessSpellCast += EvadeBeta;
+            Obj_AI_Base.OnProcessSpellCast += EvadeBeta;
             Gapcloser.OnGapcloser += OnGapcloser;
             Orbwalker.OnAttack += Atack;
             Orbwalker.OnPreMove += PreMovieR;
-
         }
 
         private static void PreMovieR(EventArgs args)
         {
             var rTarget = TargetSelector.GetTarget(R.Range, DamageType.Physical);
             if (rTarget != null && rTarget.Health < ObjectManager.Player.GetAutoAttackDamage(rTarget, true)
-                  * Misc["AAR"].Cast<Slider>().CurrentValue) return;
+                * Misc["AAR"].Cast<Slider>().CurrentValue) return;
             if (rTarget.IsValidTarget(R.Range) && !ObjectManager.Player.HasBuff("KaynDash"))
-            {
                 R.Cast();
-            }
         }
 
         private static void Atack(AttackableUnit target, EventArgs args)
@@ -126,20 +125,17 @@ namespace Kayn
             if (rTarget != null && rTarget.Health < ObjectManager.Player.GetAutoAttackDamage(rTarget, true)
                 * Misc["AAR"].Cast<Slider>().CurrentValue) return;
             if (rTarget.IsValidTarget(R.Range) && !ObjectManager.Player.HasBuff("KaynDash"))
-            { 
-              R.Cast();
-            }
+                R.Cast();
         }
 
-private static void OnGapcloser(AIHeroClient sender, Gapcloser.GapcloserEventArgs e)
+        private static void OnGapcloser(AIHeroClient sender, Gapcloser.GapcloserEventArgs e)
         {
-            if(_Player.IsDead || sender.IsMe || sender.IsAlly) return;
+            if (_Player.IsDead || sender.IsMe || sender.IsAlly) return;
 
             if (Misc["Gap"].Cast<CheckBox>().CurrentValue && !R.IsReady() && !sender.IsValidTarget(R.Range)) return;
             {
                 R.Cast(sender);
             }
-
         }
 
         private static void EvadeBeta(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
@@ -148,53 +144,54 @@ private static void OnGapcloser(AIHeroClient sender, Gapcloser.GapcloserEventArg
 
             var EOMenu = Misc["ER"].Cast<CheckBox>().CurrentValue && Q.IsReady() && R.IsReady();
             {
-
-                if (sender.IsValidTarget() && sender.IsEnemy && Q.IsReady() && R.IsReady() && _Player.Distance(sender) <= args.SData.CastRange)
-                {
+                if (sender.IsValidTarget() && sender.IsEnemy && Q.IsReady() && R.IsReady() &&
+                    _Player.Distance(sender) <= args.SData.CastRange)
                     if (Q.IsReady() && R.IsReady())
                     {
                         var Target = TargetSelector.GetTarget(250, DamageType.Physical);
                         Core.DelayAction(delegate
-                    {
-                        if (Target != null && Target.IsValidTarget(Q.Range)) Q.Cast(Target);
-                    }, (int)args.SData.SpellCastTime - Game.Ping - 100);
+                        {
+                            if (Target != null && Target.IsValidTarget(Q.Range)) Q.Cast(Target);
+                        }, (int) args.SData.SpellCastTime - Game.Ping - 100);
 
                         Core.DelayAction(delegate
                         {
                             if (sender.IsValidTarget(Q.Range)) Q.Cast(sender);
-                        }, (int)args.SData.SpellCastTime - Game.Ping - 50);
-
-                        return;
+                        }, (int) args.SData.SpellCastTime - Game.Ping - 50);
                     }
 
-                    else if (R.IsReady() && _Player.IsFacing(sender) && ((args.Target != null && args.Target.IsMe) || _Player.Position.To2D().Distance(args.Start.To2D(), args.End.To2D(), true, true) < args.SData.LineWidth * args.SData.LineWidth || args.End.Distance(_Player) < args.SData.CastRadius))
+                    else if (R.IsReady() && _Player.IsFacing(sender) &&
+                             (args.Target != null && args.Target.IsMe ||
+                              _Player.Position.To2D().Distance(args.Start.To2D(), args.End.To2D(), true, true) <
+                              args.SData.LineWidth * args.SData.LineWidth ||
+                              args.End.Distance(_Player) < args.SData.CastRadius))
                     {
                         var Target = TargetSelector.GetTarget(700, DamageType.Physical);
-                        int delay = (int)(_Player.Distance(sender) / ((args.SData.MissileMaxSpeed + args.SData.MissileMinSpeed) / 2) * 1000) - 150 + (int)args.SData.SpellCastTime;
+                        var delay = (int) (_Player.Distance(sender) /
+                                           ((args.SData.MissileMaxSpeed + args.SData.MissileMinSpeed) / 2) * 1000) -
+                                    150 + (int) args.SData.SpellCastTime;
 
                         if (args.SData.Name != "ZedR" && args.SData.Name != "NocturneUnpeakableHorror")
                         {
                             Core.DelayAction(() => W.Cast(), delay);
-                            if (Target != null) Core.DelayAction(() => EloBuddy.Player.IssueOrder(GameObjectOrder.AttackTo, Target), delay + 100);
+                            if (Target != null)
+                                Core.DelayAction(() => Player.IssueOrder(GameObjectOrder.AttackTo, Target),
+                                    delay + 100);
                         }
-                        return;
                     }
-                }
             }
         }
 
-    private static void Interrupter_Spell(Obj_AI_Base sender, Interrupter.InterruptableSpellEventArgs e)
+        private static void Interrupter_Spell(Obj_AI_Base sender, Interrupter.InterruptableSpellEventArgs e)
         {
             var target = TargetSelector.GetTarget(W.Range, DamageType.Physical);
             var wPred = W.GetPrediction(target);
 
-            if (Misc["Inter"].Cast<CheckBox>().CurrentValue && W.IsReady() && W.GetPrediction(target).HitChance >= HitChance.High)
-            {
-                if (_Player.Distance(_Player.ServerPosition, true) <= W.Range && W.GetPrediction(target).HitChance >= HitChance.High)
-                {
+            if (Misc["Inter"].Cast<CheckBox>().CurrentValue && W.IsReady() &&
+                W.GetPrediction(target).HitChance >= HitChance.High)
+                if (_Player.Distance(_Player.ServerPosition, true) <= W.Range &&
+                    W.GetPrediction(target).HitChance >= HitChance.High)
                     W.Cast(target);
-                }
-            }
         }
 
         private static void Game_OnTick(EventArgs args)
@@ -202,21 +199,13 @@ private static void OnGapcloser(AIHeroClient sender, Gapcloser.GapcloserEventArg
             Haraaa();
             Missc();
             if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo))
-            {
                 Combos();
-            }
             if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Harass))
-            {
                 Harass();
-            }
             if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.LaneClear))
-            {
                 LaneClear();
-            }
             if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.JungleClear))
-            {
                 JungleClear();
-            }
         }
 
         private static void Missc()
@@ -225,79 +214,70 @@ private static void OnGapcloser(AIHeroClient sender, Gapcloser.GapcloserEventArg
             {
                 var target = TargetSelector.GetTarget(R.Range, DamageType.Physical);
                 foreach (var enemy in
-                     EntityManager.Heroes.Enemies.Where(
-                         x => x.Distance(_Player) <= R.Range && x.IsValidTarget() && !x.IsInvulnerable && !x.IsZombie))
+                    EntityManager.Heroes.Enemies.Where(
+                        x => x.Distance(_Player) <= R.Range && x.IsValidTarget() && !x.IsInvulnerable && !x.IsZombie))
                     if (target.IsValidTarget(R.Range) && R.IsReady() && RDamage(enemy) >= enemy.Health)
-                    {
                         R.Cast();
-                    }
             }
             if (Misc["End"].Cast<CheckBox>().CurrentValue)
             {
                 var target = TargetSelector.GetTarget(R.Range, DamageType.Physical);
                 foreach (var enemy in
-                     EntityManager.Heroes.Enemies.Where(
-                         x => x.Distance(_Player) <= R.Range && x.IsValidTarget() && !x.IsInvulnerable && !x.IsZombie))
+                    EntityManager.Heroes.Enemies.Where(
+                        x => x.Distance(_Player) <= R.Range && x.IsValidTarget() && !x.IsInvulnerable && !x.IsZombie))
                     if (target.IsValidTarget(R.Range) && R.IsReady() && RDamage(enemy) >= enemy.Health)
-                    {
                         R.Cast();
-                    }
             }
         }
+
         private static void Haraaa()
         {
             var target = TargetSelector.GetTarget(W.Range, DamageType.Physical);
             var wPred = W.GetPrediction(target);
-            if (target.IsValidTarget(W.Range) && W.IsReady() && wPred.HitChancePercent >= Pre["Pw"].Cast<Slider>().CurrentValue && W.IsReady() && Player.Instance.ManaPercent >= Hara["mW"].Cast<Slider>().CurrentValue)
-            {
+            if (target.IsValidTarget(W.Range) && W.IsReady() &&
+                wPred.HitChancePercent >= Pre["Pw"].Cast<Slider>().CurrentValue && W.IsReady() &&
+                Player.Instance.ManaPercent >= Hara["mW"].Cast<Slider>().CurrentValue)
                 W.Cast(wPred.CastPosition);
-            }
         }
 
-    private static void Combos()
+        private static void Combos()
         {
             if (Combo["Qk"].Cast<CheckBox>().CurrentValue)
             {
                 var target = TargetSelector.GetTarget(Q.Range, DamageType.Physical);
                 var qPred = Q.GetPrediction(target);
-                if (target.IsValidTarget(Q.Range) && Q.IsReady() && qPred.HitChancePercent >= Pre["Pq"].Cast<Slider>().CurrentValue)
-                {
+                if (target.IsValidTarget(Q.Range) && Q.IsReady() &&
+                    qPred.HitChancePercent >= Pre["Pq"].Cast<Slider>().CurrentValue)
                     Q.Cast(qPred.CastPosition);
-                }
             }
-                if (Combo["Wk"].Cast<CheckBox>().CurrentValue)
-                {
+            if (Combo["Wk"].Cast<CheckBox>().CurrentValue)
+            {
                 var traget = TargetSelector.GetTarget(W.Range, DamageType.Physical);
-                    var wPred = W.GetPrediction(traget);
-                        if (traget.IsValidTarget(W.Range) && W.IsReady() && wPred.HitChancePercent >= Pre["Pw"].Cast<Slider>().CurrentValue)
-                {
-                        W.Cast(wPred.CastPosition);
-                    }
-                }
-                if (Combo["Rk"].Cast<CheckBox>().CurrentValue)
-                {
-                var target = TargetSelector.GetTarget(R.Range, DamageType.Physical);
-                        if (target.IsValidTarget(R.Range) && R.IsReady())
-                        {
-                            R.Cast();
-                        }
-                        else if (R2.IsReady())
-                        {
-                            R2.Cast();
-                        }
-                }
+                var wPred = W.GetPrediction(traget);
+                if (traget.IsValidTarget(W.Range) && W.IsReady() &&
+                    wPred.HitChancePercent >= Pre["Pw"].Cast<Slider>().CurrentValue)
+                    W.Cast(wPred.CastPosition);
             }
-                 
+            if (Combo["Rk"].Cast<CheckBox>().CurrentValue)
+            {
+                var target = TargetSelector.GetTarget(R.Range, DamageType.Physical);
+                if (target.IsValidTarget(R.Range) && R.IsReady())
+                    R.Cast();
+                else if (R2.IsReady())
+                    R2.Cast();
+            }
+        }
+
         private static void Harass()
         {
             if (Hara["Wh"].Cast<CheckBox>().CurrentValue)
             {
                 var target = TargetSelector.GetTarget(W.Range, DamageType.Physical);
                 var wPred = W.GetPrediction(target);
-                if (target.IsValidTarget(W.Range) && W.IsReady() && wPred.HitChancePercent >= Pre["Pw"].Cast<Slider>().CurrentValue && Player.Instance.ManaPercent >= Hara["mW"].Cast<Slider>().CurrentValue)
-                {
+                if (target.IsValidTarget(W.Range) && W.IsReady() &&
+                    wPred.HitChancePercent >= Pre["Pw"].Cast<Slider>().CurrentValue && Player.Instance.ManaPercent >=
+                    Hara["mW"].Cast<Slider>().CurrentValue)
                     W.Cast(wPred.CastPosition);
-                }
             }
         }
 
@@ -310,21 +290,16 @@ private static void OnGapcloser(AIHeroClient sender, Gapcloser.GapcloserEventArg
                 foreach (var clearQ in clear)
                 {
                     if (Player.Instance.ManaPercent >= Lane["Mi"].Cast<Slider>().CurrentValue)
-                    {
                         Q.Cast(clearQ);
-                    }
 
-                    if (Lane["Wl"].Cast<CheckBox>().CurrentValue && W.IsReady()) 
+                    if (Lane["Wl"].Cast<CheckBox>().CurrentValue && W.IsReady())
                     {
-                        var clear2 = EntityManager.MinionsAndMonsters.GetJungleMonsters(Player.Instance.Position, W.Range);
+                        var clear2 =
+                            EntityManager.MinionsAndMonsters.GetJungleMonsters(Player.Instance.Position, W.Range);
 
                         foreach (var clearW in clear2)
-                        {
                             if (Player.Instance.ManaPercent >= Lane["Mi"].Cast<Slider>().CurrentValue)
-                            {
                                 W.Cast(clearW);
-                            }
-                        }
                     }
                 }
             }
@@ -339,21 +314,16 @@ private static void OnGapcloser(AIHeroClient sender, Gapcloser.GapcloserEventArg
                 foreach (var jungleQ in jungle)
                 {
                     if (Player.Instance.ManaPercent >= Lane["Ma"].Cast<Slider>().CurrentValue)
-                    {
                         Q.Cast(jungleQ);
-                    }
 
                     if (Lane["Wj"].Cast<CheckBox>().CurrentValue && W.IsReady())
                     {
-                        var jungle2 = EntityManager.MinionsAndMonsters.GetJungleMonsters(Player.Instance.Position, W.Range);
+                        var jungle2 =
+                            EntityManager.MinionsAndMonsters.GetJungleMonsters(Player.Instance.Position, W.Range);
 
                         foreach (var jungleW in jungle2)
-                        {
                             if (Player.Instance.ManaPercent >= Jungle["Ma"].Cast<Slider>().CurrentValue)
-                            {
                                 W.Cast(jungleW);
-                            }
-                        }
                     }
                 }
             }
@@ -362,10 +332,12 @@ private static void OnGapcloser(AIHeroClient sender, Gapcloser.GapcloserEventArg
         private static void Draws_Load(EventArgs args)
         {
             new Circle
-            {
-                Color = System.Drawing.Color.LightCyan,
-                Radius = W.Range,BorderWidth = 1f}.Draw
-                    (Player.Instance.Position);
+                {
+                    Color = Color.LightCyan,
+                    Radius = W.Range,
+                    BorderWidth = 1f
+                }.Draw
+                (Player.Instance.Position);
         }
     }
 }
