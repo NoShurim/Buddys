@@ -93,6 +93,7 @@ namespace Kayn
             Misc.Add("End", new CheckBox("Always use R to finish"));
             Misc.Add("Inter", new CheckBox("Interrupter"));
             Misc.Add("Gap", new CheckBox("GapCloser"));
+            Misc.Add("AAR", new CheckBox("Reset AA+R"));
 
             Evade = Kmenu.AddSubMenu("Evade");
             Evade.Add("ER", new CheckBox("Enabled Evade"));
@@ -103,10 +104,34 @@ namespace Kayn
             Interrupter.OnInterruptableSpell += Interrupter_Spell;
             AIHeroClient.OnProcessSpellCast += EvadeBeta;
             Gapcloser.OnGapcloser += OnGapcloser;
+            Orbwalker.OnAttack += Atack;
+            Orbwalker.OnPreMove += PreMovieR;
 
         }
 
-        private static void OnGapcloser(AIHeroClient sender, Gapcloser.GapcloserEventArgs e)
+        private static void PreMovieR(EventArgs args)
+        {
+            var rTarget = TargetSelector.GetTarget(R.Range, DamageType.Physical);
+            if (rTarget != null && rTarget.Health < ObjectManager.Player.GetAutoAttackDamage(rTarget, true)
+                  * Misc["AAR"].Cast<Slider>().CurrentValue) return;
+            if (rTarget.IsValidTarget(R.Range) && !ObjectManager.Player.HasBuff("KaynDash"))
+            {
+                R.Cast();
+            }
+        }
+
+        private static void Atack(AttackableUnit target, EventArgs args)
+        {
+            var rTarget = TargetSelector.GetTarget(R.Range, DamageType.Physical);
+            if (rTarget != null && rTarget.Health < ObjectManager.Player.GetAutoAttackDamage(rTarget, true)
+                * Misc["AAR"].Cast<Slider>().CurrentValue) return;
+            if (rTarget.IsValidTarget(R.Range) && !ObjectManager.Player.HasBuff("KaynDash"))
+            { 
+              R.Cast();
+            }
+        }
+
+private static void OnGapcloser(AIHeroClient sender, Gapcloser.GapcloserEventArgs e)
         {
             throw new NotImplementedException();
         }
@@ -210,10 +235,7 @@ namespace Kayn
                 if (Combo["Rk"].Cast<CheckBox>().CurrentValue)
                 {
                 var target = TargetSelector.GetTarget(R.Range, DamageType.Physical);
-                    foreach (var enemy in
-                     EntityManager.Heroes.Enemies.Where(
-                         x => x.Distance(_Player) <= R.Range && x.IsValidTarget() && !x.IsInvulnerable && !x.IsZombie))
-                        if (target.IsValidTarget(R.Range) && R.IsReady() && RDamage(enemy) >= enemy.Health)
+                        if (target.IsValidTarget(R.Range) && R.IsReady())
                         {
                             R.Cast();
                         }
