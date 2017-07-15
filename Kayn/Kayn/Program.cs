@@ -151,20 +151,22 @@ namespace Kayn
         {
             if (Misc["KS"].Cast<CheckBox>().CurrentValue)
             {
+                var target = TargetSelector.GetTarget(R.Range, DamageType.Physical);
                 foreach (var enemy in
                      EntityManager.Heroes.Enemies.Where(
                          x => x.Distance(_Player) <= R.Range && x.IsValidTarget() && !x.IsInvulnerable && !x.IsZombie))
-                    if (R.IsReady() && RDamage(enemy) >= enemy.Health)
+                    if (target.IsValidTarget(R.Range) && R.IsReady() && RDamage(enemy) >= enemy.Health)
                     {
                         R.Cast();
                     }
             }
             if (Misc["End"].Cast<CheckBox>().CurrentValue)
             {
+                var target = TargetSelector.GetTarget(R.Range, DamageType.Physical);
                 foreach (var enemy in
                      EntityManager.Heroes.Enemies.Where(
                          x => x.Distance(_Player) <= R.Range && x.IsValidTarget() && !x.IsInvulnerable && !x.IsZombie))
-                    if (R.IsReady() && RDamage(enemy) >= enemy.Health)
+                    if (target.IsValidTarget(R.Range) && R.IsReady() && RDamage(enemy) >= enemy.Health)
                     {
                         R.Cast();
                     }
@@ -174,7 +176,7 @@ namespace Kayn
         {
             var target = TargetSelector.GetTarget(W.Range, DamageType.Physical);
             var wPred = W.GetPrediction(target);
-            if (wPred.HitChance >= EloBuddy.SDK.Enumerations.HitChance.High && W.IsReady() && Player.Instance.ManaPercent >= Hara["mW"].Cast<Slider>().CurrentValue)
+            if (target.IsValidTarget(W.Range) && wPred.HitChance >= EloBuddy.SDK.Enumerations.HitChance.High && W.IsReady() && Player.Instance.ManaPercent >= Hara["mW"].Cast<Slider>().CurrentValue)
             {
                 W.Cast(wPred.CastPosition);
             }
