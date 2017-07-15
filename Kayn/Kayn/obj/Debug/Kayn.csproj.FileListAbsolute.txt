@@ -6,6 +6,5 @@ c:\users\Thu\documents\visual studio 2015\Projects\Kayn\Kayn\bin\Debug\EloBuddy.
 c:\users\Thu\documents\visual studio 2015\Projects\Kayn\Kayn\bin\Debug\SharpDX.dll
 c:\users\Thu\documents\visual studio 2015\Projects\Kayn\Kayn\bin\Debug\SharpDX.Direct3D9.dll
 c:\users\Thu\documents\visual studio 2015\Projects\Kayn\Kayn\bin\Debug\Newtonsoft.Json.dll
-c:\users\Thu\documents\visual studio 2015\Projects\Kayn\Kayn\obj\Debug\Kayn.csprojResolveAssemblyReference.cache
 c:\users\Thu\documents\visual studio 2015\Projects\Kayn\Kayn\obj\Debug\Kayn.exe
 c:\users\Thu\documents\visual studio 2015\Projects\Kayn\Kayn\obj\Debug\Kayn.pdb
