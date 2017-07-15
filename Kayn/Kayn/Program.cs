@@ -19,7 +19,7 @@ namespace Kayn
         public static Spell.Targeted R;
         public static Spell.Skillshot R2;
         public static AIHeroClient _Player;
-        public static Menu Kmenu, Combo, Hara, Lane, Jungle, Misc, Evade;
+        public static Menu Kmenu, Combo, Hara, Lane, Jungle, Misc, Evade, Pre;
 
         public static float QDamage(Obj_AI_Base target)
         {
@@ -59,6 +59,11 @@ namespace Kayn
             R2 = new Spell.Skillshot(SpellSlot.R, 150, EloBuddy.SDK.Enumerations.SkillShotType.Linear, 75, 37, 18);
 
             Kmenu = MainMenu.AddMenu("Kayn", "Kayn");
+
+            Pre = Kmenu.AddSubMenu("Prediction");
+            Pre.Add("Pq", new Slider("Prediction [Q]", 65, 1, 100));
+            Pre.Add("Pw", new Slider("Prediction [W]", 70, 1, 50));
+
             Combo = Kmenu.AddSubMenu("Combo");
             Combo.Add("Qk", new CheckBox("[Use Q]"));
             Combo.Add("Wk", new CheckBox("[Use W]"));
@@ -176,7 +181,7 @@ namespace Kayn
         {
             var target = TargetSelector.GetTarget(W.Range, DamageType.Physical);
             var wPred = W.GetPrediction(target);
-            if (target.IsValidTarget(W.Range) && wPred.HitChance >= EloBuddy.SDK.Enumerations.HitChance.High && W.IsReady() && Player.Instance.ManaPercent >= Hara["mW"].Cast<Slider>().CurrentValue)
+            if (target.IsValidTarget(W.Range) && W.IsReady() && wPred.HitChancePercent >= Pre["Pw"].Cast<Slider>().CurrentValue && W.IsReady() && Player.Instance.ManaPercent >= Hara["mW"].Cast<Slider>().CurrentValue)
             {
                 W.Cast(wPred.CastPosition);
             }
@@ -188,7 +193,7 @@ namespace Kayn
             {
                 var target = TargetSelector.GetTarget(Q.Range, DamageType.Physical);
                 var qPred = Q.GetPrediction(target);
-                if (target.IsValidTarget(Q.Range) && qPred.HitChance >= EloBuddy.SDK.Enumerations.HitChance.High && Q.IsReady())
+                if (target.IsValidTarget(Q.Range) && Q.IsReady() && qPred.HitChancePercent >= Pre["Pq"].Cast<Slider>().CurrentValue)
                 {
                     Q.Cast(qPred.CastPosition);
                 }
@@ -197,8 +202,8 @@ namespace Kayn
                 {
                 var traget = TargetSelector.GetTarget(W.Range, DamageType.Physical);
                     var wPred = W.GetPrediction(traget);
-                        if (traget.IsValidTarget(W.Range) && wPred.HitChance >= EloBuddy.SDK.Enumerations.HitChance.High && W.IsReady())
-                    {
+                        if (traget.IsValidTarget(W.Range) && W.IsReady() && wPred.HitChancePercent >= Pre["Pw"].Cast<Slider>().CurrentValue)
+                {
                         W.Cast(wPred.CastPosition);
                     }
                 }
@@ -225,7 +230,7 @@ namespace Kayn
             {
                 var target = TargetSelector.GetTarget(W.Range, DamageType.Physical);
                 var wPred = W.GetPrediction(target);
-                if (target.IsValidTarget(W.Range) && wPred.HitChance >= EloBuddy.SDK.Enumerations.HitChance.High && W.IsReady() && Player.Instance.ManaPercent >= Hara["mW"].Cast<Slider>().CurrentValue)
+                if (target.IsValidTarget(W.Range) && W.IsReady() && wPred.HitChancePercent >= Pre["Pw"].Cast<Slider>().CurrentValue && Player.Instance.ManaPercent >= Hara["mW"].Cast<Slider>().CurrentValue)
                 {
                     W.Cast(wPred.CastPosition);
                 }
