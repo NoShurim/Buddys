@@ -18,7 +18,7 @@ namespace Kayn
         public static Spell.Targeted R;
         public static Spell.Skillshot R2;
         public static AIHeroClient _Player;
-        public static Menu Kmenu, Combo, Hara, Lane, Jungle, Misc;
+        public static Menu Kmenu, Combo, Hara, Lane, Jungle, Misc, Evade;
 
         static void Main(string[] args)
         {
@@ -45,24 +45,33 @@ namespace Kayn
             Combo.Add("Ek", new CheckBox("[Use E]", false));
             Combo.AddLabel("The Ability E Still in test is not working yet");
             Combo.Add("Rk", new CheckBox("[Use R]"));
+
             Hara = Kmenu.AddSubMenu("Harass");
             Hara.AddLabel("Harass Automatic");
             Hara.Add("Wh", new CheckBox("[Use W]"));
             Hara.Add("mW", new Slider("Mana W", 50, 1, 100));
+
             Lane = Kmenu.AddSubMenu("Lane");
             Lane.Add("Ql", new CheckBox("[Use Q]"));
             Lane.Add("Wl", new CheckBox("[Use W]"));
             Lane.AddLabel("Setting Lane");
             Lane.Add("Mi", new Slider("Mana", 50, 1, 100));
+
             Jungle = Kmenu.AddSubMenu("Jungle");
             Jungle.Add("Qj", new CheckBox("[Use Q]"));
             Jungle.Add("Wj", new CheckBox("[Use W]"));
             Jungle.AddLabel("Setting Lane");
             Jungle.Add("Ma", new Slider("Mana", 50, 1, 100));
+
             Misc = Kmenu.AddSubMenu("Misc");
             Misc.Add("KS", new CheckBox("Use R KillSteal"));
             Misc.Add("End", new CheckBox("Always use R to finish"));
             Misc.Add("Inter", new CheckBox("Interrupter"));
+            Misc.Add("Gap", new CheckBox("GapCloser"));
+
+            Evade = Kmenu.AddSubMenu("Evade");
+            Evade.Add("ER", new CheckBox("Enabled Evade"));
+            Evade.AddLabel("Evade In Faze Beta");
         }
 
             public static float QDamage(Obj_AI_Base target)
@@ -82,12 +91,24 @@ namespace Kayn
             if (!Player.GetSpell(SpellSlot.R).IsLearned) return 0;
             return Player.Instance.CalculateDamageOnUnit(target, DamageType.Physical,
                 (float)new double[] { 150, 250, 350 }[R.Level - 1] + 1 * Player.Instance.FlatMagicDamageMod);
+        
 
             Drawing.OnDraw += Draws_Load;
             Game.OnTick += Game_OnTick;
-            Interrupter.OnInterruptableSpell += Interrupter_Spell;     
-                              
+            Interrupter.OnInterruptableSpell += Interrupter_Spell;
+            AIHeroClient.OnProcessSpellCast += EvadeBeta;
+            Gapcloser.OnGapcloser += OnGapcloser;
 
+        }
+
+        private static void OnGapcloser(AIHeroClient sender, Gapcloser.GapcloserEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private static void EvadeBeta(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+        {
+            throw new NotImplementedException();
         }
 
         private static void Interrupter_Spell(Obj_AI_Base sender, Interrupter.InterruptableSpellEventArgs e)
@@ -164,21 +185,17 @@ namespace Kayn
             if (Combo["Qk"].Cast<CheckBox>().CurrentValue && Q.IsReady())
             {
                 var target = TargetSelector.GetTarget(Q.Range, DamageType.Physical);
-                    var qPred = Q.GetPrediction(target);
-                foreach (var enemy in
-                     EntityManager.Heroes.Enemies.Where(
-                         x => x.Distance(_Player) <= Q.Range && x.IsValidTarget() && !x.IsInvulnerable && !x.IsZombie))
-                    if (qPred.HitChance >= EloBuddy.SDK.Enumerations.HitChance.High && Q.IsReady() && QDamage(enemy) >= enemy.Health)
+                var qPred = Q.GetPrediction(target);
+                if (qPred.HitChance >= EloBuddy.SDK.Enumerations.HitChance.High && Q.IsReady())
                 {
                     Q.Cast(qPred.CastPosition);
                 }
+            }
                 if (Combo["Wk"].Cast<CheckBox>().CurrentValue && W.IsReady())
                 {
-                    var wPred = W.GetPrediction(target);
-                    foreach (var enemy in
-                     EntityManager.Heroes.Enemies.Where(
-                         x => x.Distance(_Player) <= W.Range && x.IsValidTarget() && !x.IsInvulnerable && !x.IsZombie))
-                        if (wPred.HitChance >= EloBuddy.SDK.Enumerations.HitChance.High && W.IsReady() && WDamage(enemy) >= enemy.Health)
+                var traget = TargetSelector.GetTarget(W.Range, DamageType.Physical);
+                    var wPred = W.GetPrediction(traget);
+                        if (wPred.HitChance >= EloBuddy.SDK.Enumerations.HitChance.High && W.IsReady())
                     {
                         W.Cast(wPred.CastPosition);
                     }
@@ -198,7 +215,6 @@ namespace Kayn
                         }
                 }
             }
-        }
                  
         private static void Harass()
         {
