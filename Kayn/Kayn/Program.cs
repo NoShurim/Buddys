@@ -149,7 +149,7 @@ namespace Kayn
 
         private static void Missc()
         {
-            if (Misc["KS"].Cast<CheckBox>().CurrentValue && R.IsReady())
+            if (Misc["KS"].Cast<CheckBox>().CurrentValue)
             {
                 foreach (var enemy in
                      EntityManager.Heroes.Enemies.Where(
@@ -159,7 +159,7 @@ namespace Kayn
                         R.Cast();
                     }
             }
-            if (Misc["End"].Cast<CheckBox>().CurrentValue && R.IsReady())
+            if (Misc["End"].Cast<CheckBox>().CurrentValue)
             {
                 foreach (var enemy in
                      EntityManager.Heroes.Enemies.Where(
@@ -182,30 +182,31 @@ namespace Kayn
 
     private static void Combos()
         {
-            if (Combo["Qk"].Cast<CheckBox>().CurrentValue && Q.IsReady())
+            if (Combo["Qk"].Cast<CheckBox>().CurrentValue)
             {
                 var target = TargetSelector.GetTarget(Q.Range, DamageType.Physical);
                 var qPred = Q.GetPrediction(target);
-                if (qPred.HitChance >= EloBuddy.SDK.Enumerations.HitChance.High && Q.IsReady())
+                if (target.IsValidTarget(Q.Range) && qPred.HitChance >= EloBuddy.SDK.Enumerations.HitChance.High && Q.IsReady())
                 {
                     Q.Cast(qPred.CastPosition);
                 }
             }
-                if (Combo["Wk"].Cast<CheckBox>().CurrentValue && W.IsReady())
+                if (Combo["Wk"].Cast<CheckBox>().CurrentValue)
                 {
                 var traget = TargetSelector.GetTarget(W.Range, DamageType.Physical);
                     var wPred = W.GetPrediction(traget);
-                        if (wPred.HitChance >= EloBuddy.SDK.Enumerations.HitChance.High && W.IsReady())
+                        if (traget.IsValidTarget(W.Range) && wPred.HitChance >= EloBuddy.SDK.Enumerations.HitChance.High && W.IsReady())
                     {
                         W.Cast(wPred.CastPosition);
                     }
                 }
-                if (Combo["Rk"].Cast<CheckBox>().CurrentValue && R.IsReady())
+                if (Combo["Rk"].Cast<CheckBox>().CurrentValue)
                 {
+                var target = TargetSelector.GetTarget(R.Range, DamageType.Physical);
                     foreach (var enemy in
                      EntityManager.Heroes.Enemies.Where(
                          x => x.Distance(_Player) <= R.Range && x.IsValidTarget() && !x.IsInvulnerable && !x.IsZombie))
-                        if (R.IsReady() && RDamage(enemy) >= enemy.Health)
+                        if (target.IsValidTarget(R.Range) && R.IsReady() && RDamage(enemy) >= enemy.Health)
                         {
                             R.Cast();
                         }
@@ -218,11 +219,11 @@ namespace Kayn
                  
         private static void Harass()
         {
-            if (Hara["Wh"].Cast<CheckBox>().CurrentValue && W.IsReady())
+            if (Hara["Wh"].Cast<CheckBox>().CurrentValue)
             {
                 var target = TargetSelector.GetTarget(W.Range, DamageType.Physical);
                 var wPred = W.GetPrediction(target);
-                if (wPred.HitChance >= EloBuddy.SDK.Enumerations.HitChance.High && W.IsReady() && Player.Instance.ManaPercent >= Hara["mW"].Cast<Slider>().CurrentValue)
+                if (target.IsValidTarget(W.Range) && wPred.HitChance >= EloBuddy.SDK.Enumerations.HitChance.High && W.IsReady() && Player.Instance.ManaPercent >= Hara["mW"].Cast<Slider>().CurrentValue)
                 {
                     W.Cast(wPred.CastPosition);
                 }
@@ -231,7 +232,7 @@ namespace Kayn
 
         private static void LaneClear()
         {
-            if (Lane["Ql"].Cast<CheckBox>().CurrentValue && Q.IsReady())
+            if (Lane["Ql"].Cast<CheckBox>().CurrentValue)
             {
                 var clear = EntityManager.MinionsAndMonsters.GetJungleMonsters(Player.Instance.Position, Q.Range);
 
