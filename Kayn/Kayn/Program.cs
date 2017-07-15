@@ -8,6 +8,7 @@ using EloBuddy.SDK.Rendering;
 using System.Linq;
 using EloBuddy.SDK.Enumerations;
 
+
 namespace Kayn
 {
     class Program
@@ -233,7 +234,7 @@ namespace Kayn
         {
             if (Lane["Ql"].Cast<CheckBox>().CurrentValue && Q.IsReady())
             {
-                var clear = EntityManager.MinionsAndMonsters.GetJungleMonsters();
+                var clear = EntityManager.MinionsAndMonsters.GetJungleMonsters(Player.Instance.Position, Q.Range);
 
                 foreach (var clearQ in clear)
                 {
@@ -244,7 +245,7 @@ namespace Kayn
 
                     if (Lane["Wl"].Cast<CheckBox>().CurrentValue && W.IsReady()) 
                     {
-                        var clear2 = EntityManager.MinionsAndMonsters.GetJungleMonsters();
+                        var clear2 = EntityManager.MinionsAndMonsters.GetJungleMonsters(Player.Instance.Position, W.Range);
 
                         foreach (var clearW in clear2)
                         {
@@ -262,7 +263,7 @@ namespace Kayn
         {
             if (Lane["QJ"].Cast<CheckBox>().CurrentValue && Q.IsReady())
             {
-                var jungle = EntityManager.MinionsAndMonsters.GetJungleMonsters();
+                var jungle = EntityManager.MinionsAndMonsters.GetJungleMonsters(Player.Instance.Position, Q.Range);
 
                 foreach (var jungleQ in jungle)
                 {
@@ -273,7 +274,7 @@ namespace Kayn
 
                     if (Lane["Wj"].Cast<CheckBox>().CurrentValue && W.IsReady())
                     {
-                        var jungle2 = EntityManager.MinionsAndMonsters.GetJungleMonsters();
+                        var jungle2 = EntityManager.MinionsAndMonsters.GetJungleMonsters(Player.Instance.Position, W.Range);
 
                         foreach (var jungleW in jungle2)
                         {
