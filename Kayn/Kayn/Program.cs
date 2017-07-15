@@ -21,7 +21,26 @@ namespace Kayn
         public static AIHeroClient _Player;
         public static Menu Kmenu, Combo, Hara, Lane, Jungle, Misc, Evade;
 
-        static void Main(string[] args)
+        public static float QDamage(Obj_AI_Base target)
+        {
+            if (!Player.GetSpell(SpellSlot.Q).IsLearned) return 0;
+            return Player.Instance.CalculateDamageOnUnit(target, DamageType.Physical,
+                (float)new double[] { 55, 75, 95, 115, 135 }[Q.Level - 1] + 1 * Player.Instance.FlatMagicDamageMod);
+        }
+        public static float WDamage(Obj_AI_Base target)
+        {
+            if (!Player.GetSpell(SpellSlot.W).IsLearned) return 0;
+            return Player.Instance.CalculateDamageOnUnit(target, DamageType.Physical,
+                (float)new double[] { 170, 215, 260 }[W.Level - 1] + 1 * Player.Instance.FlatMagicDamageMod);
+        }
+        public static float RDamage(Obj_AI_Base target)
+        {
+            if (!Player.GetSpell(SpellSlot.R).IsLearned) return 0;
+            return Player.Instance.CalculateDamageOnUnit(target, DamageType.Physical,
+                (float)new double[] { 150, 250, 350 }[R.Level - 1] + 1 * Player.Instance.FlatMagicDamageMod);
+        }
+
+            static void Main(string[] args)
         {
             Loading.OnLoadingComplete += Loading_On;
         }
@@ -73,27 +92,7 @@ namespace Kayn
             Evade = Kmenu.AddSubMenu("Evade");
             Evade.Add("ER", new CheckBox("Enabled Evade"));
             Evade.AddLabel("Evade In Faze Beta");
-        }
-
-            public static float QDamage(Obj_AI_Base target)
-        {
-            if (!Player.GetSpell(SpellSlot.Q).IsLearned) return 0;
-            return Player.Instance.CalculateDamageOnUnit(target, DamageType.Physical,
-                (float)new double[] { 55, 75, 95, 115, 135 }[Q.Level - 1] + 1 * Player.Instance.FlatMagicDamageMod);
-        }
-        public static float WDamage(Obj_AI_Base target)
-        {
-            if (!Player.GetSpell(SpellSlot.W).IsLearned) return 0;
-            return Player.Instance.CalculateDamageOnUnit(target, DamageType.Physical,
-                (float)new double[] { 170, 215, 260 }[W.Level - 1] + 1 * Player.Instance.FlatMagicDamageMod);
-        }
-        public static float RDamage(Obj_AI_Base target)
-        {
-            if (!Player.GetSpell(SpellSlot.R).IsLearned) return 0;
-            return Player.Instance.CalculateDamageOnUnit(target, DamageType.Physical,
-                (float)new double[] { 150, 250, 350 }[R.Level - 1] + 1 * Player.Instance.FlatMagicDamageMod);
         
-
             Drawing.OnDraw += Draws_Load;
             Game.OnTick += Game_OnTick;
             Interrupter.OnInterruptableSpell += Interrupter_Spell;
