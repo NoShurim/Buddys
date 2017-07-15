@@ -358,7 +358,7 @@ namespace Kayn
         {
             if (Lane["Ql"].Cast<CheckBox>().CurrentValue)
             {
-                var clear = EntityManager.MinionsAndMonsters.GetJungleMonsters(Player.Instance.Position, Q.Range);
+                var clear = EntityManager.MinionsAndMonsters.GetLaneMonsters(Player.Instance.Position, Q.Range);
 
                 foreach (var clearQ in clear)
                 {
@@ -369,7 +369,7 @@ namespace Kayn
 
                     if (Lane["Wl"].Cast<CheckBox>().CurrentValue && W.IsReady()) 
                     {
-                        var clear2 = EntityManager.MinionsAndMonsters.GetJungleMonsters(Player.Instance.Position, W.Range);
+                        var clear2 = EntityManager.MinionsAndMonsters.GetLaneMonsters(Player.Instance.Position, W.Range);
 
                         foreach (var clearW in clear2)
                         {
