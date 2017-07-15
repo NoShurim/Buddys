@@ -40,7 +40,7 @@ namespace Kayn
                 (float)new double[] { 150, 250, 350 }[R.Level - 1] + 1 * Player.Instance.FlatMagicDamageMod);
         }
 
-            static void Main(string[] args)
+        static void Main(string[] args)
         {
             Loading.OnLoadingComplete += Loading_On;
         }
@@ -133,15 +133,57 @@ namespace Kayn
 
 private static void OnGapcloser(AIHeroClient sender, Gapcloser.GapcloserEventArgs e)
         {
-            throw new NotImplementedException();
+            if(_Player.IsDead || sender.IsMe || sender.IsAlly) return;
+
+            if (Misc["Gap"].Cast<CheckBox>().CurrentValue && !R.IsReady() && !sender.IsValidTarget(R.Range)) return;
+            {
+                R.Cast(sender);
+            }
+
         }
 
         private static void EvadeBeta(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
-            throw new NotImplementedException();
+            if (_Player.IsDead || !(sender is AIHeroClient)) return;
+
+            var EOMenu = Misc["ER"].Cast<CheckBox>().CurrentValue && Q.IsReady() && R.IsReady();
+            {
+
+                if (sender.IsValidTarget() && sender.IsEnemy && Q.IsReady() && R.IsReady() && _Player.Distance(sender) <= args.SData.CastRange)
+                {
+                    if (Q.IsReady() && R.IsReady())
+                    {
+                        var Target = TargetSelector.GetTarget(250, DamageType.Physical);
+                        Core.DelayAction(delegate
+                    {
+                        if (Target != null && Target.IsValidTarget(Q.Range)) Q.Cast(Target);
+                    }, (int)args.SData.SpellCastTime - Game.Ping - 100);
+
+                        Core.DelayAction(delegate
+                        {
+                            if (sender.IsValidTarget(Q.Range)) Q.Cast(sender);
+                        }, (int)args.SData.SpellCastTime - Game.Ping - 50);
+
+                        return;
+                    }
+
+                    else if (R.IsReady() && _Player.IsFacing(sender) && ((args.Target != null && args.Target.IsMe) || _Player.Position.To2D().Distance(args.Start.To2D(), args.End.To2D(), true, true) < args.SData.LineWidth * args.SData.LineWidth || args.End.Distance(_Player) < args.SData.CastRadius))
+                    {
+                        var Target = TargetSelector.GetTarget(700, DamageType.Physical);
+                        int delay = (int)(_Player.Distance(sender) / ((args.SData.MissileMaxSpeed + args.SData.MissileMinSpeed) / 2) * 1000) - 150 + (int)args.SData.SpellCastTime;
+
+                        if (args.SData.Name != "ZedR" && args.SData.Name != "NocturneUnpeakableHorror")
+                        {
+                            Core.DelayAction(() => W.Cast(), delay);
+                            if (Target != null) Core.DelayAction(() => EloBuddy.Player.IssueOrder(GameObjectOrder.AttackTo, Target), delay + 100);
+                        }
+                        return;
+                    }
+                }
+            }
         }
 
-        private static void Interrupter_Spell(Obj_AI_Base sender, Interrupter.InterruptableSpellEventArgs e)
+    private static void Interrupter_Spell(Obj_AI_Base sender, Interrupter.InterruptableSpellEventArgs e)
         {
             var target = TargetSelector.GetTarget(W.Range, DamageType.Physical);
             var wPred = W.GetPrediction(target);
