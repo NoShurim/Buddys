@@ -14,11 +14,17 @@ namespace Kayn
     internal class Program
     {
         public static Spell.Skillshot Q;
+        public static Spell.Skillshot Q2;
         public static Spell.Skillshot W;
+        public static Spell.Skillshot W2;
         public static Spell.Active E;
         public static Spell.Targeted R;
         public static Spell.Skillshot R2;
-        public static AIHeroClient _Player;
+        public static AIHeroClient _Player
+        {
+            get { return ObjectManager.Player; }
+
+        }
         public static Menu Kmenu, Combo, Hara, Lane, Jungle, Misc, Evade, Pre;
 
         public static float QDamage(Obj_AI_Base target)
@@ -54,8 +60,12 @@ namespace Kayn
             Chat.Print("[Addon]", Color.LightBlue);
             Chat.Print("[Champion]", Color.Red, "[Kayn]", Color.Blue);
 
-            Q = new Spell.Skillshot(SpellSlot.Q, 250, SkillShotType.Linear, 150, 75, 37);
-            W = new Spell.Skillshot(SpellSlot.W, 700, SkillShotType.Linear, 350, 175, 87);
+
+
+            Q = new Spell.Skillshot(SpellSlot.Q, 250, EloBuddy.SDK.Enumerations.SkillShotType.Linear, 150, 75, 37);
+            Q2 = new Spell.Skillshot(SpellSlot.Q, 375, SkillShotType.Linear, 150, 75, 50);
+            W = new Spell.Skillshot(SpellSlot.W, 700, EloBuddy.SDK.Enumerations.SkillShotType.Linear, 350, 175, 87);
+            W2 = new Spell.Skillshot(SpellSlot.W, 800, SkillShotType.Linear, 400, 200, 100);
             E = new Spell.Active(SpellSlot.E);
             R = new Spell.Targeted(SpellSlot.R, 475);
             R2 = new Spell.Skillshot(SpellSlot.R, 150, SkillShotType.Linear, 75, 37, 18);
@@ -63,8 +73,14 @@ namespace Kayn
             Kmenu = MainMenu.AddMenu("Kayn", "Kayn");
 
             Pre = Kmenu.AddSubMenu("Prediction");
+            Pre.AddLabel("Settings Kayn");
             Pre.Add("Pq", new Slider("Prediction [Q]", 65, 1, 100));
-            Pre.Add("Pw", new Slider("Prediction [W]", 70, 1, 50));
+            Pre.Add("Pw", new Slider("Prediction [W]", 70, 1, 100));
+            Pre.AddLabel("Settings Shodown Asasin");
+            Pre.Add("Qq", new Slider("Prediction [Q]", 65, 1, 100));
+            Pre.Add("Ww", new Slider("Prediction [W]", 70, 1, 100));
+            Pre.AddLabel("Settings Rhaast");
+            Pre.Add("r2", new Slider("Minimum of life to use the utimate", 30, 1, 100)); 
 
             Combo = Kmenu.AddSubMenu("Combo");
             Combo.Add("Qk", new CheckBox("[Use Q]"));
@@ -96,6 +112,8 @@ namespace Kayn
             Misc.Add("Inter", new CheckBox("Interrupter"));
             Misc.Add("Gap", new CheckBox("GapCloser"));
             Misc.Add("AAR", new CheckBox("Reset AA+R"));
+            Misc.AddLabel("Settings GapCloser");
+            Misc.Add("sG", new Slider("Mini Mana Gap", 70, 1, 100));
 
             Evade = Kmenu.AddSubMenu("Evade");
             Evade.Add("ER", new CheckBox("Enabled Evade"));
@@ -132,9 +150,14 @@ namespace Kayn
         {
             if (_Player.IsDead || sender.IsMe || sender.IsAlly) return;
 
-            if (Misc["Gap"].Cast<CheckBox>().CurrentValue && !R.IsReady() && !sender.IsValidTarget(R.Range)) return;
+            if (Misc["Gap"].Cast<CheckBox>().CurrentValue && !R.IsReady() && !sender.IsValidTarget(R.Range) && Player.Instance.ManaPercent >= Hara["sG"].Cast<Slider>().CurrentValue) return;
             {
                 R.Cast(sender);
+            }
+
+            if (Misc["Gap"].Cast<CheckBox>().CurrentValue && !E.IsReady() && Player.Instance.ManaPercent >= Hara["sG"].Cast<Slider>().CurrentValue) return;
+            {
+                E.Cast(sender);
             }
         }
 
@@ -198,6 +221,8 @@ namespace Kayn
         {
             Haraaa();
             Missc();
+            Rhaast();
+            Assassin();
             if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo))
                 Combos();
             if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Harass))
@@ -206,6 +231,37 @@ namespace Kayn
                 LaneClear();
             if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.JungleClear))
                 JungleClear();
+        }
+
+        private static void Assassin()
+        {
+            if (Combo["Qk"].Cast<CheckBox>().CurrentValue)
+            {
+                var Target = TargetSelector.GetTarget(Q2.Range, DamageType.Physical);
+                var Q2Pred = W2.GetPrediction(Target);
+                if (Target.IsValidTarget(Q2.Range) && Q2.IsReady() && Q2Pred.HitChancePercent >= Pre["Qq"].Cast<Slider>().CurrentValue && W.IsReady())
+                {
+                    Q2.Cast(Q2Pred.CastPosition);
+                }
+            }
+            if (Combo["Qk"].Cast<CheckBox>().CurrentValue)
+            {
+                var Target = TargetSelector.GetTarget(W2.Range, DamageType.Physical);
+                var w2Pred = W2.GetPrediction(Target);
+                if (Target.IsValidTarget(W.Range) && W.IsReady() && w2Pred.HitChancePercent >= Pre["Ww"].Cast<Slider>().CurrentValue && W.IsReady())
+                {
+                    W2.Cast(w2Pred.CastPosition);
+                }
+            }
+        }
+
+        private static void Rhaast()
+        {
+            var target = TargetSelector.GetTarget(R.Range, DamageType.Physical);
+            if (target.IsValidTarget(R.Range) && R.IsReady() && Player.Instance.Health >= 30)
+            {
+                R.Cast();
+            }
         }
 
         private static void Missc()
