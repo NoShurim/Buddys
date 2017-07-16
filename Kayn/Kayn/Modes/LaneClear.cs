@@ -20,11 +20,11 @@ namespace Kayn.Modes
                 return;
             }
 
-            if (Lane["W1"].Cast<CheckBox>().CurrentValue && W.IsReady() && Player.Instance.ManaPercent >= Lane["Mi"].Cast<Slider>().CurrentValue)
+            if (Lane["W1"].Cast<CheckBox>().CurrentValue && W.IsReady())
             {
                 W.Cast(startvoid);
             }
-            if (Lane["Q1"].Cast<CheckBox>().CurrentValue && Q.IsReady() && Player.Instance.ManaPercent >= Lane["Mi"].Cast<Slider>().CurrentValue)
+            if (Lane["Q1"].Cast<CheckBox>().CurrentValue && Q.IsReady())
             {
                 Q.Cast(startvoid);
             }

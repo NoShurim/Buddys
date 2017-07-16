@@ -32,20 +32,6 @@ namespace Kayn
 
             new SpellsManager();
             new Menus();
-            Interrupter.OnInterruptableSpell += Interrupter_Spell;
-        }
-
-        private static void Interrupter_Spell(Obj_AI_Base sender, Interrupter.InterruptableSpellEventArgs e)
-        {
-            var wtarget = TargetSelector.GetTarget(W.Range, DamageType.Mixed);
-
-            if (Misc["Inter"].Cast<CheckBox>().CurrentValue && W.IsReady() && W.GetPrediction(wtarget).HitChance >= HitChance.High)
-            {
-                if (_Player.Distance(_Player.ServerPosition, true) <= W.Range && W.GetPrediction(wtarget).HitChance >= HitChance.High)
-                {
-                    W.Cast(wtarget);
-                }
-            }
         }
     }
 }
