@@ -11,7 +11,7 @@ namespace Kayn_Official
 {
     class Champi
     {
-        public static Spell.Ranged Q;
+        public static Spell.Skillshot Q;
         public static Spell.Skillshot W;
         public static Spell.Active E;
         public static Spell.Targeted R;
@@ -88,38 +88,34 @@ namespace Kayn_Official
 
         private static void JungleClear()
         {
-            var target = EntityManager.MinionsAndMonsters.GetJungleMonsters().OrderByDescending(a => a.MaxHealth).FirstOrDefault(a => a.IsValidTarget(250));
-
-            if (target == null || target.IsInvulnerable || target.MagicImmune)
+            var jungleMonsters = EntityManager.MinionsAndMonsters.GetJungleMonsters().OrderByDescending(j => j.Health).FirstOrDefault(j => j.IsValidTarget(250));
+            if (lane["Mana"].Cast<Slider>().CurrentValue <= Player.Instance.ManaPercent)
             {
-                return;
-            }
-
-            if (jungle["Qj"].Cast<CheckBox>().CurrentValue && Q.IsReady())
-            {
-                Q.Cast(target);
-            }
-
-            if (jungle["Wj"].Cast<CheckBox>().CurrentValue && W.IsReady() && target.IsValidTarget(W.Range))
-            {
-                W.Cast();
+                if (jungle["Wj"].Cast<CheckBox>().CurrentValue && W.IsReady() && jungleMonsters.IsValidTarget(450))
+                {
+                    W.Cast();
+                }
+                if (jungle["Qj"].Cast<CheckBox>().CurrentValue && Q.IsReady() && jungleMonsters.IsValidTarget(250))
+                {
+                    Q.Cast(jungleMonsters);
+                }
             }
         }
-
         private static void LaneCLear()
         {
-            var farmQ = EntityManager.MinionsAndMonsters.GetLaneMinions(EntityManager.UnitTeam.Enemy, Kayn.ServerPosition).Where(x => x.IsValidTarget(Q.Range)).ToList();
-            if (!farmQ.Any()) return;
-            if ((Q.IsReady() && lane["Ql"].Cast<CheckBox>().CurrentValue))
-            {
-                Q.Cast();
-            }
-            if (!W.IsReady() || !lane["Wl"].Cast<CheckBox>().CurrentValue) return;
-            var farmW = W.GetBestLinearCastPosition(farmQ);
-            if (farmW.CastPosition != Vector3.Zero)
-            {
-                W.Cast(farmW.CastPosition);
-            }
+            var minions = ObjectManager.Get<Obj_AI_Base>().OrderBy(m => m.Health).Where(m => m.IsMinion && m.IsEnemy && !m.IsDead);
+            if (lane["Mana"].Cast<Slider>().CurrentValue <= Player.Instance.ManaPercent)
+                foreach (var m in minions)
+                {
+                    if (lane["Wl"].Cast<CheckBox>().CurrentValue && W.IsReady() && m.IsValidTarget(450))
+                    {
+                        W.Cast();
+                    }
+                    if (lane["Ql"].Cast<CheckBox>().CurrentValue && Q.IsReady() && m.IsValidTarget(250))
+                    {
+                        Q.Cast(m);
+                    }
+                }
         }
         private static void Harass()
         {
@@ -128,34 +124,29 @@ namespace Kayn_Official
 
         private static void Combo()
         {
-            if (comb["Qc"].Cast<CheckBox>().CurrentValue)
+            var target = TargetSelector.GetTarget(Q.Range, DamageType.Physical);
+            var qpre = Q.GetPrediction(target);
+            if (target.IsValidTarget(Q.Range) && Q.IsReady())
             {
-                var target = TargetSelector.GetTarget(Q.Range, DamageType.Physical);
-                if (target.IsValidTarget(Q.Range) && Q.IsReady())
-                {
-                    Q.Cast(target);
-                }
+                Q.Cast(target);
             }
-            if (comb["Wc"].Cast<CheckBox>().CurrentValue)
+
+            var targetw = TargetSelector.GetTarget(W.Range, DamageType.Physical);
+            var wpred = W.GetPrediction(target);
+            if (target.IsValidTarget(W.Range) && W.IsReady() && wpred.HitChance >= EloBuddy.SDK.Enumerations.HitChance.Medium)
             {
-                var target = TargetSelector.GetTarget(W.Range, DamageType.Physical);
-                var wpred = W.GetPrediction(target);
-                if (target.IsValidTarget(W.Range) && W.IsReady() && wpred.HitChance >= EloBuddy.SDK.Enumerations.HitChance.Medium)
-                {
-                    W.Cast(target);
-                }
+                W.Cast(target);
             }
-            if (comb["Rc"].Cast<CheckBox>().CurrentValue)
+
+            var targetrt = TargetSelector.GetTarget(R.Range, DamageType.Physical);
+            foreach (var enemy in EntityManager.Heroes.Enemies.Where(x => x.Distance(_Player) <= R.Range && x.IsValidTarget() && !x.IsInvulnerable && !x.IsZombie))
             {
-                var target = TargetSelector.GetTarget(R.Range, DamageType.Physical);
-                foreach (var enemy in EntityManager.Heroes.Enemies.Where(x => x.Distance(_Player) <= R.Range && x.IsValidTarget() && !x.IsInvulnerable && !x.IsZombie))
+                if (target.IsValidTarget(R.Range) && R.IsReady() && RDamage(enemy) >= enemy.Health)
                 {
-                    if (target.IsValidTarget(R.Range) && R.IsReady() && RDamage(enemy) >= enemy.Health)
-                    {
-                        R.Cast(target);
-                    }
+                    R.Cast(target);
                 }
             }
         }
     }
 }
+
