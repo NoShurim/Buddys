@@ -20,6 +20,8 @@ namespace Kayn
             Pre.Add("Ww", new Slider("Prediction [W]", 70, 1, 100));
             Pre.AddLabel("Settings Rhaast");
             Pre.Add("r2", new Slider("Minimum of life to use the utimate", 30, 1, 100));
+            Pre.AddLabel("Settings [E]");
+            Pre.Add("Rang", new Slider("Range detectable", 200, 1, 500));
 
             Combo = Kmenu.AddSubMenu("Combo");
             Combo.Add("Qk", new CheckBox("[Use Q]"));

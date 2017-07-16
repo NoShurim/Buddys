@@ -5,11 +5,14 @@ using static Kayn.Menus;
 using static Kayn.SpellsManager;
 using EloBuddy.SDK;
 using EloBuddy.SDK.Enumerations;
+using System.Linq;
 
 namespace Kayn.Modes
 {
     internal class Combos
     {
+        private static AIHeroClient Kayn => Player.Instance;
+
         internal static void Execute()
         {
             if (Combo["Qk"].Cast<CheckBox>().CurrentValue)
@@ -19,6 +22,14 @@ namespace Kayn.Modes
                 if (target.IsValidTarget(Q.Range) && Q.IsReady() && qpre.HitChance >= HitChance.High)
                 {
                     Q.Cast(target);
+                }
+            }
+            if (Combo["Ek"].Cast<CheckBox>().CurrentValue)
+            {
+                var active = TargetSelector.GetTarget(E.Range, DamageType.True);
+                if (E.IsReady() && active.IsValidTarget(E.Range))
+                {
+                    E.Cast(active);
                 }
             }
             if (Combo["Wk"].Cast<CheckBox>().CurrentValue)

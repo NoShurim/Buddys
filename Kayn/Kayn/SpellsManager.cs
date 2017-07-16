@@ -25,7 +25,7 @@ namespace Kayn
             Q2 = new Spell.Skillshot(SpellSlot.Q, 375, SkillShotType.Linear, 150, 75, 50);
             W = new Spell.Skillshot(SpellSlot.W, 700, EloBuddy.SDK.Enumerations.SkillShotType.Linear, 350, 175, 87);
             W2 = new Spell.Skillshot(SpellSlot.W, 800, SkillShotType.Linear, 400, 200, 100);
-            E = new Spell.Active(SpellSlot.E);
+            E = new Spell.Active(SpellSlot.E, 200 + 500);
             R = new Spell.Targeted(SpellSlot.R, 475);
             R2 = new Spell.Skillshot(SpellSlot.R, 150, EloBuddy.SDK.Enumerations.SkillShotType.Linear, 75, 37, 18);
         }
