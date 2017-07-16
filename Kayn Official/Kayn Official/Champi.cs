@@ -126,16 +126,16 @@ namespace Kayn_Official
         {
             var target = TargetSelector.GetTarget(Q.Range, DamageType.Physical);
             var qpre = Q.GetPrediction(target);
-            if (target.IsValidTarget(Q.Range) && Q.IsReady())
+            if (target.IsValidTarget(Q.Range) && Q.IsReady() && qpre.HitChance >= EloBuddy.SDK.Enumerations.HitChance.High)
             {
-                Q.Cast(target);
+                Q.Cast(qpre.CastPosition);
             }
 
             var targetw = TargetSelector.GetTarget(W.Range, DamageType.Physical);
             var wpred = W.GetPrediction(target);
             if (target.IsValidTarget(W.Range) && W.IsReady() && wpred.HitChance >= EloBuddy.SDK.Enumerations.HitChance.Medium)
             {
-                W.Cast(target);
+                W.Cast(wpred.CastPosition);
             }
 
             var targetrt = TargetSelector.GetTarget(R.Range, DamageType.Physical);
