@@ -21,8 +21,6 @@ namespace Kayn.Modes
                     W.Cast(wpre.CastPosition);
                 }
             }
-
-
         }
     }
 }

@@ -56,7 +56,6 @@
     <Compile Include="Menus.cs" />
     <Compile Include="Modes\Active.cs" />
     <Compile Include="Modes\Combos.cs" />
-    <Compile Include="Modes\Draws.cs" />
     <Compile Include="Modes\Harass.cs" />
     <Compile Include="Modes\JungleClear.cs" />
     <Compile Include="Modes\KillSeteal.cs" />

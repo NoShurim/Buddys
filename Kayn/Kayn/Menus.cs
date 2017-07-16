@@ -5,24 +5,11 @@ namespace Kayn
 {
     internal class Menus
     {
-        public static Menu Kmenu, Combo, Hara, Lane, Jungle, Misc, Evade, Pre, Draws;
+        public static Menu Kmenu, Combo, Hara, Lane, Jungle, Misc;
 
         public Menus()
         {
             Kmenu = MainMenu.AddMenu("Kayn", "Kayn");
-
-            Pre = Kmenu.AddSubMenu("Prediction");
-            Pre.AddLabel("Settings Kayn");
-            Pre.Add("Pq", new Slider("Prediction [Q]", 65, 1, 100));
-            Pre.Add("Pw", new Slider("Prediction [W]", 70, 1, 100));
-            Pre.AddLabel("Settings Shodown Asasin");
-            Pre.Add("Qq", new Slider("Prediction [Q]", 65, 1, 100));
-            Pre.Add("Ww", new Slider("Prediction [W]", 70, 1, 100));
-            Pre.AddLabel("Settings Rhaast");
-            Pre.Add("r2", new Slider("Minimum of life to use the utimate", 30, 1, 100));
-            Pre.AddLabel("Settings [E]");
-            Pre.Add("Rang", new Slider("Range detectable", 200, 1, 500));
-
             Combo = Kmenu.AddSubMenu("Combo");
             Combo.Add("Qk", new CheckBox("[Use Q]"));
             Combo.Add("Wk", new CheckBox("[Use W]"));
@@ -53,19 +40,6 @@ namespace Kayn
             Misc.Add("KS3", new CheckBox("Use R KillSteal"));
             Misc.Add("End", new CheckBox("Always use R to finish"));
             Misc.Add("Inter", new CheckBox("Interrupter"));
-            Misc.Add("Gap", new CheckBox("GapCloser"));
-            Misc.Add("AAR", new CheckBox("Reset AA+R"));
-            Misc.AddLabel("Settings GapCloser");
-            Misc.Add("sG", new Slider("Mini Mana Gap", 70, 1, 100));
-
-            Draws = Kmenu.AddSubMenu("Draws");
-            Draws.Add("DQ", new CheckBox("Draw [Q]"));
-            Draws.Add("DW", new CheckBox("Draw [W]"));
-            Draws.Add("DR", new CheckBox("Draw [R]"));
-
-            Evade = Kmenu.AddSubMenu("Evade");
-            Evade.Add("ER", new CheckBox("Enabled Evade"));
-            Evade.AddLabel("Evade In Faze Beta");
         }
     }
 }

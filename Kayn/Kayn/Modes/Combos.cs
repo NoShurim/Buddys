@@ -11,7 +11,6 @@ namespace Kayn.Modes
 {
     internal class Combos
     {
-
         internal static void Execute()
         {
             if (Combo["Qk"].Cast<CheckBox>().CurrentValue)

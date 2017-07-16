@@ -17,10 +17,7 @@ namespace Kayn.Modes
 
         private static void Game_OnTick(EventArgs args)
         {
-
             KillSeteal.Execute();
-            Draws.Execute();
-
             if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo))
             {
                 Combos.Execute();
