@@ -11,7 +11,6 @@ namespace Kayn.Modes
 {
     internal class Combos
     {
-        private static AIHeroClient Kayn => Player.Instance;
 
         internal static void Execute()
         {
@@ -26,7 +25,7 @@ namespace Kayn.Modes
             }
             if (Combo["Ek"].Cast<CheckBox>().CurrentValue)
             {
-                var active = TargetSelector.GetTarget(E.Range, DamageType.True);
+                var active = TargetSelector.GetTarget(E.Range, DamageType.Physical);
                 if (E.IsReady() && active.IsValidTarget(E.Range))
                 {
                     E.Cast(active);

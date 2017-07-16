@@ -18,7 +18,6 @@ namespace Kayn
             get { return ObjectManager.Player; }
 
         }
-
         static void Main(string[] args)
         {
             Loading.OnLoadingComplete += Loading_On;
@@ -26,7 +25,7 @@ namespace Kayn
 
         private static void Loading_On(EventArgs args)
         {
-            if (Player.Instance.ChampionName != "Kayn") { return; }
+            if (Player.Instance.Hero != Champion.Kayn) { return; }
 
             Chat.Print("[Addon]", System.Drawing.Color.LightBlue);
             Chat.Print("[Champion]", System.Drawing.Color.Red, "[Kayn]", System.Drawing.Color.Blue);
