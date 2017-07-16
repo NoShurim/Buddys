@@ -53,8 +53,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Menus.cs" />
+    <Compile Include="Modes\Active.cs" />
+    <Compile Include="Modes\Combos.cs" />
+    <Compile Include="Modes\Draws.cs" />
+    <Compile Include="Modes\Harass.cs" />
+    <Compile Include="Modes\JungleClear.cs" />
+    <Compile Include="Modes\KillSeteal.cs" />
+    <Compile Include="Modes\LaneClear.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SpellsManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
