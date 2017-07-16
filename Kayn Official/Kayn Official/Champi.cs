@@ -124,26 +124,33 @@ namespace Kayn_Official
 
         private static void Combo()
         {
-            var target = TargetSelector.GetTarget(Q.Range, DamageType.Physical);
-            var qpre = Q.GetPrediction(target);
-            if (target.IsValidTarget(Q.Range) && Q.IsReady() && qpre.HitChance >= EloBuddy.SDK.Enumerations.HitChance.High)
+            if (comb["Qc"].Cast<CheckBox>().CurrentValue)
             {
-                Q.Cast(qpre.CastPosition);
-            }
-
-            var targetw = TargetSelector.GetTarget(W.Range, DamageType.Physical);
-            var wpred = W.GetPrediction(target);
-            if (target.IsValidTarget(W.Range) && W.IsReady() && wpred.HitChance >= EloBuddy.SDK.Enumerations.HitChance.Medium)
-            {
-                W.Cast(wpred.CastPosition);
-            }
-
-            var targetrt = TargetSelector.GetTarget(R.Range, DamageType.Physical);
-            foreach (var enemy in EntityManager.Heroes.Enemies.Where(x => x.Distance(_Player) <= R.Range && x.IsValidTarget() && !x.IsInvulnerable && !x.IsZombie))
-            {
-                if (target.IsValidTarget(R.Range) && R.IsReady() && RDamage(enemy) >= enemy.Health)
+                var target = TargetSelector.GetTarget(Q.Range, DamageType.Physical);
+                var qpre = Q.GetPrediction(target);
+                if (target.IsValidTarget(Q.Range) && Q.IsReady() && qpre.HitChance >= EloBuddy.SDK.Enumerations.HitChance.High)
                 {
-                    R.Cast(target);
+                    Q.Cast(qpre.CastPosition);
+                }
+            }
+            if (comb["Wc"].Cast<CheckBox>().CurrentValue)
+            {
+                var target = TargetSelector.GetTarget(W.Range, DamageType.Physical);
+                var wpred = W.GetPrediction(target);
+                if (target.IsValidTarget(W.Range) && W.IsReady() && wpred.HitChance >= EloBuddy.SDK.Enumerations.HitChance.Medium)
+                {
+                    W.Cast(wpred.CastPosition);
+                }
+            }
+            if (comb["Qc"].Cast<CheckBox>().CurrentValue)
+            {
+                var target = TargetSelector.GetTarget(R.Range, DamageType.Physical);
+                foreach (var enemy in EntityManager.Heroes.Enemies.Where(x => x.Distance(_Player) <= R.Range && x.IsValidTarget() && !x.IsInvulnerable && !x.IsZombie))
+                {
+                    if (target.IsValidTarget(R.Range) && R.IsReady() && RDamage(enemy) >= enemy.Health)
+                    {
+                        R.Cast(target);
+                    }
                 }
             }
         }
