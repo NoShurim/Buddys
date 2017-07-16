@@ -43,7 +43,7 @@ namespace Kayn
             {
                 if (_Player.Distance(_Player.ServerPosition, true) <= W.Range && W.GetPrediction(wtarget).HitChance >= HitChance.High)
                 {
-                    Q.Cast(wtarget);
+                    W.Cast(wtarget);
                 }
             }
         }
