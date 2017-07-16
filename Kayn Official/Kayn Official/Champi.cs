@@ -88,19 +88,21 @@ namespace Kayn_Official
 
         private static void JungleClear()
         {
-            var frammontres = EntityManager.MinionsAndMonsters.GetJungleMonsters().Where(x => x.IsValidTarget(Kayn.GetAutoAttackRange())).ToList();
-            if (!frammontres.Any()) return;
-            string[] monsters = { "SRU_Gromp", "SRU_Blue", "SRU_Red", "SRU_Razorbeak", "SRU_Krug", "SRU_Murkwolf", "Sru_Crab", "SRU_RiftHerald", "SRU_Dragon", "SRU_Baron" };
-            if (Q.IsReady() && jungle["Qj"].Cast<CheckBox>().CurrentValue)
+            var target = EntityManager.MinionsAndMonsters.GetJungleMonsters().OrderByDescending(a => a.MaxHealth).FirstOrDefault(a => a.IsValidTarget(250));
+
+            if (target == null || target.IsInvulnerable || target.MagicImmune)
             {
-                Q.Cast();
+                return;
             }
-            if (!W.IsReady() || !jungle["Wj"].Cast<CheckBox>().CurrentValue) return;
+
+            if (jungle["Qj"].Cast<CheckBox>().CurrentValue && Q.IsReady())
             {
-                var farmW = frammontres.FirstOrDefault(x => monsters.Contains(x.BaseSkinName, StringComparer.CurrentCultureIgnoreCase));
-                if (farmW == null || !(farmW.Health > Kayn.GetAutoAttackDamage(farmW, true) * 2)) return;
-                var pred = W.GetPrediction(farmW);
-                W.Cast(pred.CastPosition);
+                Q.Cast(target);
+            }
+
+            if (jungle["Wj"].Cast<CheckBox>().CurrentValue && W.IsReady() && target.IsValidTarget(W.Range))
+            {
+                W.Cast();
             }
         }
 
