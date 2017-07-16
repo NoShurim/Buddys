@@ -11,11 +11,23 @@ namespace Kayn_Official
 {
     class Champi
     {
-        public static Spell.Skillshot Q,W;
+        public static Spell.Ranged Q;
+        public static Spell.Skillshot W;
         public static Spell.Active E;
         public static Spell.Targeted R;
         public static Menu kay, comb, hara, lane, jungle;
         private static AIHeroClient Kayn => Player.Instance;
+        public static AIHeroClient _Player
+        {
+            get { return ObjectManager.Player; }
+
+        }
+        public static float RDamage(Obj_AI_Base target)
+        {
+            if (!Player.GetSpell(SpellSlot.R).IsLearned) return 0;
+            return Player.Instance.CalculateDamageOnUnit(target, DamageType.Physical,
+                (float)new double[] { 150, 250, 350 }[R.Level - 1] + 1 * Player.Instance.FlatMagicDamageMod);
+        }
 
         static void Main(string[] args)
         {
@@ -94,7 +106,7 @@ namespace Kayn_Official
 
         private static void LaneCLear()
         {
-            var farmQ = EntityManager.MinionsAndMonsters.GetLaneMinions(EntityManager.UnitTeam.Enemy, Kayn.ServerPosition).Where(x => x.IsValidTarget(Q.Range - 100)).ToList();
+            var farmQ = EntityManager.MinionsAndMonsters.GetLaneMinions(EntityManager.UnitTeam.Enemy, Kayn.ServerPosition).Where(x => x.IsValidTarget(Q.Range)).ToList();
             if (!farmQ.Any()) return;
             if ((Q.IsReady() && lane["Ql"].Cast<CheckBox>().CurrentValue))
             {
@@ -117,8 +129,7 @@ namespace Kayn_Official
             if (comb["Qc"].Cast<CheckBox>().CurrentValue)
             {
                 var target = TargetSelector.GetTarget(Q.Range, DamageType.Physical);
-                var qpred = Q.GetPrediction(target);
-                if (target.IsValidTarget(Q.Range) && Q.IsReady() && qpred.HitChance >= EloBuddy.SDK.Enumerations.HitChance.High)
+                if (target.IsValidTarget(Q.Range) && Q.IsReady())
                 {
                     Q.Cast(target);
                 }
@@ -135,9 +146,12 @@ namespace Kayn_Official
             if (comb["Rc"].Cast<CheckBox>().CurrentValue)
             {
                 var target = TargetSelector.GetTarget(R.Range, DamageType.Physical);
-                if (target.IsValidTarget(R.Range) && R.IsReady())
+                foreach (var enemy in EntityManager.Heroes.Enemies.Where(x => x.Distance(_Player) <= R.Range && x.IsValidTarget() && !x.IsInvulnerable && !x.IsZombie))
                 {
-                    R.Cast(target);
+                    if (target.IsValidTarget(R.Range) && R.IsReady() && RDamage(enemy) >= enemy.Health)
+                    {
+                        R.Cast(target);
+                    }
                 }
             }
         }
