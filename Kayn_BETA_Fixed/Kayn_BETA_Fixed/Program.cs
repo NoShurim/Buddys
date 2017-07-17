@@ -93,6 +93,13 @@ namespace Kayn_BETA_Fixed
                     }
                 }
             }
+            if (Combo["E"].Cast<CheckBox>().CurrentValue)
+            {
+                if (E.IsReady() && target.IsValidTarget(1000) && !target.IsDead && !target.IsZombie)
+                {
+                    E.Cast();
+                }
+            }
         }
         private static void ByLane()
         {
