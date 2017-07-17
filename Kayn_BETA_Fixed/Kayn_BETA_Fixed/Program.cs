@@ -100,21 +100,20 @@ namespace Kayn_BETA_Fixed
                     E.Cast();
                 }
             }
-            foreach (var enemy in ObjectManager.Get<AIHeroClient>().Where(x => x.IsVisible && x.IsEnemy && x.IsValid))
-                if (Combo["R"].Cast<CheckBox>().CurrentValue && R.IsReady())
+            if (Combo["R"].Cast<CheckBox>().CurrentValue && R.IsReady())
+            {
+                var enemy = TargetSelector.GetTarget(R.Range, DamageType.Physical);
+                if (enemy.IsValidTarget(R.Range) &&
+                    Player.Instance.GetSpellDamage(enemy, SpellSlot.R) > enemy.Health + enemy.AttackShield)
                 {
-                    if (enemy.IsValidTarget(R.Range) &&
-                        Player.Instance.GetSpellDamage(enemy, SpellSlot.R) > enemy.Health + enemy.AttackShield)
-                    {
-                        R.Cast(enemy);
-                    }
-                    else if (R.IsReady())
-                    {
-                        R2.Cast();
-                    }
+                    R.Cast(enemy);
                 }
+                else if (R.IsReady())
+                {
+                    R2.Cast();
+                }
+            }
         }
-               
         private static void ByLane()
         {
             var laneQ = EntityManager.MinionsAndMonsters.GetLaneMinions(EntityManager.UnitTeam.Enemy, Player.Instance.Position, Q.Range);
