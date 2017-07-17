@@ -109,28 +109,37 @@ namespace Kayn_BETA_Fixed
         }
         private static void byCombo()
         {
-            var target = TargetSelector.GetTarget(W.Range, DamageType.Physical);
-            if (Combo["W"].Cast<CheckBox>().CurrentValue)
+            var target = TargetSelector.GetTarget(E.Range, DamageType.Physical);
+            if (Combo["E"].Cast<CheckBox>().CurrentValue)
             {
-                if (target.Distance(ObjectManager.Player) <= W.Range && W.IsReady())
+                if (target.Distance(ObjectManager.Player) <= E.Range && E.IsReady())
                 {
-                    W.Cast(W.GetPrediction(target).CastPosition);
+                    E.Cast(target);
                 }
 
-                target = TargetSelector.GetTarget(Q.Range, DamageType.Physical);
-                if (Combo["Q"].Cast<CheckBox>().CurrentValue)
+                target = TargetSelector.GetTarget(W.Range, DamageType.Physical);
+                if (Combo["W"].Cast<CheckBox>().CurrentValue)
                 {
-                    if (target.Distance(ObjectManager.Player) <= Q.Range && Q.IsReady())
+                    if (target.Distance(ObjectManager.Player) <= W.Range && W.IsReady())
                     {
-                        Q.Cast(Q.GetPrediction(target).CastPosition);
+                        W.Cast(W.GetPrediction(target).CastPosition);
                     }
 
-                    target = TargetSelector.GetTarget(R.Range, DamageType.Physical);
-                    if (Combo["R"].Cast<CheckBox>().CurrentValue)
+                    target = TargetSelector.GetTarget(Q.Range, DamageType.Physical);
+                    if (Combo["Q"].Cast<CheckBox>().CurrentValue)
                     {
-                        if (target.Distance(ObjectManager.Player) <= R.Range && R.IsReady())
+                        if (target.Distance(ObjectManager.Player) <= Q.Range && Q.IsReady())
                         {
-                            R.Cast(target);
+                            Q.Cast(Q.GetPrediction(target).CastPosition);
+                        }
+
+                        target = TargetSelector.GetTarget(R.Range, DamageType.Physical);
+                        if (Combo["R"].Cast<CheckBox>().CurrentValue)
+                        {
+                            if (target.Distance(ObjectManager.Player) <= R.Range && R.IsReady())
+                            {
+                                R.Cast(target);
+                            }
                         }
                     }
                 }
@@ -199,7 +208,7 @@ namespace Kayn_BETA_Fixed
         {
             Q = new Spell.Skillshot(SpellSlot.Q, 350, EloBuddy.SDK.Enumerations.SkillShotType.Circular);
             W = new Spell.Skillshot(SpellSlot.W, 700, EloBuddy.SDK.Enumerations.SkillShotType.Linear);
-            E = new Spell.Active(SpellSlot.E);
+            E = new Spell.Active(SpellSlot.E, 1000);
             R = new Spell.Targeted(SpellSlot.R, 550);
             R2 = new Spell.Skillshot(SpellSlot.R, 150, EloBuddy.SDK.Enumerations.SkillShotType.Linear);
         }
