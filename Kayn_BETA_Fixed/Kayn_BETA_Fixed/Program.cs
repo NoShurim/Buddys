@@ -73,12 +73,33 @@ namespace Kayn_BETA_Fixed
 
         private static void ByLane()
         {
-            throw new NotImplementedException();
-        }
+            var laneQ = EntityManager.MinionsAndMonsters.GetLaneMinions(EntityManager.UnitTeam.Enemy, Player.Instance.Position, Q.Range);
+            var laneW = EntityManager.MinionsAndMonsters.GetLaneMinions(EntityManager.UnitTeam.Enemy, Player.Instance.Position, E.Range);
 
+            if (Lane["Qlane"].Cast<CheckBox>().CurrentValue && Q.IsReady()) 
+            {
+                foreach (var minionQ in laneQ)
+                {
+                    if (Player.Instance.ManaPercent >= Lane["qmana"].Cast<Slider>().CurrentValue)
+                    {
+                        Q.Cast(minionQ);
+                    }
+                }
+            }
+            if (Lane["WLane"].Cast<CheckBox>().CurrentValue && W.IsReady())
+            {
+                foreach (var minionE in laneW)
+                {
+                    if (Player.Instance.ManaPercent >= Lane["wmana"].Cast<Slider>().CurrentValue)
+                    {
+                        W.Cast(minionE);
+                    }
+                }
+            }
+        }
         private static void ByJungle()
         {
-            if (Jungle["Qjungle"].Cast<CheckBox>().CurrentValue && Q.IsReady()) //range missing
+            if (Jungle["Qjungle"].Cast<CheckBox>().CurrentValue && Q.IsReady()) 
             {
                 var jungleMonsterQ = EntityManager.MinionsAndMonsters.GetJungleMonsters(Player.Instance.Position, Q.Range);
                 if (jungleMonsterQ != null)
@@ -93,7 +114,7 @@ namespace Kayn_BETA_Fixed
                 }
             }
 
-            if (Jungle["Wjungle"].Cast<CheckBox>().CurrentValue && W.IsReady()) //range missing
+            if (Jungle["Wjungle"].Cast<CheckBox>().CurrentValue && W.IsReady()) 
             {
                 var jungleMonsterW = EntityManager.MinionsAndMonsters.GetJungleMonsters(Player.Instance.Position, W.Range);
                 if (jungleMonsterW != null)
