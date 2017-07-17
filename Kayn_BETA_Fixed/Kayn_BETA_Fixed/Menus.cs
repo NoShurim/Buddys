@@ -33,7 +33,6 @@ namespace Kayn_BETA_Fixed
             Draws = Kmenu.AddSubMenu("Drawings");
             Draws.Add("DQ", new CheckBox("Use [Q] Draw"));
             Draws.Add("DW", new CheckBox("Use [W] Draw"));
-            Draws.Add("DE", new CheckBox("Use [E] Draw", false));
             Draws.Add("DR", new CheckBox("Use [R] Draw"));
 
         }

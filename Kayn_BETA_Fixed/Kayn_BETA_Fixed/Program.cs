@@ -42,9 +42,9 @@ namespace Kayn_BETA_Fixed
             {
                 Q.DrawRange(System.Drawing.Color.LightBlue);
             }
-            if (Draws["DE"].Cast<CheckBox>().CurrentValue && E.IsReady())
+            if (Draws["DW"].Cast<CheckBox>().CurrentValue && W.IsReady())
             {
-                E.DrawRange(System.Drawing.Color.Crimson);
+                W.DrawRange(System.Drawing.Color.Crimson);
             }
             if (Draws["DR"].Cast<CheckBox>().CurrentValue && R.IsReady())
             {
