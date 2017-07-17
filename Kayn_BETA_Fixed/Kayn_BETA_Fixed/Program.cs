@@ -16,7 +16,13 @@ namespace Kayn_BETA_Fixed
         public static Spell.Active E;
         public static Spell.Targeted R;
         public static Spell.Skillshot R2;
-        public static AIHeroClient _Player;
+        private static AIHeroClient Kayn => Player.Instance;
+
+        public static AIHeroClient _Player
+        {
+            get { return ObjectManager.Player; }
+
+        }
 
         static void Main(string[] args)
         {
@@ -25,12 +31,6 @@ namespace Kayn_BETA_Fixed
 
         private static void Loading_On(EventArgs args)
         {
-            if (Player.Instance.Hero == Champion.Kayn)
-                Chat.Print("[Addon] [Champion] [Kayn]", System.Drawing.Color.LightBlue);
-            else if (Player.Instance.Hero != Champion.Kayn)
-            {
-                return;
-            }
             CreateMenu();
             InitializeSpells();
             Drawing.OnDraw += OnDraw;
@@ -113,17 +113,6 @@ namespace Kayn_BETA_Fixed
             var target = TargetSelector.GetTarget(Q.Range, DamageType.Physical);
             if ((target == null) || target.IsInvulnerable) return;
 
-            if (Combo["Q"].Cast<CheckBox>().CurrentValue)
-            {
-                if (target.IsValidTarget(Q.Range) && Q.IsReady())
-                {
-                    var qhitchance = Q.GetPrediction(target);
-                    if (qhitchance.HitChancePercent >= Combo["Qhit"].Cast<Slider>().CurrentValue)
-                    {
-                        Q.Cast(qhitchance.CastPosition);
-                    }
-                }
-            }
             if (Combo["W"].Cast<CheckBox>().CurrentValue)
             {
                 if (target.IsValidTarget(W.Range) && W.IsReady())
@@ -132,6 +121,17 @@ namespace Kayn_BETA_Fixed
                     if (whitchance.HitChancePercent >= Combo["Whit"].Cast<Slider>().CurrentValue)
                     {
                         W.Cast(whitchance.CastPosition);
+                    }
+                }
+            }
+            if (Combo["Q"].Cast<CheckBox>().CurrentValue)
+            {
+                if (target.IsValidTarget(Q.Range) && Q.IsReady())
+                {
+                    var Qhitchance = Q.GetPrediction(target);
+                    if (Qhitchance.HitChancePercent >= Combo["Qhit"].Cast<Slider>().CurrentValue)
+                    {
+                        Q.Cast(Qhitchance.CastPosition);
                     }
                 }
             }
