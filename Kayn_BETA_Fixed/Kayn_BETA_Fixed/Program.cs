@@ -1,5 +1,6 @@
 ﻿using EloBuddy;
 using EloBuddy.SDK;
+using EloBuddy.SDK.Enumerations;
 using EloBuddy.SDK.Events;
 using EloBuddy.SDK.Menu.Values;
 using System;
@@ -65,7 +66,48 @@ namespace Kayn_BETA_Fixed
             {
                 ByJungle();
             }
+            Kill();
         }
+
+        private static void Kill()
+        {
+            var Rks = Misc["KS"].Cast<CheckBox>().CurrentValue;
+            var Wks = Misc["KS"].Cast<CheckBox>().CurrentValue;
+            var Qks = Misc["KS"].Cast<CheckBox>().CurrentValue;
+            foreach (var enemy in EntityManager.Heroes.Enemies.Where(x => x.Distance(_Player) <= W.Range && x.IsValidTarget() && !x.IsInvulnerable && !x.IsZombie
+                             && !x.HasBuff("JudicatorIntervention")
+                             && !x.HasBuff("sionpassivezombie")
+                             && !x.HasBuff("KarthusDeathDefiedBuff")
+                             && !x.HasBuff("kogmawicathiansurprise")))
+            {
+                if (Wks && W.IsReady() &&
+                    SpellDamage.Wmage(enemy) >= enemy.Health && enemy.Distance(_Player) >= 700)
+
+                {
+                    var prediction = W.GetPrediction(enemy);
+                    if (prediction.HitChance >= HitChance.High)
+                    {
+                        W.Cast(prediction.CastPosition);
+                    }
+                }
+                if (Qks && Q.IsReady() &&
+                    SpellDamage.Qmage(enemy) >= enemy.Health && enemy.Distance(_Player) >= 350)
+
+                {
+                    var prediction = Q.GetPrediction(enemy);
+                    if (prediction.HitChance >= HitChance.High)
+                    {
+                        Q.Cast(prediction.CastPosition);
+                    }
+                }
+                if (Rks && R.IsReady() &&
+                    SpellDamage.Rmage(enemy) >= enemy.Health && enemy.Distance(_Player) >= 550)
+                {
+                    R.Cast();
+                }
+            }
+        }
+
         private static void byCombo()
         {
             var target = TargetSelector.GetTarget(Q.Range, DamageType.Physical);
@@ -103,8 +145,7 @@ namespace Kayn_BETA_Fixed
             if (Combo["R"].Cast<CheckBox>().CurrentValue && R.IsReady())
             {
                 var enemy = TargetSelector.GetTarget(R.Range, DamageType.Physical);
-                if (enemy.IsValidTarget(R.Range) &&
-                    Player.Instance.GetSpellDamage(enemy, SpellSlot.R) > enemy.Health + enemy.AttackShield)
+                if (enemy.IsValidTarget(R.Range))                 
                 {
                     R.Cast(enemy);
                 }
