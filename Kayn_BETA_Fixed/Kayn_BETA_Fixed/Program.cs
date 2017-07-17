@@ -137,7 +137,7 @@ namespace Kayn_BETA_Fixed
             }
             if (Combo["E"].Cast<CheckBox>().CurrentValue)
             {
-                if (E.IsReady() && target.IsValidTarget(1000) && !target.IsDead && !target.IsZombie)
+                if (E.IsReady() && target.Distance(_Player) >= 550 && !target.IsDead && !target.IsZombie)
                 {
                     E.Cast();
                 }
@@ -215,11 +215,11 @@ namespace Kayn_BETA_Fixed
         }
         private static void InitializeSpells()
         {
-            Q = new Spell.Skillshot(SpellSlot.Q, 350, EloBuddy.SDK.Enumerations.SkillShotType.Linear, 150, 75, 37);
-            W = new Spell.Skillshot(SpellSlot.W, 700, EloBuddy.SDK.Enumerations.SkillShotType.Linear, 350, 175, 87);
+            Q = new Spell.Skillshot(SpellSlot.Q, 350, EloBuddy.SDK.Enumerations.SkillShotType.Circular);
+            W = new Spell.Skillshot(SpellSlot.W, 700, EloBuddy.SDK.Enumerations.SkillShotType.Linear);
             E = new Spell.Active(SpellSlot.E);
             R = new Spell.Targeted(SpellSlot.R, 550);
-            R2 = new Spell.Skillshot(SpellSlot.R, 150, EloBuddy.SDK.Enumerations.SkillShotType.Linear, 75, 37, 18);
+            R2 = new Spell.Skillshot(SpellSlot.R, 150, EloBuddy.SDK.Enumerations.SkillShotType.Linear);
         }
     }
 }
