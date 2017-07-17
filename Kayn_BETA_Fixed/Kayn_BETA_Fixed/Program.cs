@@ -18,7 +18,6 @@ namespace Kayn_BETA_Fixed
         public static Spell.Targeted R;
         public static Spell.Skillshot R2;
         public static AIHeroClient _Player;
-        public static Menu Kmenu, Combo, Hara, Lane, Jungle, Misc;
 
         static void Main(string[] args)
         {
@@ -33,12 +32,17 @@ namespace Kayn_BETA_Fixed
             {
                 return;
             }
+            Menus.CreateMenu();
+            InitializeSpells();
+        }
+
+        private static void InitializeSpells()
+        {
             Q = new Spell.Skillshot(SpellSlot.Q, 350, EloBuddy.SDK.Enumerations.SkillShotType.Linear, 150, 75, 37);
             W = new Spell.Skillshot(SpellSlot.W, 700, EloBuddy.SDK.Enumerations.SkillShotType.Linear, 350, 175, 87);
             E = new Spell.Active(SpellSlot.E);
             R = new Spell.Targeted(SpellSlot.R, 550);
             R2 = new Spell.Skillshot(SpellSlot.R, 150, EloBuddy.SDK.Enumerations.SkillShotType.Linear, 75, 37, 18);
-
         }
     }
 }
