@@ -114,43 +114,29 @@ namespace Kayn_BETA_Fixed
             {
                 if (target.Distance(ObjectManager.Player) <= W.Range && W.IsReady())
                 {
-                    var whitchance = W.GetPrediction(target);
-                    if (whitchance.HitChancePercent >= Combo["Whit"].Cast<Slider>().CurrentValue)
+                    W.Cast(W.GetPrediction(target).CastPosition);
+                }
+
+                target = TargetSelector.GetTarget(Q.Range, DamageType.Physical);
+                if (Combo["Q"].Cast<CheckBox>().CurrentValue)
+                {
+                    if (target.Distance(ObjectManager.Player) <= Q.Range && Q.IsReady())
                     {
-                        W.Cast(whitchance.CastPosition);
+                        Q.Cast(Q.GetPrediction(target).CastPosition);
                     }
-                }
-            }
-            if (Combo["Q"].Cast<CheckBox>().CurrentValue)
-            {
-                if (target.Distance(ObjectManager.Player) <= Q.Range && Q.IsReady())
-                {
-                    var Qhitchance = Q.GetPrediction(target);
-                    if (Qhitchance.HitChancePercent >= Combo["Qhit"].Cast<Slider>().CurrentValue)
+
+                    target = TargetSelector.GetTarget(R.Range, DamageType.Physical);
+                    if (Combo["R"].Cast<CheckBox>().CurrentValue)
                     {
-                        Q.Cast(Qhitchance.CastPosition);
+                        if (target.Distance(ObjectManager.Player) <= R.Range && R.IsReady())
+                        {
+                            R.Cast(target);
+                        }
                     }
-                }
-            }
-            if (Combo["E"].Cast<CheckBox>().CurrentValue)
-            {
-                if (E.IsReady() && target.Distance(_Player) >= 1000 && !target.IsDead && !target.IsZombie)
-                {
-                    E.Cast();
-                }
-            }
-            if (Combo["R"].Cast<CheckBox>().CurrentValue && R.IsReady())
-            {
-                if (target.Distance(ObjectManager.Player) <= R.Range && R.IsReady())
-                {
-                    R.Cast(target);
-                }
-                else if (R.IsReady())
-                {
-                    R2.Cast();
                 }
             }
         }
+
         private static void ByLane()
         {
             var laneQ = EntityManager.MinionsAndMonsters.GetLaneMinions(EntityManager.UnitTeam.Enemy, Player.Instance.Position, Q.Range);
