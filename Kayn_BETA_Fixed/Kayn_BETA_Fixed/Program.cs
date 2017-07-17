@@ -110,7 +110,7 @@ namespace Kayn_BETA_Fixed
 
         private static void byCombo()
         {
-            var target = TargetSelector.GetTarget(Q.Range, DamageType.Physical);
+            var target = TargetSelector.GetTarget(W.Range, DamageType.Physical);
             if ((target == null) || target.IsInvulnerable) return;
 
             if (Combo["W"].Cast<CheckBox>().CurrentValue)
