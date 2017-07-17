@@ -1,0 +1,11 @@
+C:\Users\Edcarlos\Documents\Visual Studio 2015\Projects\Kayn_BETA_Fixed\Kayn_BETA_Fixed\bin\Release\Kayn_BETA_Fixed.exe.config
+C:\Users\Edcarlos\Documents\Visual Studio 2015\Projects\Kayn_BETA_Fixed\Kayn_BETA_Fixed\bin\Release\Kayn_BETA_Fixed.exe
+C:\Users\Edcarlos\Documents\Visual Studio 2015\Projects\Kayn_BETA_Fixed\Kayn_BETA_Fixed\bin\Release\Kayn_BETA_Fixed.pdb
+C:\Users\Edcarlos\Documents\Visual Studio 2015\Projects\Kayn_BETA_Fixed\Kayn_BETA_Fixed\bin\Release\EloBuddy.dll
+C:\Users\Edcarlos\Documents\Visual Studio 2015\Projects\Kayn_BETA_Fixed\Kayn_BETA_Fixed\bin\Release\EloBuddy.SDK.dll
+C:\Users\Edcarlos\Documents\Visual Studio 2015\Projects\Kayn_BETA_Fixed\Kayn_BETA_Fixed\bin\Release\SharpDX.dll
+C:\Users\Edcarlos\Documents\Visual Studio 2015\Projects\Kayn_BETA_Fixed\Kayn_BETA_Fixed\bin\Release\SharpDX.Direct3D9.dll
+C:\Users\Edcarlos\Documents\Visual Studio 2015\Projects\Kayn_BETA_Fixed\Kayn_BETA_Fixed\bin\Release\Newtonsoft.Json.dll
+C:\Users\Edcarlos\Documents\Visual Studio 2015\Projects\Kayn_BETA_Fixed\Kayn_BETA_Fixed\obj\Release\Kayn_BETA_Fixed.csprojResolveAssemblyReference.cache
+C:\Users\Edcarlos\Documents\Visual Studio 2015\Projects\Kayn_BETA_Fixed\Kayn_BETA_Fixed\obj\Release\Kayn_BETA_Fixed.exe
+C:\Users\Edcarlos\Documents\Visual Studio 2015\Projects\Kayn_BETA_Fixed\Kayn_BETA_Fixed\obj\Release\Kayn_BETA_Fixed.pdb
