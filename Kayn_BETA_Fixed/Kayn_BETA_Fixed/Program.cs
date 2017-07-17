@@ -68,7 +68,7 @@ namespace Kayn_BETA_Fixed
         }
         private static void byCombo()
         {
-            var target = TargetSelector.GetTarget(Q.Range, DamageType.Magical);
+            var target = TargetSelector.GetTarget(Q.Range, DamageType.Physical);
             if ((target == null) || target.IsInvulnerable) return;
 
             if (Combo["Q"].Cast<CheckBox>().CurrentValue)
@@ -79,6 +79,17 @@ namespace Kayn_BETA_Fixed
                     if (qhitchance.HitChancePercent >= Combo["Qhit"].Cast<Slider>().CurrentValue)
                     {
                         Q.Cast(qhitchance.CastPosition);
+                    }
+                }
+            }
+            if (Combo["W"].Cast<CheckBox>().CurrentValue)
+            {
+                if (target.IsValidTarget(W.Range) && W.IsReady())
+                {
+                    var whitchance = W.GetPrediction(target);
+                    if (whitchance.HitChancePercent >= Combo["Whit"].Cast<Slider>().CurrentValue)
+                    {
+                        W.Cast(whitchance.CastPosition);
                     }
                 }
             }
