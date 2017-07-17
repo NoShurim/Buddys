@@ -16,6 +16,9 @@ namespace Kayn_BETA_Fixed
             Combo.Add("W", new CheckBox("Use [W]"));
             Combo.Add("E", new CheckBox("Use [E]"));
             Combo.Add("R", new CheckBox("Use [R]"));
+            Combo.AddLabel("Predction");
+            Combo.Add("Qhit", new Slider("HitChance [Q]", 65, 1));
+            Combo.Add("Whit", new Slider("HitChance [W]", 80, 1));
             Lane = Kmenu.AddSubMenu("Lane");
             Lane.Add("Qlane", new CheckBox("Use [Q]"));
             Lane.Add("WLane", new CheckBox("Use [W]"));

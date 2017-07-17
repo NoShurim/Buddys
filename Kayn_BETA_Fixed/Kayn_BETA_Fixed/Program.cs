@@ -68,13 +68,25 @@ namespace Kayn_BETA_Fixed
         }
         private static void byCombo()
         {
-            throw new NotImplementedException();
-        }
+            var target = TargetSelector.GetTarget(Q.Range, DamageType.Magical);
+            if ((target == null) || target.IsInvulnerable) return;
 
+            if (Combo["Q"].Cast<CheckBox>().CurrentValue)
+            {
+                if (target.IsValidTarget(Q.Range) && Q.IsReady())
+                {
+                    var qhitchance = Q.GetPrediction(target);
+                    if (qhitchance.HitChancePercent >= Combo["Qhit"].Cast<Slider>().CurrentValue)
+                    {
+                        Q.Cast(qhitchance.CastPosition);
+                    }
+                }
+            }
+        }
         private static void ByLane()
         {
             var laneQ = EntityManager.MinionsAndMonsters.GetLaneMinions(EntityManager.UnitTeam.Enemy, Player.Instance.Position, Q.Range);
-            var laneW = EntityManager.MinionsAndMonsters.GetLaneMinions(EntityManager.UnitTeam.Enemy, Player.Instance.Position, E.Range);
+            var laneW = EntityManager.MinionsAndMonsters.GetLaneMinions(EntityManager.UnitTeam.Enemy, Player.Instance.Position, W.Range);
 
             if (Lane["Qlane"].Cast<CheckBox>().CurrentValue && Q.IsReady()) 
             {
