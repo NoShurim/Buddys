@@ -107,15 +107,12 @@ namespace Kayn_BETA_Fixed
                 }
             }
         }
-
         private static void byCombo()
         {
             var target = TargetSelector.GetTarget(W.Range, DamageType.Physical);
-            if ((target == null) || target.IsInvulnerable) return;
-
             if (Combo["W"].Cast<CheckBox>().CurrentValue)
             {
-                if (target.IsValidTarget(W.Range) && W.IsReady())
+                if (target.Distance(ObjectManager.Player) <= W.Range && W.IsReady())
                 {
                     var whitchance = W.GetPrediction(target);
                     if (whitchance.HitChancePercent >= Combo["Whit"].Cast<Slider>().CurrentValue)
@@ -126,7 +123,7 @@ namespace Kayn_BETA_Fixed
             }
             if (Combo["Q"].Cast<CheckBox>().CurrentValue)
             {
-                if (target.IsValidTarget(Q.Range) && Q.IsReady())
+                if (target.Distance(ObjectManager.Player) <= Q.Range && Q.IsReady())
                 {
                     var Qhitchance = Q.GetPrediction(target);
                     if (Qhitchance.HitChancePercent >= Combo["Qhit"].Cast<Slider>().CurrentValue)
@@ -137,17 +134,16 @@ namespace Kayn_BETA_Fixed
             }
             if (Combo["E"].Cast<CheckBox>().CurrentValue)
             {
-                if (E.IsReady() && target.Distance(_Player) >= 550 && !target.IsDead && !target.IsZombie)
+                if (E.IsReady() && target.Distance(_Player) >= 1000 && !target.IsDead && !target.IsZombie)
                 {
                     E.Cast();
                 }
             }
             if (Combo["R"].Cast<CheckBox>().CurrentValue && R.IsReady())
             {
-                var enemy = TargetSelector.GetTarget(R.Range, DamageType.Physical);
-                if (enemy.IsValidTarget(R.Range))                 
+                if (target.Distance(ObjectManager.Player) <= R.Range && R.IsReady())
                 {
-                    R.Cast(enemy);
+                    R.Cast(target);
                 }
                 else if (R.IsReady())
                 {
