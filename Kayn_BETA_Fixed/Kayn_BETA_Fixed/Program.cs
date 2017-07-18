@@ -27,6 +27,7 @@ namespace Kayn_BETA_Fixed
         static void Main(string[] args)
         {
             Loading.OnLoadingComplete += Loading_On;
+            Chat.Print("[Addon] [Champion] [Kayn]", System.Drawing.Color.LightBlue);
         }
 
         private static void Loading_On(EventArgs args)
@@ -46,6 +47,10 @@ namespace Kayn_BETA_Fixed
             if (Draws["DW"].Cast<CheckBox>().CurrentValue && W.IsReady())
             {
                 W.DrawRange(System.Drawing.Color.Crimson);
+            }
+            if (Draws["DE"].Cast<CheckBox>().CurrentValue && E.IsReady())
+            {
+                E.DrawRange(System.Drawing.Color.Crimson);
             }
             if (Draws["DR"].Cast<CheckBox>().CurrentValue && R.IsReady())
             {
@@ -148,67 +153,77 @@ namespace Kayn_BETA_Fixed
 
         private static void ByLane()
         {
-            var laneQ = EntityManager.MinionsAndMonsters.GetLaneMinions(EntityManager.UnitTeam.Enemy, Player.Instance.Position, Q.Range);
-            var laneW = EntityManager.MinionsAndMonsters.GetLaneMinions(EntityManager.UnitTeam.Enemy, Player.Instance.Position, W.Range);
+            var minions = EntityManager.MinionsAndMonsters.GetLaneMinions(EntityManager.UnitTeam.Enemy, Kayn.Position, W.Range).ToArray();
 
-            if (Lane["Qlane"].Cast<CheckBox>().CurrentValue && Q.IsReady()) 
+            if (minions != null)
             {
-                foreach (var minionQ in laneQ)
+
+                var wpred = EntityManager.MinionsAndMonsters.GetLineFarmLocation(minions, W.Width, (int)W.Range);
+
+                if (Lane["Qlane"].Cast<CheckBox>().CurrentValue && Q.IsLearned && Q.IsReady())
                 {
-                    if (Player.Instance.ManaPercent >= Lane["qmana"].Cast<Slider>().CurrentValue)
+                    foreach (var minion in minions.Where(x => x.IsValid() && !x.IsDead && x.Health > 15))
                     {
-                        Q.Cast(minionQ);
+                        if (Lane["Qmode"].Cast<ComboBox>().CurrentValue == 0 &&
+                            Prediction.Position.PredictUnitPosition(minion, Q.CastDelay).Distance(Kayn.Position) <= (Q.Range - 50))
+                        {
+                            Q.Cast(minion.Position);
+                        }
+
+                        else { Q.Cast(minion.Position); }
+
                     }
                 }
-            }
-            if (Lane["WLane"].Cast<CheckBox>().CurrentValue && W.IsReady())
-            {
-                foreach (var minionE in laneW)
+                if (Lane["WLane"].Cast<CheckBox>().CurrentValue && W.IsLearned && W.IsReady())
                 {
-                    if (Player.Instance.ManaPercent >= Lane["wmana"].Cast<Slider>().CurrentValue)
+                    if (Lane["Win"].Cast<Slider>().CurrentValue == 1)
                     {
-                        W.Cast(minionE);
+                        switch (Lane["Wmode"].Cast<ComboBox>().CurrentValue)
+                        {
+                            case 0:
+                                if (wpred.HitNumber == Lane["WP"].Cast<Slider>().CurrentValue) { W.Cast(wpred.CastPosition); }
+                                break;
+                            case 1:
+                                W.Cast(minions.Where(x => x.Distance(Kayn.Position) < W.Range &&
+                                                               !x.IsDead && x.Health > 25 && x.IsValid()).OrderBy(x => x.Distance(Kayn.Position))
+                                                                                                         .FirstOrDefault().Position);
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        if (wpred.HitNumber >= Lane["WP"].Cast<Slider>().CurrentValue)
+                        {
+                            W.Cast(wpred.CastPosition);
+                        }
                     }
                 }
             }
         }
         private static void ByJungle()
         {
-            if (Jungle["Qjungle"].Cast<CheckBox>().CurrentValue && Q.IsReady()) 
+            var Monsters = EntityManager.MinionsAndMonsters.GetJungleMonsters(Kayn.Position, 1800f);
+
+            var Wp = EntityManager.MinionsAndMonsters.GetLineFarmLocation(Monsters, W.Width, (int) W.Range);
+
+            if (Jungle["Qjungle"].Cast<CheckBox>().CurrentValue && Q.IsLearned && Q.IsReady())
             {
-                var jungleMonsterQ = EntityManager.MinionsAndMonsters.GetJungleMonsters(Player.Instance.Position, Q.Range);
-                if (jungleMonsterQ != null)
+                foreach (var monster in Monsters.Where(x => !x.IsDead && x.IsValidTarget(Q.Range) && x.Health > 100))
                 {
-                    foreach (var junglemonsterq in jungleMonsterQ)
-                    {
-                        if (Player.Instance.ManaPercent >= Jungle["qmana"].Cast<Slider>().CurrentValue)
-                        {
-                            Q.Cast(junglemonsterq);
-                        }
-                    }
+                   Q.Cast(monster.Position);
                 }
             }
 
-            if (Jungle["Wjungle"].Cast<CheckBox>().CurrentValue && W.IsReady()) 
+            if (Jungle["Wjungle"].Cast<CheckBox>().CurrentValue && W.IsLearned && W.IsReady())
             {
-                var jungleMonsterW = EntityManager.MinionsAndMonsters.GetJungleMonsters(Player.Instance.Position, W.Range);
-                if (jungleMonsterW != null)
-                {
-                    foreach (var junglemonstere in jungleMonsterW)
-                    {
-                        if (Player.Instance.ManaPercent >= Jungle["wmana"].Cast<Slider>().CurrentValue)
-                        {
-                           W.Cast(junglemonstere);
-                        }
-                    }
-                }
+                if (Wp.HitNumber >= Jungle["J"].Cast<Slider>().CurrentValue) W.Cast(Wp.CastPosition);
             }
         }
         private static void InitializeSpells()
         {
-            Q = new Spell.Skillshot(SpellSlot.Q, 350, EloBuddy.SDK.Enumerations.SkillShotType.Circular);
+            Q = new Spell.Skillshot(SpellSlot.Q, 550, EloBuddy.SDK.Enumerations.SkillShotType.Circular);
             W = new Spell.Skillshot(SpellSlot.W, 700, EloBuddy.SDK.Enumerations.SkillShotType.Linear);
-            E = new Spell.Active(SpellSlot.E, 1000);
+            E = new Spell.Active(SpellSlot.E, 3000);
             R = new Spell.Targeted(SpellSlot.R, 550);
             R2 = new Spell.Skillshot(SpellSlot.R, 150, EloBuddy.SDK.Enumerations.SkillShotType.Linear);
         }
