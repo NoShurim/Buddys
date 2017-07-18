@@ -3,6 +3,7 @@ using EloBuddy.SDK;
 using EloBuddy.SDK.Enumerations;
 using EloBuddy.SDK.Events;
 using EloBuddy.SDK.Menu.Values;
+using SharpDX;
 using System;
 using System.Linq;
 using static Kayn_BETA_Fixed.Menus;
@@ -13,10 +14,14 @@ namespace Kayn_BETA_Fixed
     {
         public static Spell.Skillshot Q;
         public static Spell.Skillshot W;
+        public static Spell.Skillshot Flash;
         public static Spell.Active E;
         public static Spell.Targeted R;
         private static AIHeroClient Kayn => Player.Instance;
-
+        private static Vector3 MousePos
+        {
+            get { return Game.CursorPos; }
+        }
         public static AIHeroClient _Player
         {
             get { return ObjectManager.Player; }
@@ -62,6 +67,10 @@ namespace Kayn_BETA_Fixed
             {
                 R.DrawRange(System.Drawing.Color.LawnGreen);
             }
+            if (Draws["DF"].Cast<CheckBox>().CurrentValue && R.IsReady())
+            {
+                Flash.DrawRange(System.Drawing.Color.Red);
+            }
         }
         private static void OnTick(EventArgs args)
         {
@@ -79,6 +88,39 @@ namespace Kayn_BETA_Fixed
             }
             Kill();
             Bacck();
+            FlashR();
+            FlashW();
+        }
+
+        private static void FlashW()
+        {
+            var flashtarget = TargetSelector.GetTarget(850, DamageType.Physical);
+            if (flashtarget == null) return;
+            var xpos = flashtarget.Position.Extend(flashtarget, 850);
+            var target = TargetSelector.GetTarget(W.Range, DamageType.Physical);
+            var doF = W.GetPrediction(flashtarget).CastPosition;
+            if (Misc["FW"].Cast<KeyBind>().CurrentValue)
+            {
+                if (W.IsReady() && Flash.IsReady())
+                    if (flashtarget.IsValidTarget(850) && target.Health < SpellDamage.Wmage(target))
+                    {
+                        Flash.Cast((Vector3)xpos);
+                        W.Cast(doF);
+                    }
+            }
+        }
+        private static void FlashR()
+        {
+            var flashtarget = TargetSelector.GetTarget(850 + 425, DamageType.Physical);
+            if (flashtarget == null) return;
+            var xpos = flashtarget.Position.Extend(flashtarget, 850);
+            var target = TargetSelector.GetTarget(R.Range, DamageType.Physical);
+            if (R.IsReady() && Flash.IsReady())
+                if (flashtarget.IsValidTarget(850 + 425) && target.Health < SpellDamage.Rmage(target))
+                {
+                    Flash.Cast((Vector3)xpos);
+                    R.Cast(target);
+                }
         }
         private static void Bacck()
         {
@@ -177,14 +219,13 @@ namespace Kayn_BETA_Fixed
                 {
                     foreach (var minion in minions.Where(x => x.IsValid() && !x.IsDead && x.Health > 15))
                     {
-                        if (Lane["Wmode"].Cast<ComboBox>().CurrentValue == 0 && wpred.HitNumber >= minW &&
+                        if (Lane["Wmode"].Cast<ComboBox>().CurrentValue == 0 &&
                             Prediction.Position.PredictUnitPosition(minion, W.CastDelay).Distance(Kayn.Position) <= (W.Range + 700))
                         {
                             W.Cast(minion.Position);
                         }
 
                         else { W.Cast(minion.Position); }
-
                     }
                 }
             }
@@ -215,7 +256,8 @@ namespace Kayn_BETA_Fixed
             W = new Spell.Skillshot(SpellSlot.W, 700, EloBuddy.SDK.Enumerations.SkillShotType.Linear);
             E = new Spell.Active(SpellSlot.E, 2000);
             R = new Spell.Targeted(SpellSlot.R, 550);
-
+            var FlashSlot = Kayn.GetSpellSlotFromName("summonerflash");
+            Flash = new Spell.Skillshot(FlashSlot, 950, SkillShotType.Linear);
         }
     }
 }

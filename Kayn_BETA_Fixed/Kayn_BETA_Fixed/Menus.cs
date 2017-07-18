@@ -42,11 +42,15 @@ namespace Kayn_BETA_Fixed
             Misc = Kmenu.AddSubMenu("Misc");
             Misc.Add("KSR", new CheckBox("Use [R] Fish"));
             Misc.Add("KS", new CheckBox("KillSteal"));
+            Misc.AddLabel("Flash");
+            Misc.Add("FR", new CheckBox("Use [Flash + R]", false));
+            Misc.Add("FW", new CheckBox("Use [Flash + W]", false));
             Draws = Kmenu.AddSubMenu("Drawings");
             Draws.Add("DQ", new CheckBox("Use [Q] Draw"));
             Draws.Add("DW", new CheckBox("Use [W] Draw"));
             Draws.Add("DE", new CheckBox("Use [E] Draw"));
             Draws.Add("DR", new CheckBox("Use [R]/[R2] Draw"));
+            Draws.Add("DF", new CheckBox("Use [Flash] Draw"));
 
         }
     }
