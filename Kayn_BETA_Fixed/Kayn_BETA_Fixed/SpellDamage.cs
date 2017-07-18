@@ -36,6 +36,11 @@ namespace Kayn_BETA_Fixed
             return Player.Instance.CalculateDamageOnUnit(target, DamageType.Physical,
                 (float)(new[] { 0, 55, 75, 95, 115, 135 }[Q.Level] + 1.1f * Player.Instance.FlatPhysicalDamageMod + 0.4f * Player.Instance.FlatMagicDamageMod));
         }
+        public static float Emage(Obj_AI_Base target)
+        {
+            return Player.Instance.CalculateDamageOnUnit(target, DamageType.Physical,
+                (float)(new[] { 0, 0, 0, 0 }[Q.Level] + 1.1f * Player.Instance.FlatPhysicalDamageMod + 0.4f * Player.Instance.FlatMagicDamageMod));
+        }
         public static float Wmage(Obj_AI_Base target)
         {
             return Player.Instance.CalculateDamageOnUnit(target, DamageType.Physical,
@@ -44,7 +49,7 @@ namespace Kayn_BETA_Fixed
         public static float Rmage(Obj_AI_Base target)
         {
             return Player.Instance.CalculateDamageOnUnit(target, DamageType.Physical,
-                (float)(new[] { 0, 150, 250, 350 }[R.Level] + 1.0f * Player.Instance.FlatPhysicalDamageMod + 0.9f * Player.Instance.FlatMagicDamageMod));
+                (float)(new[] { 0, 150, 250, 350 + 110}[R.Level] + 1.0f * Player.Instance.FlatPhysicalDamageMod + 0.9f * Player.Instance.FlatMagicDamageMod));
         }
     }
 }

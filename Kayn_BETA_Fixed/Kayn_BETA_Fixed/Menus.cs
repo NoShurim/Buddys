@@ -38,12 +38,13 @@ namespace Kayn_BETA_Fixed
             Jungle.Add("wmana", new Slider("Mini Mana [W]", 65, 1));
             Jungle.Add("J", new Slider("Min Monsters To Hit With W", 1, 1, 4));
             Misc = Kmenu.AddSubMenu("Misc");
-            Misc.Add("KS", new CheckBox("Use [R] KillSteal"));
+            Misc.Add("KSR", new CheckBox("Use [R] Fish"));
+            Misc.Add("KS", new CheckBox("KillSteal"));
             Draws = Kmenu.AddSubMenu("Drawings");
             Draws.Add("DQ", new CheckBox("Use [Q] Draw"));
             Draws.Add("DW", new CheckBox("Use [W] Draw"));
             Draws.Add("DE", new CheckBox("Use [E] Draw"));
-            Draws.Add("DR", new CheckBox("Use [R] Draw"));
+            Draws.Add("DR", new CheckBox("Use [R]/[R2] Draw"));
 
         }
     }

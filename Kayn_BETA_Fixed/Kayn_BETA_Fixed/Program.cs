@@ -15,7 +15,6 @@ namespace Kayn_BETA_Fixed
         public static Spell.Skillshot W;
         public static Spell.Active E;
         public static Spell.Targeted R;
-        public static Spell.Skillshot R2;
         private static AIHeroClient Kayn => Player.Instance;
 
         public static AIHeroClient _Player
@@ -27,11 +26,18 @@ namespace Kayn_BETA_Fixed
         static void Main(string[] args)
         {
             Loading.OnLoadingComplete += Loading_On;
-            Chat.Print("[Addon] [Champion] [Kayn]", System.Drawing.Color.LightBlue);
         }
 
         private static void Loading_On(EventArgs args)
         {
+            Chat.Print("[Addon] [Champion] [Kayn]", System.Drawing.Color.LightBlue);
+            Chat.Print("[Version] [1.2.1.6]", System.Drawing.Color.Red);
+            Chat.Print("[Combo]", System.Drawing.Color.LightBlue);
+            Chat.Print("[Haras]", System.Drawing.Color.LightBlue);
+            Chat.Print("[LaneClear]", System.Drawing.Color.LightBlue);
+            Chat.Print("[JungleClear]", System.Drawing.Color.LightBlue);
+            Chat.Print("[Mics]", System.Drawing.Color.LightBlue);
+
             CreateMenu();
             InitializeSpells();
             Drawing.OnDraw += OnDraw;
@@ -72,43 +78,25 @@ namespace Kayn_BETA_Fixed
                 ByJungle();
             }
             Kill();
+            Bacck();
         }
-
+        private static void Bacck()
+        {
+        }
         private static void Kill()
         {
-            var Rks = Misc["KS"].Cast<CheckBox>().CurrentValue;
-            var Wks = Misc["KS"].Cast<CheckBox>().CurrentValue;
-            var Qks = Misc["KS"].Cast<CheckBox>().CurrentValue;
-            foreach (var enemy in EntityManager.Heroes.Enemies.Where(x => x.Distance(_Player) <= W.Range && x.IsValidTarget() && !x.IsInvulnerable && !x.IsZombie
-                             && !x.HasBuff("JudicatorIntervention")
-                             && !x.HasBuff("sionpassivezombie")
-                             && !x.HasBuff("KarthusDeathDefiedBuff")
-                             && !x.HasBuff("kogmawicathiansurprise")))
+            var target = TargetSelector.GetTarget(R.Range, DamageType.Physical); //By BestSNA
+            if (Misc["KSR"].Cast<CheckBox>().CurrentValue)
             {
-                if (Wks && W.IsReady() &&
-                    SpellDamage.Wmage(enemy) >= enemy.Health && enemy.Distance(_Player) >= 700)
-
+                if (target != null && target.Health < SpellDamage.Rmage(target))
                 {
-                    var prediction = W.GetPrediction(enemy);
-                    if (prediction.HitChance >= HitChance.High)
+                    if (!target.IsInRange(_Player, R.Range) && R.IsReady())
                     {
-                        W.Cast(prediction.CastPosition);
+                        return;
                     }
-                }
-                if (Qks && Q.IsReady() &&
-                    SpellDamage.Qmage(enemy) >= enemy.Health && enemy.Distance(_Player) >= 350)
-
-                {
-                    var prediction = Q.GetPrediction(enemy);
-                    if (prediction.HitChance >= HitChance.High)
                     {
-                        Q.Cast(prediction.CastPosition);
+                        R.Cast(target);
                     }
-                }
-                if (Rks && R.IsReady() &&
-                    SpellDamage.Rmage(enemy) >= enemy.Health && enemy.Distance(_Player) >= 550)
-                {
-                    R.Cast();
                 }
             }
         }
@@ -150,7 +138,6 @@ namespace Kayn_BETA_Fixed
                 }
             }
         }
-
         private static void ByLane()
         {
             var minions = EntityManager.MinionsAndMonsters.GetLaneMinions(EntityManager.UnitTeam.Enemy, Kayn.Position, W.Range).ToArray();
@@ -204,7 +191,7 @@ namespace Kayn_BETA_Fixed
         {
             var Monsters = EntityManager.MinionsAndMonsters.GetJungleMonsters(Kayn.Position, 1800f);
 
-            var Wp = EntityManager.MinionsAndMonsters.GetLineFarmLocation(Monsters, W.Width, (int) W.Range);
+            var WPred = EntityManager.MinionsAndMonsters.GetLineFarmLocation(Monsters, W.Width, (int) W.Range);
 
             if (Jungle["Qjungle"].Cast<CheckBox>().CurrentValue && Q.IsLearned && Q.IsReady())
             {
@@ -216,16 +203,16 @@ namespace Kayn_BETA_Fixed
 
             if (Jungle["Wjungle"].Cast<CheckBox>().CurrentValue && W.IsLearned && W.IsReady())
             {
-                if (Wp.HitNumber >= Jungle["J"].Cast<Slider>().CurrentValue) W.Cast(Wp.CastPosition);
+                if (WPred.HitNumber >= Jungle["J"].Cast<Slider>().CurrentValue) W.Cast(WPred.CastPosition);
             }
         }
         private static void InitializeSpells()
         {
             Q = new Spell.Skillshot(SpellSlot.Q, 550, EloBuddy.SDK.Enumerations.SkillShotType.Circular);
             W = new Spell.Skillshot(SpellSlot.W, 700, EloBuddy.SDK.Enumerations.SkillShotType.Linear);
-            E = new Spell.Active(SpellSlot.E, 3000);
+            E = new Spell.Active(SpellSlot.E, 2000);
             R = new Spell.Targeted(SpellSlot.R, 550);
-            R2 = new Spell.Skillshot(SpellSlot.R, 150, EloBuddy.SDK.Enumerations.SkillShotType.Linear);
+
         }
     }
 }
