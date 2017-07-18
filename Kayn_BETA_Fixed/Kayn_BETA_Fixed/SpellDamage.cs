@@ -49,7 +49,7 @@ namespace Kayn_BETA_Fixed
         public static float Rmage(Obj_AI_Base target)
         {
             return Player.Instance.CalculateDamageOnUnit(target, DamageType.Physical,
-                (float)(new[] { 0, 150, 250, 350 + 110}[R.Level] + 1.0f * Player.Instance.FlatPhysicalDamageMod + 0.9f * Player.Instance.FlatMagicDamageMod));
+                (float)(new[] { 0, 150, 250, 350}[R.Level] + 1.0f * Player.Instance.FlatPhysicalDamageMod + 0.9f * Player.Instance.FlatMagicDamageMod));
         }
     }
 }

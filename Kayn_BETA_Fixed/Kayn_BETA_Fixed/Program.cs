@@ -82,7 +82,18 @@ namespace Kayn_BETA_Fixed
         }
         private static void Bacck()
         {
+            var useR = Combo["ultR"].Cast<CheckBox>().CurrentValue;
+            var evadeR = Combo["MR"].Cast<Slider>().CurrentValue;
+            var target = TargetSelector.GetTarget(R.Range, DamageType.Physical);
+            if(target.Distance(ObjectManager.Player) <= R.Range)
+            {
+                if (useR && !target.IsInRange(_Player, R.Range) && R.IsReady() && Kayn.HealthPercent <= evadeR)
+                {
+                    R.Cast(target);
+                }
+            }
         }
+                              
         private static void Kill()
         {
             var target = TargetSelector.GetTarget(R.Range, DamageType.Physical); //By BestSNA
@@ -141,11 +152,12 @@ namespace Kayn_BETA_Fixed
         private static void ByLane()
         {
             var minions = EntityManager.MinionsAndMonsters.GetLaneMinions(EntityManager.UnitTeam.Enemy, Kayn.Position, W.Range).ToArray();
-
+            var mana = Lane["mana"].Cast<Slider>().CurrentValue;
+            if (_Player.ManaPercent < mana) return;
             if (minions != null)
             {
-
                 var wpred = EntityManager.MinionsAndMonsters.GetLineFarmLocation(minions, W.Width, (int)W.Range);
+                var minW = Lane["Min"].Cast<Slider>().CurrentValue;
 
                 if (Lane["Qlane"].Cast<CheckBox>().CurrentValue && Q.IsLearned && Q.IsReady())
                 {
@@ -163,26 +175,16 @@ namespace Kayn_BETA_Fixed
                 }
                 if (Lane["WLane"].Cast<CheckBox>().CurrentValue && W.IsLearned && W.IsReady())
                 {
-                    if (Lane["Win"].Cast<Slider>().CurrentValue == 1)
+                    foreach (var minion in minions.Where(x => x.IsValid() && !x.IsDead && x.Health > 15))
                     {
-                        switch (Lane["Wmode"].Cast<ComboBox>().CurrentValue)
+                        if (Lane["Wmode"].Cast<ComboBox>().CurrentValue == 0 && wpred.HitNumber >= minW &&
+                            Prediction.Position.PredictUnitPosition(minion, W.CastDelay).Distance(Kayn.Position) <= (W.Range + 700))
                         {
-                            case 0:
-                                if (wpred.HitNumber == Lane["WP"].Cast<Slider>().CurrentValue) { W.Cast(wpred.CastPosition); }
-                                break;
-                            case 1:
-                                W.Cast(minions.Where(x => x.Distance(Kayn.Position) < W.Range &&
-                                                               !x.IsDead && x.Health > 25 && x.IsValid()).OrderBy(x => x.Distance(Kayn.Position))
-                                                                                                         .FirstOrDefault().Position);
-                                break;
+                            W.Cast(minion.Position);
                         }
-                    }
-                    else
-                    {
-                        if (wpred.HitNumber >= Lane["WP"].Cast<Slider>().CurrentValue)
-                        {
-                            W.Cast(wpred.CastPosition);
-                        }
+
+                        else { W.Cast(minion.Position); }
+
                     }
                 }
             }
@@ -190,7 +192,8 @@ namespace Kayn_BETA_Fixed
         private static void ByJungle()
         {
             var Monsters = EntityManager.MinionsAndMonsters.GetJungleMonsters(Kayn.Position, 1800f);
-
+            var mana = Jungle["jmana"].Cast<Slider>().CurrentValue;
+            if (_Player.ManaPercent < mana) return;
             var WPred = EntityManager.MinionsAndMonsters.GetLineFarmLocation(Monsters, W.Width, (int) W.Range);
 
             if (Jungle["Qjungle"].Cast<CheckBox>().CurrentValue && Q.IsLearned && Q.IsReady())
