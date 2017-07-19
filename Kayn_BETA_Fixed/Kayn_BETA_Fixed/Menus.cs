@@ -6,7 +6,7 @@ namespace Kayn_BETA_Fixed
 {
     class Menus
     {
-        public static Menu Kmenu, Combo, Lane, Jungle, Draws, Misc;
+        public static Menu Kmenu, Combo, Lane, Jungle, Draws, Misc, AutoHara;
 
         internal static void CreateMenu()
         {
@@ -15,13 +15,16 @@ namespace Kayn_BETA_Fixed
             Combo.Add("Q", new CheckBox("Use [Q]"));
             Combo.Add("W", new CheckBox("Use [W]"));
             Combo.Add("E", new CheckBox("Use [E]"));
-            Combo.Add("R", new CheckBox("Use [R]"));
+            Combo.Add("R", new CheckBox("Use [R]", false));
             Combo.AddLabel("Predction");
             Combo.Add("Qhit", new Slider("HitChance [Q]", 65, 1));
             Combo.Add("Whit", new Slider("HitChance [W]", 80, 1));
             Combo.AddLabel("Settings [R]");
             Combo.Add("ultR", new CheckBox("Use [R] Evade"));
             Combo.Add("MR", new Slider("My HP Use Evade [R] <=", 15));
+            AutoHara = Kmenu.AddSubMenu("AutoHarass");
+            AutoHara.Add("AutoW", new CheckBox("Auto [W]"));
+            AutoHara.Add("Mn", new Slider("Mana AutoHarass", 65, 1));
             Lane = Kmenu.AddSubMenu("Lane");
             Lane.Add("Qlane", new CheckBox("Use [Q]"));
             Lane.Add("WLane", new CheckBox("Use [W]"));

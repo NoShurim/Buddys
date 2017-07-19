@@ -90,8 +90,23 @@ namespace Kayn_BETA_Fixed
             Bacck();
             FlashR();
             FlashW();
-        }
+            AutoHarass();
 
+        }
+        private static void AutoHarass()
+        {
+            var targetW = TargetSelector.GetTarget(W.Range, DamageType.Physical);
+            if (AutoHara["AutoW"].Cast<CheckBox>().CurrentValue)
+            {
+                if (targetW.Distance(ObjectManager.Player) <= W.Range && W.IsReady())
+                {
+                    if (Player.Instance.ManaPercent > AutoHara["Mn"].Cast<Slider>().CurrentValue)
+                    {
+                        W.Cast(W.GetPrediction(targetW).CastPosition);
+                    }
+                }
+            }
+        }
         private static void FlashW()
         {
             var flashtarget = TargetSelector.GetTarget(850, DamageType.Physical);
@@ -127,7 +142,7 @@ namespace Kayn_BETA_Fixed
             var useR = Combo["ultR"].Cast<CheckBox>().CurrentValue;
             var evadeR = Combo["MR"].Cast<Slider>().CurrentValue;
             var target = TargetSelector.GetTarget(R.Range, DamageType.Physical);
-            if(target.Distance(ObjectManager.Player) <= R.Range)
+            if (target.Distance(ObjectManager.Player) <= R.Range)
             {
                 if (useR && !target.IsInRange(_Player, R.Range) && R.IsReady() && Kayn.HealthPercent <= evadeR)
                 {
@@ -135,7 +150,7 @@ namespace Kayn_BETA_Fixed
                 }
             }
         }
-                              
+
         private static void Kill()
         {
             var target = TargetSelector.GetTarget(R.Range, DamageType.Physical); //By BestSNA
@@ -155,39 +170,36 @@ namespace Kayn_BETA_Fixed
         }
         private static void byCombo()
         {
-            var target = TargetSelector.GetTarget(E.Range, DamageType.Physical);
+            var targete = TargetSelector.GetTarget(E.Range, DamageType.Physical);
             if (Combo["E"].Cast<CheckBox>().CurrentValue)
             {
-                if (target.Distance(ObjectManager.Player) <= E.Range && E.IsReady())
+                if (targete.Distance(ObjectManager.Player) <= E.Range && E.IsReady())
                 {
-                    E.Cast(target);
+                    E.Cast(targete);
                 }
-
-                target = TargetSelector.GetTarget(W.Range, DamageType.Physical);
-                if (Combo["W"].Cast<CheckBox>().CurrentValue)
+            }
+            var target = TargetSelector.GetTarget(W.Range, DamageType.Physical);
+            if (Combo["W"].Cast<CheckBox>().CurrentValue)
+            {
+                if (target.Distance(ObjectManager.Player) <= W.Range && W.IsReady())
                 {
-                    if (target.Distance(ObjectManager.Player) <= W.Range && W.IsReady())
-                    {
-                        W.Cast(W.GetPrediction(target).CastPosition);
-                    }
-
-                    target = TargetSelector.GetTarget(Q.Range, DamageType.Physical);
-                    if (Combo["Q"].Cast<CheckBox>().CurrentValue)
-                    {
-                        if (target.Distance(ObjectManager.Player) <= Q.Range && Q.IsReady())
-                        {
-                            Q.Cast(Q.GetPrediction(target).CastPosition);
-                        }
-
-                        target = TargetSelector.GetTarget(R.Range, DamageType.Physical);
-                        if (Combo["R"].Cast<CheckBox>().CurrentValue)
-                        {
-                            if (target.Distance(ObjectManager.Player) <= R.Range && R.IsReady())
-                            {
-                                R.Cast(target);
-                            }
-                        }
-                    }
+                    W.Cast(W.GetPrediction(target).CastPosition);
+                }
+            }
+            var targetw = TargetSelector.GetTarget(Q.Range, DamageType.Physical);
+            if (Combo["Q"].Cast<CheckBox>().CurrentValue)
+            {
+                if (target.Distance(ObjectManager.Player) <= Q.Range && Q.IsReady())
+                {
+                    Q.Cast(Q.GetPrediction(target).CastPosition);
+                }
+            }
+            var targetr = TargetSelector.GetTarget(R.Range, DamageType.Physical);
+            if (Combo["R"].Cast<CheckBox>().CurrentValue)
+            {
+                if (target.Distance(ObjectManager.Player) <= R.Range && R.IsReady())
+                {
+                    R.Cast(target);
                 }
             }
         }
@@ -199,8 +211,6 @@ namespace Kayn_BETA_Fixed
             if (minions != null)
             {
                 var wpred = EntityManager.MinionsAndMonsters.GetLineFarmLocation(minions, W.Width, (int)W.Range);
-                var minW = Lane["Min"].Cast<Slider>().CurrentValue;
-
                 if (Lane["Qlane"].Cast<CheckBox>().CurrentValue && Q.IsLearned && Q.IsReady())
                 {
                     foreach (var minion in minions.Where(x => x.IsValid() && !x.IsDead && x.Health > 15))
@@ -217,15 +227,18 @@ namespace Kayn_BETA_Fixed
                 }
                 if (Lane["WLane"].Cast<CheckBox>().CurrentValue && W.IsLearned && W.IsReady())
                 {
-                    foreach (var minion in minions.Where(x => x.IsValid() && !x.IsDead && x.Health > 15))
-                    {
-                        if (Lane["Wmode"].Cast<ComboBox>().CurrentValue == 0 &&
-                            Prediction.Position.PredictUnitPosition(minion, W.CastDelay).Distance(Kayn.Position) <= (W.Range + 700))
+                    if (wpred.HitNumber >= Lane["Min"].Cast<Slider>().CurrentValue) W.Cast(wpred.CastPosition);
+                {
+                        foreach (var minion in minions.Where(x => x.IsValid() && !x.IsDead && x.Health > 15))
                         {
-                            W.Cast(minion.Position);
-                        }
+                            if (Lane["Wmode"].Cast<ComboBox>().CurrentValue == 0 &&
+                                Prediction.Position.PredictUnitPosition(minion, W.CastDelay).Distance(Kayn.Position) <= (W.Range + 700))
+                            {
+                                W.Cast(minion.Position);
+                            }
 
-                        else { W.Cast(minion.Position); }
+                            else { W.Cast(minion.Position); }
+                        }
                     }
                 }
             }

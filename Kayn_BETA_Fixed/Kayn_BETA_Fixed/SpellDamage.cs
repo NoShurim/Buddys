@@ -44,12 +44,12 @@ namespace Kayn_BETA_Fixed
         public static float Wmage(Obj_AI_Base target)
         {
             return Player.Instance.CalculateDamageOnUnit(target, DamageType.Physical,
-                (float)(new[] { 0, 80, 125, 170,215, 260 }[W.Level] + 0.8f * Player.Instance.FlatMagicDamageMod));
+                (float)(new[] { 0, 80, 125, 170, 215, 260 }[W.Level] + 0.8f * Player.Instance.FlatMagicDamageMod));
         }
         public static float Rmage(Obj_AI_Base target)
         {
             return Player.Instance.CalculateDamageOnUnit(target, DamageType.Physical,
-                (float)(new[] { 0, 150, 250, 350}[R.Level] + 1f * Player.Instance.FlatPhysicalDamageMod + 1f * Player.Instance.FlatMagicDamageMod));
+                (float)(new[] { 0, 150, 250, 350 }[R.Level] + 1f * Player.Instance.FlatPhysicalDamageMod + 1f * Player.Instance.FlatMagicDamageMod));
         }
     }
 }
