@@ -21,6 +21,9 @@ namespace Caitlyn__Beta_Fixed
             get { return ObjectManager.Player; }
 
         }
+        protected static bool IsTarget(AIHeroClient unit) => unit.Buffs.Any(thulio => thulio.Name == "caitlynShot");
+        public static bool TiroForte => Caitlyn.Buffs.Any(x => x.Name == "HeadShot");
+
         public static HitChance HitQ()
         {
             switch (pre["HitQ"].Cast<ComboBox>().CurrentValue)
@@ -66,14 +69,12 @@ namespace Caitlyn__Beta_Fixed
             Drawing.OnDraw += OnDraw;
             Gapcloser.OnGapcloser += Gap_Closer;
             Interrupter.OnInterruptableSpell += Inte_On;
-
         }
 
         private static void Gap_Closer(AIHeroClient sender, Gapcloser.GapcloserEventArgs t)
         {
             var target = TargetSelector.GetTarget(E.Range, DamageType.Physical);
-            if(sender.IsEnemy && sender.IsValidTarget(E.Range) &&
-                t.End.Distance(_Player) <= 350)
+            if(sender.IsEnemy && sender.IsValidTarget(E.Range) && t.End.Distance(_Player) <= 350)
             {
                 E.Cast(t.End);
             }
@@ -101,20 +102,37 @@ namespace Caitlyn__Beta_Fixed
             AutoHara();
             AutoR();
             Killteal();
-            ResetAA();
+            ti();
             Back();
         }
 
+        private static void ti()
+        {
+            if (Comb["ModoR"].Cast<ComboBox>().CurrentValue == 1)
+            {
+                var target = TargetSelector.GetTarget(R.Range, DamageType.Physical);
+                if (Comb["Rf"].Cast<CheckBox>().CurrentValue)
+                {
+                    if (target != null && target.HealthPercent < Comb["LR"].Cast<Slider>().CurrentValue)
+                    {
+                        if (!target.IsInRange(_Player, R.Range) && R.IsReady())
+                        {
+                            return;
+                        }
+                        {
+                            R.Cast(target);
+                        }
+                    }
+                }
+            }
+        }
         private static void Back()
         {
-            throw new NotImplementedException();
+            if (Caiy["AutoAtack"].Cast<CheckBox>().CurrentValue)
+            {
+                TiroForte.Equals(EntityManager.Heroes.Enemies.Any(x => x.IsValidTarget(Caitlyn.GetAutoAttackRange())));
+            }
         }
-
-        private static void ResetAA()
-        {
-            throw new NotImplementedException();
-        }
-
         private static void Killteal()
         {
             var target = TargetSelector.GetTarget(Q.Range, DamageType.Physical);
@@ -132,21 +150,24 @@ namespace Caitlyn__Beta_Fixed
         }
         private static void AutoR()
         {
-            var target = TargetSelector.GetTarget(R.Range, DamageType.Physical);
-            if (Comb["Rf"].Cast<CheckBox>().CurrentValue)
+            if (Comb["ModoR"].Cast<ComboBox>().CurrentValue == 0)
             {
-                if (target != null && target.Health < SpellDamage.Rmage(target))
+                var target = TargetSelector.GetTarget(R.Range, DamageType.Physical);
+                if (Comb["Rf"].Cast<CheckBox>().CurrentValue)
                 {
-                    if (!target.IsInRange(_Player, R.Range) && R.IsReady())
+                    if (target != null && target.Health < SpellDamage.Rmage(target))
                     {
-                        return;
-                    }
-                    {
-                        R.Cast(target);
+                        if (!target.IsInRange(_Player, R.Range) && R.IsReady())
+                        {
+                            return;
+                        }
+                        {
+                            R.Cast(target);
+                        }
                     }
                 }
             }
-        }
+        }                 
         private static void ByCombo()
         {
             var target = TargetSelector.GetTarget(Q.Range, DamageType.Physical);
@@ -156,7 +177,7 @@ namespace Caitlyn__Beta_Fixed
             }
             if (Comb["Ec"].Cast<CheckBox>().CurrentValue)
             {
-                if (E.IsReady() && E.CanCast(target))
+                if (E.IsReady() && E.CanCast(target) && !TiroForte)
                 {
                     var prediction = E.GetPrediction(target);
                     if (target.IsValidTarget(E.Range) && prediction.HitChance >= HitE())
@@ -178,7 +199,7 @@ namespace Caitlyn__Beta_Fixed
             }
             if (Comb["Wc"].Cast<CheckBox>().CurrentValue)
             {
-                if (W.IsReady())
+                if (W.IsReady() && !TiroForte)
                 {
                     var predictionPos = Prediction.Position.PredictUnitPosition(target, 500).To3D();
 

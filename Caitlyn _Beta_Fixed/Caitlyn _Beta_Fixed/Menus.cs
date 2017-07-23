@@ -1,6 +1,8 @@
-﻿using EloBuddy.SDK.Menu;
+﻿using EloBuddy.SDK;
+using EloBuddy.SDK.Menu;
 using EloBuddy.SDK.Menu.Values;
 using System;
+using System.Linq;
 
 namespace Caitlyn__Beta_Fixed
 {
@@ -20,6 +22,7 @@ namespace Caitlyn__Beta_Fixed
         internal static void InMenu()
         {
             Caiy = MainMenu.AddMenu("Caitlyn", "Caitlyn");
+            Caiy.Add("AutoAtack", new CheckBox("Use Atack Buff [Enemy]"));
             pre = Caiy.AddSubMenu("Prediction");
             pre.Add("HitQ", new ComboBox("HitChance [Q]", 1, "Low", "Medium", "High"));
             pre.Add("HitW", new ComboBox("HitChance [W]", 2, "Low", "Medium", "High"));
@@ -31,6 +34,17 @@ namespace Caitlyn__Beta_Fixed
             Comb.AddSeparator();
             Comb.AddLabel("Settings [R]");
             Comb.Add("Rf", new CheckBox("Use [R] Fish Enemy"));
+            Comb.AddSeparator();
+            Comb.Add("ModoR", new ComboBox("Mode [R]", 0, "Fish [R]", "Beta Mode [R]"));
+            Comb.AddSeparator();
+            Comb.AddLabel("Settings [Beta Mode R]");
+            Comb.Add("LR", new Slider("Minimal of the Enemy's Life", 20, 1, 100));
+            Comb.AddSeparator();
+            Comb.AddLabel("Enemys, No Use on whom?");
+            foreach (var enemies in EntityManager.Heroes.Enemies.Where(caity => !caity.IsMe))
+            {
+                Comb.Add("CaitlynUti" + enemies.ChampionName, new CheckBox("" + enemies.ChampionName, false));
+            }
             Auto = Caiy.AddSubMenu("Auto Harass");
             Auto.Add("AutoQ", new CheckBox("AutoHarass [Q]"));
             Auto.AddSeparator();
