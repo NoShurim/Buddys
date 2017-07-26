@@ -1,0 +1,10 @@
+C:\Users\Edcarlos\Documents\Visual Studio 2017\Projects\Leona_Beta_Fixed\Leona_Beta_Fixed\bin\Release\Leona_Beta_Fixed.exe.config
+C:\Users\Edcarlos\Documents\Visual Studio 2017\Projects\Leona_Beta_Fixed\Leona_Beta_Fixed\bin\Release\Leona_Beta_Fixed.exe
+C:\Users\Edcarlos\Documents\Visual Studio 2017\Projects\Leona_Beta_Fixed\Leona_Beta_Fixed\bin\Release\Leona_Beta_Fixed.pdb
+C:\Users\Edcarlos\Documents\Visual Studio 2017\Projects\Leona_Beta_Fixed\Leona_Beta_Fixed\bin\Release\EloBuddy.dll
+C:\Users\Edcarlos\Documents\Visual Studio 2017\Projects\Leona_Beta_Fixed\Leona_Beta_Fixed\bin\Release\EloBuddy.SDK.dll
+C:\Users\Edcarlos\Documents\Visual Studio 2017\Projects\Leona_Beta_Fixed\Leona_Beta_Fixed\bin\Release\SharpDX.dll
+C:\Users\Edcarlos\Documents\Visual Studio 2017\Projects\Leona_Beta_Fixed\Leona_Beta_Fixed\bin\Release\SharpDX.Direct3D9.dll
+C:\Users\Edcarlos\Documents\Visual Studio 2017\Projects\Leona_Beta_Fixed\Leona_Beta_Fixed\bin\Release\Newtonsoft.Json.dll
+C:\Users\Edcarlos\Documents\Visual Studio 2017\Projects\Leona_Beta_Fixed\Leona_Beta_Fixed\obj\Release\Leona_Beta_Fixed.exe
+C:\Users\Edcarlos\Documents\Visual Studio 2017\Projects\Leona_Beta_Fixed\Leona_Beta_Fixed\obj\Release\Leona_Beta_Fixed.pdb
