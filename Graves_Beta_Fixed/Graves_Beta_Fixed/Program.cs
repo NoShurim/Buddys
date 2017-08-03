@@ -207,22 +207,6 @@ namespace Graves_Beta_Fixed
                     hero => hero.IsValidTarget() && (hero.Distance(position) <= range) && hero.HealthPercent <= 15)
                     .ToList();
         }
-
-        public static void OnPreAttack(GameObject target, EventArgs args)
-        {
-            if (_Player.HasBuff("GravesBasicAttackAmmo2") || _Player.HasBuff("GravesBasicAttackAmmo1") ||
-                !Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo) ||
-                target.Type != GameObjectType.AIHeroClient || !Comb["disableAA"].Cast<CheckBox>().CurrentValue)
-                return;
-
-            if (Prediction.Position.Collision.LinearMissileCollision(
-                target as Obj_AI_Base, _Player.ServerPosition.To2D(), target.Position.To2D(), int.MaxValue,
-                (int)target.BoundingRadius, 0))
-            {
-                Orbwalker.DisableAttacking = true;
-            }
-        }
-
         public static void OnSpellCast(GameObject sender, GameObjectProcessSpellCastEventArgs args)
         {
             if (sender.IsDead || !sender.IsMe) return;
