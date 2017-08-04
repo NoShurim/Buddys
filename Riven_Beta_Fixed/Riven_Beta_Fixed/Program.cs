@@ -64,13 +64,13 @@ namespace Riven_Beta_Fixed
             get
             {
                 if (SmiteBlue.Any(i => Item.HasItem(i)))
-                    return "s5_summonersmiteplayerganker";
+                    return "s7_summonersmiteplayerganker";
 
                 if (SmiteRed.Any(i => Item.HasItem(i)))
-                    return "s5_summonersmiteduel";
+                    return "s7_summonersmiteduel";
 
                 if (SmiteGrey.Any(i => Item.HasItem(i)))
-                    return "s5_summonersmitequick";
+                    return "s7_summonersmitequick";
 
                 if (SmitePurple.Any(i => Item.HasItem(i)))
                     return "itemsmiteaoe";
