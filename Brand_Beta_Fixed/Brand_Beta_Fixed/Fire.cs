@@ -266,13 +266,13 @@ namespace Brand_Beta_Fixed
             var allTargets = new[] { selectedTarget }.Concat(enemies.Where(n => n.Index != selectedTarget.Index).OrderByDescending(n => Logics.TotalDamage(SpellSlot.Q, n) / n.Health)).Where(n => n.IsValidTarget() && !n.WillDie());
             
 
-            var ksQ = KillSteal["ksQ"].Cast<CheckBox>().CurrentValue &&
+            var ksQ = KillSteal["KsQ"].Cast<CheckBox>().CurrentValue &&
                       Player.CanUseSpell(SpellSlot.Q) == SpellState.Ready;
-            var ksW = KillSteal["ksW"].Cast<CheckBox>().CurrentValue &&
+            var ksW = KillSteal["KsW"].Cast<CheckBox>().CurrentValue &&
                       Player.CanUseSpell(SpellSlot.W) == SpellState.Ready;
-            var ksE = KillSteal["ksE"].Cast<CheckBox>().CurrentValue &&
+            var ksE = KillSteal["KsE"].Cast<CheckBox>().CurrentValue &&
                       Player.CanUseSpell(SpellSlot.E) == SpellState.Ready;
-            var ksR = KillSteal["ksR"].Cast<CheckBox>().CurrentValue &&
+            var ksR = KillSteal["KsR"].Cast<CheckBox>().CurrentValue &&
                       Player.CanUseSpell(SpellSlot.R) == SpellState.Ready;
 
             foreach (var enemy in allTargets)
