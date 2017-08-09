@@ -79,7 +79,7 @@ namespace Cassiopeia_Beta_Fixed
                 R.Cast(target.Position);
             }
 
-            if (Combo["W"].Cast<CheckBox>().CurrentValue && W.IsReady() && target.IsValidTarget(W.Range))
+            if (Combo["Wc"].Cast<CheckBox>().CurrentValue && W.IsReady() && target.IsValidTarget(W.Range))
             {
                 var prediction = W.GetPrediction(target);
                 if (prediction.HitChance >= HitChance.High)
@@ -88,7 +88,7 @@ namespace Cassiopeia_Beta_Fixed
                 }
             }
 
-            if (Combo["Q"].Cast<CheckBox>().CurrentValue && Q.IsReady() && target.IsValidTarget(Q.Range + 100))
+            if (Combo["Qc"].Cast<CheckBox>().CurrentValue && Q.IsReady() && target.IsValidTarget(Q.Range + 100))
             {
                 var prediction = Q.GetPrediction(target);
                 if (prediction.HitChance >= HitChance.High)
