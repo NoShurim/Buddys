@@ -74,7 +74,7 @@ namespace Caitlyn__Beta_Fixed
         private static void Gap_Closer(AIHeroClient sender, Gapcloser.GapcloserEventArgs t)
         {
             var target = TargetSelector.GetTarget(E.Range, DamageType.Physical);
-            if(sender.IsEnemy && sender.IsValidTarget(E.Range) && t.End.Distance(_Player) <= 350)
+            if (sender.IsEnemy && sender.IsValidTarget(E.Range) && t.End.Distance(_Player) <= 350)
             {
                 E.Cast(t.End);
             }
@@ -82,7 +82,7 @@ namespace Caitlyn__Beta_Fixed
 
         private static void Inte_On(Obj_AI_Base sender, Interrupter.InterruptableSpellEventArgs e)
         {
-           //Não sei como faz isso ainda 
+            //Não sei como faz isso ainda 
         }
 
         private static void Game_On(EventArgs args)
@@ -167,7 +167,7 @@ namespace Caitlyn__Beta_Fixed
                     }
                 }
             }
-        }                 
+        }
         private static void ByCombo()
         {
             var target = TargetSelector.GetTarget(Q.Range, DamageType.Physical);
@@ -234,7 +234,7 @@ namespace Caitlyn__Beta_Fixed
                     Q.Cast(miniQ.First());
                 }
             }
-        }                  
+        }
         private static void AutoHara()
         {
             var target = TargetSelector.GetTarget(Q.Range, DamageType.Physical);
@@ -249,7 +249,7 @@ namespace Caitlyn__Beta_Fixed
                     }
                 }
             }
-        }              
+        }
         private static void InSpells()
         {
             Q = new Spell.Skillshot(SpellSlot.Q, 1225, SkillShotType.Linear, 625, 2200, 90)
@@ -263,7 +263,13 @@ namespace Caitlyn__Beta_Fixed
             };
             R = new Spell.Targeted(SpellSlot.R, 2000);
         }
-
+        public static void Ultimate(EventArgs args)
+        {
+            if (R.Level == 2)
+                R = new Spell.Targeted(SpellSlot.R, 2500);
+            if (R.Level == 3)
+                R = new Spell.Targeted(SpellSlot.R, 3000);
+        }
         private static void OnDraw(EventArgs args)
         {
 
