@@ -54,10 +54,29 @@ namespace Cassiopeia_Beta_Fixed
             {
                 ByJungle();
             }
+            if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.LastHit))
+            {
+                ByLast();
+            }
             AutoHara();
             AutoR();
             Killteal();
 
+        }
+
+        private static void ByLast()
+        {
+            var minion = EntityManager.MinionsAndMonsters.Get(EntityManager.MinionsAndMonsters.EntityType.Minion, EntityManager.UnitTeam.Enemy, Player.Instance.ServerPosition, E.Range).FirstOrDefault(m => E.IsReady() && m.IsValidTarget(E.Range) && Prediction.Health.GetPrediction(m, E.CastDelay) <= Logics.GetMinionTarget(m, SpellSlot.E));
+
+            if (Farm["Elast"].Cast<CheckBox>().CurrentValue && !(Farm["Buff"].Cast<CheckBox>().CurrentValue) && E.IsReady() && minion.IsValidTarget(E.Range))
+            {
+                E.Cast(minion);
+            }
+
+            if (Farm["Elast"].Cast<CheckBox>().CurrentValue && Farm["Buff"].Cast<CheckBox>().CurrentValue && E.IsReady() && minion.IsValidTarget(E.Range) && minion.HasBuffOfType(BuffType.Poison))
+            {
+                E.Cast(minion);
+            }
         }
 
         private static void ByCombo()
@@ -111,7 +130,7 @@ namespace Cassiopeia_Beta_Fixed
 
         private static void ByLane()
         {
-            var minion1 = EntityManager.MinionsAndMonsters.GetLaneMinions().Where(m => m.IsValidTarget(E.Range)).OrderBy(m => !(m.Health <= Logics.GetMinionTarget (m, SpellSlot.E))).ThenBy(m => !m.HasBuffOfType(BuffType.Poison)).ThenBy(m => m.Health).FirstOrDefault();
+            var minion1 = EntityManager.MinionsAndMonsters.GetLaneMinions().Where(m => m.IsValidTarget(E.Range)).OrderBy(m => !(m.Health <= Logics.GetMinionTarget(m, SpellSlot.E))).ThenBy(m => !m.HasBuffOfType(BuffType.Poison)).ThenBy(m => m.Health).FirstOrDefault();
             var minion2 = EntityManager.MinionsAndMonsters.GetLaneMinions().FirstOrDefault(m => m.IsValidTarget(E.Range) && m.HasBuffOfType(BuffType.Poison));
             var minion3 = EntityManager.MinionsAndMonsters.GetLaneMinions().Where(m => m.IsValidTarget(W.Range)).ToArray();
             if (minion3.Length == 0) return;
@@ -127,7 +146,7 @@ namespace Cassiopeia_Beta_Fixed
                 }
             }
 
-            if (Farm["Q"].Cast<CheckBox>().CurrentValue && Q.IsReady() && _Player.ManaPercent >= Farm["Manal"].Cast<Slider>().CurrentValue)
+            if (Farm["Qf"].Cast<CheckBox>().CurrentValue && Q.IsReady() && _Player.ManaPercent >= Farm["Manal"].Cast<Slider>().CurrentValue)
             {
                 var predictedMinion = minionlocation.GetCollisionObjects<Obj_AI_Minion>();
                 if (predictedMinion.Length >= Farm["Qq"].Cast<Slider>().CurrentValue)
@@ -148,13 +167,11 @@ namespace Cassiopeia_Beta_Fixed
 
             if (Farm["Ef"].Cast<CheckBox>().CurrentValue && E.IsReady() && Cassio.ManaPercent >= Farm["Manal"].Cast<Slider>().CurrentValue && minion1.IsValidTarget(E.Range))
             {
-                if (Farm["EOnly"].Cast<CheckBox>().CurrentValue)
-                {
-                    E.Cast(minion2);
-                }
+
+                E.Cast(minion2);
             }
         }
-
+               
         private static void ByJungle()
         {
             throw new NotImplementedException();

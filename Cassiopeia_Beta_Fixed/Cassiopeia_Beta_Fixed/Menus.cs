@@ -47,6 +47,8 @@ namespace Cassiopeia_Beta_Fixed
             Farm.Add("Qf", new CheckBox("Use [Q]"));
             Farm.Add("Wf", new CheckBox("Use [W]"));
             Farm.Add("Ef", new CheckBox("Use [E]"));
+            Farm.Add("Buff", new CheckBox("Position [Buff]", false));
+            Farm.Add("Elast", new CheckBox("LastHit [E]"));
             Farm.AddSeparator();
             Farm.AddLabel("Settings [Q/W]");
             Farm.Add("Qq", new Slider("Percent Minion [Q] > %", 2, 0, 6));
