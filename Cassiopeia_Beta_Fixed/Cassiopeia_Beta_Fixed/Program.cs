@@ -36,8 +36,37 @@ namespace Cassiopeia_Beta_Fixed
             Interrupter.OnInterruptableSpell += OnInterrupter;
             Gapcloser.OnGapcloser += OnGapcloser;
             Drawing.OnDraw += Drawing_OnDraw;
+            Orbwalker.OnPostAttack += OnAfterAttack;
             Game.OnTick += Game_OnTick;
 
+        }
+
+        private static void OnAfterAttack(AttackableUnit target, EventArgs args)
+        {
+            {
+                if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo))
+                    if (target == null || !(target is AIHeroClient) || target.IsDead || target.IsInvulnerable ||
+                        !target.IsEnemy || target.IsPhysicalImmune || target.IsZombie)
+                        return;
+
+                var enemy = target as AIHeroClient;
+                if (enemy == null)
+                    return;
+                if (Combo["QAA"].Cast<CheckBox>().CurrentValue)
+                {
+                    if (Q.IsReady())
+                    {
+                        Q.Cast(enemy);
+                    }
+                    if (Combo["EAA"].Cast<CheckBox>().CurrentValue)
+                    {
+                        if (E.IsReady())
+                        {
+                            E.Cast(enemy);
+                        }
+                    }
+                }
+            }
         }
 
         private static void Game_OnTick(EventArgs args)
@@ -85,18 +114,7 @@ namespace Cassiopeia_Beta_Fixed
 
             if ((target == null) || target.IsInvulnerable)
                 return;
-            if (Combo["DisAA"].Cast<CheckBox>().CurrentValue && Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo))
-            {
-                Orbwalker.DisableAttacking = true;
-            }
-            if (!Combo["DisAA"].Cast<CheckBox>().CurrentValue && Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo))
-            {
-                Orbwalker.DisableAttacking = false;
-            }
-            if (!Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo))
-            {
-                Orbwalker.DisableAttacking = false;
-            }
+         
             var PositionEnemys = EntityManager.Heroes.Enemies.Find(e => e.IsValidTarget(E.Range) && e.HasBuffOfType(BuffType.Poison));
 
             if (R.IsReady() && Combo["Rc"].Cast<CheckBox>().CurrentValue && !target.IsDead && target.IsValidTarget(R.Range))
@@ -191,6 +209,10 @@ namespace Cassiopeia_Beta_Fixed
         private static void AutoHara()
         {
             var target = TargetSelector.GetTarget(Q.Range, DamageType.Magical);
+
+            if ((target == null) || target.IsInvulnerable)
+                return;
+
             if (Hara["AutoQ"].Cast<CheckBox>().CurrentValue)
             {
                 var prediction = Q.GetPrediction(target);

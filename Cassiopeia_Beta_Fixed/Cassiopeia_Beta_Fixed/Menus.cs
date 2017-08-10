@@ -19,6 +19,8 @@ namespace Cassiopeia_Beta_Fixed
             Combo.Add("Wc", new CheckBox("Use [W] Enemy"));
             Combo.Add("Ec", new CheckBox("Use [E] Enemy"));
             Combo.Add("DisAA", new CheckBox("DisableAA in Combo", false));
+            Combo.Add("QAA", new CheckBox("Use [Q] + AA"));
+            Combo.Add("EAA", new CheckBox("Use [E] + AA"));
             Combo.AddSeparator();
             Combo.AddLabel("Settings [W]");
             Combo.Add("minWw", new Slider("Use [W] Target is Enemy > %", 1, 0, 5));
