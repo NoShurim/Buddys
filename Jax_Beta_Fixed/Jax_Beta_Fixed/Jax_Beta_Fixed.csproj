@@ -55,6 +55,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -63,8 +64,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Damage.cs" />
+    <Compile Include="DamageManager.cs" />
+    <Compile Include="HeroBase.cs" />
+    <Compile Include="IHero.cs" />
+    <Compile Include="Jax.cs" />
+    <Compile Include="MenuManager.cs" />
+    <Compile Include="Obj_AI_BaseExtensions.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Scale.cs" />
+    <Compile Include="SkinManager.cs" />
+    <Compile Include="SpellsExtensions.cs" />
+    <Compile Include="Vectors.cs" />
+    <Compile Include="VersionManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
