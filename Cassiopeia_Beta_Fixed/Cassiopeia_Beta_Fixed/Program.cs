@@ -123,7 +123,16 @@ namespace Cassiopeia_Beta_Fixed
 
             if ((target == null) || target.IsInvulnerable)
                 return;
-         
+
+            if (Player.Instance.Mana > SpellData.GetSpellData(E.Name).Mana && Combo["DisAA"].Cast<CheckBox>().CurrentValue && Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo))
+            {
+                Orbwalker.DisableAttacking = true;
+            }
+            if (Player.Instance.Mana < SpellData.GetSpellData(E.Name).Mana && Combo["DisAA"].Cast<CheckBox>().CurrentValue && Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo))
+            {
+                Orbwalker.DisableAttacking = false;
+            }
+
             var PositionEnemys = EntityManager.Heroes.Enemies.Find(e => e.IsValidTarget(E.Range) && e.HasBuffOfType(BuffType.Poison));
 
             if (R.IsReady() && Combo["Rc"].Cast<CheckBox>().CurrentValue && !target.IsDead && target.IsValidTarget(R.Range))
