@@ -44,13 +44,13 @@ namespace Cassiopeia_Beta_Fixed
 
         private static void PreAtack(AttackableUnit target, Orbwalker.PreAttackArgs args)
         {
-            if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.LaneClear) || (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.JungleClear)) || (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Harass)) || (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.LastHit)) || (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.JunglePlantsClear)))
+            if (!Combo["DisAA"].Cast<CheckBox>().CurrentValue && Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.LaneClear) || (!Combo["DisAA"].Cast<CheckBox>().CurrentValue && Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.JungleClear)) || (!Combo["DisAA"].Cast<CheckBox>().CurrentValue && Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Harass)) || (!Combo["DisAA"].Cast<CheckBox>().CurrentValue && Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.LastHit)) || (!Combo["DisAA"].Cast<CheckBox>().CurrentValue && Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.JunglePlantsClear)) || (!Combo["DisAA"].Cast<CheckBox>().CurrentValue))
            {
                 Orbwalker.DisableAttacking = false;
             }
         }
 
-        private static void OnAfterAttack(AttackableUnit target, EventArgs args)
+            private static void OnAfterAttack(AttackableUnit target, EventArgs args)
         {
             {
                 if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo))
