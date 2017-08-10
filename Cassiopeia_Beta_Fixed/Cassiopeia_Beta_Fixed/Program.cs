@@ -44,13 +44,17 @@ namespace Cassiopeia_Beta_Fixed
 
         private static void PreAtack(AttackableUnit target, Orbwalker.PreAttackArgs args)
         {
-            if (Combo["DisAA"].Cast<CheckBox>().CurrentValue && Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.LaneClear) || (Combo["DisAA"].Cast<CheckBox>().CurrentValue && Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.JungleClear)) || (Combo["DisAA"].Cast<CheckBox>().CurrentValue && Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Harass)) || (Combo["DisAA"].Cast<CheckBox>().CurrentValue && Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.LastHit)) || (Combo["DisAA"].Cast<CheckBox>().CurrentValue && Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.JunglePlantsClear)) || (!Combo["DisAA"].Cast<CheckBox>().CurrentValue))
+            if (Player.Instance.Mana > SpellData.GetSpellData(E.Name).Mana && Combo["DisAA"].Cast<CheckBox>().CurrentValue && Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo))
+            {
+                Orbwalker.DisableAttacking = true;
+            }
+            if (Player.Instance.Mana < SpellData.GetSpellData(E.Name).Mana && Combo["DisAA"].Cast<CheckBox>().CurrentValue && Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo))
             {
                 Orbwalker.DisableAttacking = false;
             }
         }
 
-            private static void OnAfterAttack(AttackableUnit target, EventArgs args)
+        private static void OnAfterAttack(AttackableUnit target, EventArgs args)
         {
             {
                 if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo))
@@ -124,15 +128,6 @@ namespace Cassiopeia_Beta_Fixed
             if ((target == null) || target.IsInvulnerable)
                 return;
 
-            if (Player.Instance.Mana > SpellData.GetSpellData(E.Name).Mana && Combo["DisAA"].Cast<CheckBox>().CurrentValue && Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo))
-            {
-                Orbwalker.DisableAttacking = true;
-            }
-            if (Player.Instance.Mana < SpellData.GetSpellData(E.Name).Mana && Combo["DisAA"].Cast<CheckBox>().CurrentValue && Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo))
-            {
-                Orbwalker.DisableAttacking = false;
-            }
-
             var PositionEnemys = EntityManager.Heroes.Enemies.Find(e => e.IsValidTarget(E.Range) && e.HasBuffOfType(BuffType.Poison));
 
             if (R.IsReady() && Combo["Rc"].Cast<CheckBox>().CurrentValue && !target.IsDead && target.IsValidTarget(R.Range))
@@ -140,8 +135,8 @@ namespace Cassiopeia_Beta_Fixed
                 R.Cast(target.Position);
             }
 
-            if (R.IsReady() && Combo["Rc"].Cast<CheckBox>().CurrentValue &&  !target.IsDead && target.IsValidTarget(R.Range))
-            { 
+            if (R.IsReady() && Combo["Rc"].Cast<CheckBox>().CurrentValue && !target.IsDead && target.IsValidTarget(R.Range))
+            {
                 R.Cast(target.Position);
             }
 
@@ -165,13 +160,13 @@ namespace Cassiopeia_Beta_Fixed
             }
 
             if (E.IsReady() && Combo["Ec"].Cast<CheckBox>().CurrentValue && PositionEnemys.IsValidTarget(E.Range) && (Q.IsOnCooldown || !target.IsInRange(Cassio, Q.Range)))
-            {             
+            {
                 E.Cast(PositionEnemys);
             }
 
             else if (E.IsReady() && Combo["Ec"].Cast<CheckBox>().CurrentValue && target.IsValidTarget(E.Range) && (Q.IsOnCooldown || !target.IsInRange(Cassio, Q.Range)))
             {
-               E.Cast(target);
+                E.Cast(target);
             }
         }
 
@@ -218,7 +213,7 @@ namespace Cassiopeia_Beta_Fixed
                 E.Cast(minion2);
             }
         }
-               
+
         private static void ByJungle()
         {
             throw new NotImplementedException();
