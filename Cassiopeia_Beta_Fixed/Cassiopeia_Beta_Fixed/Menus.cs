@@ -8,7 +8,7 @@ namespace Cassiopeia_Beta_Fixed
 {
     internal class Menus
     {
-        public static Menu casio, Combo, Hara, Farm, Misc, Draws, KillSteal;
+        public static Menu casio, Combo, Hara, Harass, Farm, Misc, Draws, KillSteal;
 
         internal static void Execute()
         {
@@ -18,24 +18,33 @@ namespace Cassiopeia_Beta_Fixed
             Combo.Add("Qc", new CheckBox("Use [Q] Enemy"));
             Combo.Add("Wc", new CheckBox("Use [W] Enemy"));
             Combo.Add("Ec", new CheckBox("Use [E] Enemy"));
-            Combo.Add("DisAA", new CheckBox("DisableAA in Combo", false));
+            Combo.Add("Eca", new CheckBox("Use [E] even if not poisoned", false));
+            Combo.Add("DisAA", new CheckBox("Smart disableAA in Combo", true));
             Combo.Add("QAA", new CheckBox("Use [Q] + AA"));
             Combo.Add("EAA", new CheckBox("Use [E] + AA"));
             Combo.AddSeparator();
             Combo.AddLabel("Settings [W]");
-            Combo.Add("minWw", new Slider("Use [W] Target is Enemy > %", 1, 0, 5));
+            Combo.Add("minWw", new Slider("Min enemies to use [W]", 1, 1, 5));
             Combo.AddSeparator();
             Combo.AddLabel("Settings [R]");
             Combo.Add("Rc", new CheckBox("Use [R] In Combo"));
             Combo.AddSeparator();
             Combo.AddLabel("Percent Enemys [R]");
-            Combo.Add("Re", new Slider("Enemys Percent > %", 2, 0, 5));
+            Combo.Add("Re", new Slider("Min enemies to ult", 2, 1, 5));
+            Combo.Add("Rb", new CheckBox("Only ult if main target is stunnable"));
+            //
+            Harass = casio.AddSubMenu("Harass");
+            Harass.Add("Qh", new CheckBox("[Q]"));
+            Harass.Add("Eh", new CheckBox("[E]"));
+            Harass.AddSeparator();
+            Harass.AddLabel("Mana Percent");
+            Harass.Add("mana", new Slider("Mana Percent > %", 30, 0));
             //
             Hara = casio.AddSubMenu("AutoHarass");
             Hara.Add("AutoQ", new CheckBox("Auto [Q]"));
             Hara.AddSeparator();
             Hara.AddLabel("Mana Percent");
-            Hara.Add("mana", new Slider("Mana Percent > %", 65, 1));
+            Hara.Add("mana", new Slider("Mana Percent > %", 65, 0));
             //
             KillSteal = casio.AddSubMenu("KillSteal");
             KillSteal.Add("KsQ", new CheckBox("KillSteal [Q]"));
@@ -53,24 +62,26 @@ namespace Cassiopeia_Beta_Fixed
             Farm.Add("Elast", new CheckBox("LastHit [E]"));
             Farm.AddSeparator();
             Farm.AddLabel("Settings [Q/W]");
-            Farm.Add("Qq", new Slider("Percent Minion [Q] > %", 2, 0, 6));
-            Farm.Add("Ww", new Slider("Percent Minion [W] > %", 3, 0, 6));
+            Farm.Add("Qq", new Slider("Percent Minion [Q] > %", 2, 1, 6));
+            Farm.Add("Ww", new Slider("Percent Minion [W] > %", 3, 1, 6));
             Farm.AddSeparator();
             Farm.AddLabel("Mana Percent");
-            Farm.Add("Manal", new Slider("Mana Percent > %", 50, 1));
+            Farm.Add("Manal", new Slider("Mana Percent > %", 25, 0));
             Farm.AddSeparator();
             Farm.AddGroupLabel("JungleClear");
             Farm.AddSeparator();
             Farm.Add("Qj", new CheckBox("Use [Q]"));
             Farm.Add("Wj", new CheckBox("Use [W]"));
             Farm.Add("Ej", new CheckBox("Use [E]"));
+            Farm.Add("AAw", new CheckBox("AA Weaving"));
             Farm.AddSeparator();
             Farm.AddLabel("Mana Percent");
-            Farm.Add("Manaj", new Slider("Mana Percent > %", 50, 1));
+            Farm.Add("Manaj", new Slider("Mana Percent > %", 25, 0));
             //
             Misc = casio.AddSubMenu("Misc");
             Misc.Add("Gap", new CheckBox("GapClose"));
             Misc.Add("Int", new CheckBox("Interrupt"));
+            Misc.Add("AAoff", new CheckBox("Disable AA if can E (For URF)", false));
             //
             Draws = casio.AddSubMenu("Draws");
             Draws.Add("DQ", new CheckBox("Draws [Q]"));
