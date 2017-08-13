@@ -37,18 +37,24 @@ namespace Cassiopeia_Beta_Fixed
             Gapcloser.OnGapcloser += OnGapcloser;
             Drawing.OnDraw += Drawing_OnDraw;
             Orbwalker.OnPostAttack += OnAfterAttack;
-            //Orbwalker.OnPreAttack += PreAtack;
+            Orbwalker.OnPreAttack += PreAtack;
             Game.OnTick += Game_OnTick;
 
+        }
+
+        private static void PreAtack(AttackableUnit target, Orbwalker.PreAttackArgs args)
+        {
+            var Target = target as AIHeroClient;
+            if ((Misc["AAoff"].Cast<CheckBox>().CurrentValue && ((E.IsReady() || E.IsOnCooldown) && ((target as Obj_AI_Base).IsMonster || (target as Obj_AI_Base).IsMinion || target is AIHeroClient))) || (Combo["DisAA"].Cast<CheckBox>().CurrentValue && Combo["Qc"].Cast<CheckBox>().CurrentValue && Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo) && Target != null && Target.HasBuffOfType(BuffType.Poison) && (E.IsReady() || E.IsOnCooldown)))
+                args.Process = false;
         }
 
         private static void OnAfterAttack(AttackableUnit target, EventArgs args)
         {
             {
-                if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo))
-                    if (target == null || !(target is AIHeroClient) || target.IsDead || target.IsInvulnerable ||
-                        !target.IsEnemy || target.IsPhysicalImmune || target.IsZombie)
-                        return;
+                if (target == null || !(target is AIHeroClient) || target.IsDead || target.IsInvulnerable ||
+                    !target.IsEnemy || target.IsPhysicalImmune || target.IsZombie || !Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo))
+                    return;
 
                 var enemy = target as AIHeroClient;
                 if (enemy == null)
@@ -84,14 +90,17 @@ namespace Cassiopeia_Beta_Fixed
             {
                 ByJungle();
             }
-            if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.LastHit))
+            if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Harass))
             {
-                ByLast();
+                ByHarass();
             }
-            AutoHara();
-            AutoR();
-            Killteal();
+            if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.LastHit))
+            { ByLast(); }
+            {
+                AutoHara();
+                Killteal();
 
+            }
         }
 
         private static void ByLast()
@@ -117,18 +126,15 @@ namespace Cassiopeia_Beta_Fixed
                 return;
 
             var PositionEnemys = EntityManager.Heroes.Enemies.Find(e => e.IsValidTarget(E.Range) && e.HasBuffOfType(BuffType.Poison));
+            var PositionEnemysAlt = EntityManager.Heroes.Enemies.Find(e => e.IsValidTarget(E.Range));
 
-            if (R.IsReady() && Combo["Rc"].Cast<CheckBox>().CurrentValue && !target.IsDead && target.IsValidTarget(R.Range))
+            if (R.IsReady() && Combo["Rc"].Cast<CheckBox>().CurrentValue && !target.IsDead && target.IsValidTarget(R.Range) && (target.IsFacing(_Player) && Combo["Re"].Cast<Slider>().CurrentValue <= 1) || (Combo["Rb"].Cast<CheckBox>().CurrentValue && target.IsFacing(_Player) && EntityManager.Heroes.Enemies.Where(x => x.IsInRange(_Player.Position, R.Range)).Count() >= Combo["Re"].Cast<Slider>().CurrentValue && Combo["Re"].Cast<Slider>().CurrentValue >= 2) || (!Combo["Rb"].Cast<CheckBox>().CurrentValue && EntityManager.Heroes.Enemies.Where(x => x.IsInRange(_Player.Position, R.Range)).Count() >= Combo["Re"].Cast<Slider>().CurrentValue && Combo["Re"].Cast<Slider>().CurrentValue >= 2))
             {
                 R.Cast(target.Position);
             }
 
-            if (R.IsReady() && Combo["Rc"].Cast<CheckBox>().CurrentValue && !target.IsDead && target.IsValidTarget(R.Range))
-            {
-                R.Cast(target.Position);
-            }
 
-            if (Combo["Wc"].Cast<CheckBox>().CurrentValue && W.IsReady() && target.IsValidTarget(W.Range))
+            if (Combo["Wc"].Cast<CheckBox>().CurrentValue && W.IsReady() && target.IsValidTarget(W.Range) && EntityManager.Heroes.Enemies.Where(x => x.IsInRange(_Player.Position, W.Range)).Count() >= Combo["minWw"].Cast<Slider>().CurrentValue)
             {
                 var prediction = W.GetPrediction(target);
                 if (prediction.HitChance >= HitChance.High)
@@ -147,12 +153,49 @@ namespace Cassiopeia_Beta_Fixed
 
             }
 
-            if (E.IsReady() && Combo["Ec"].Cast<CheckBox>().CurrentValue && PositionEnemys.IsValidTarget(E.Range) && (Q.IsOnCooldown || !target.IsInRange(Cassio, Q.Range)))
+            if (E.IsReady() && Combo["Ec"].Cast<CheckBox>().CurrentValue && !Combo["Eca"].Cast<CheckBox>().CurrentValue && PositionEnemys.IsValidTarget(E.Range) && target.HasBuffOfType(BuffType.Poison))
+            {
+                E.Cast(PositionEnemys);
+            }
+            if (E.IsReady() && Combo["Eca"].Cast<CheckBox>().CurrentValue && Combo["Ec"].Cast<CheckBox>().CurrentValue && PositionEnemysAlt.IsValidTarget(E.Range))
+            {
+                E.Cast(PositionEnemysAlt);
+            }
+            else if (E.IsReady() && (Combo["Ec"].Cast<CheckBox>().CurrentValue || Combo["Eca"].Cast<CheckBox>().CurrentValue) && target.IsValidTarget(E.Range) && target.HasBuffOfType(BuffType.Poison))
+            {
+                E.Cast(target);
+            }
+
+        }
+
+        private static void ByHarass()
+        {
+            var target = TargetSelector.GetTarget(Q.Range, DamageType.Magical);
+
+            if ((target == null) || target.IsInvulnerable)
+                return;
+
+            var PositionEnemys = EntityManager.Heroes.Enemies.Find(e => e.IsValidTarget(E.Range) && e.HasBuffOfType(BuffType.Poison));
+            if (Player.Instance.ManaPercent > Harass["mana"].Cast<Slider>().CurrentValue)
+
+
+
+                if (Harass["Qh"].Cast<CheckBox>().CurrentValue && Q.IsReady() && target.IsValidTarget(Q.Range + 100))
+            {
+                    var prediction = Q.GetPrediction(target);
+                    if (prediction.HitChance >= HitChance.Medium)
+                {
+                    Q.Cast(prediction.CastPosition);
+                }
+
+            }
+
+            if (E.IsReady() && Harass["Eh"].Cast<CheckBox>().CurrentValue && PositionEnemys.IsValidTarget(E.Range) && target.HasBuffOfType(BuffType.Poison))
             {
                 E.Cast(PositionEnemys);
             }
 
-            else if (E.IsReady() && Combo["Ec"].Cast<CheckBox>().CurrentValue && target.IsValidTarget(E.Range) && (Q.IsOnCooldown || !target.IsInRange(Cassio, Q.Range)))
+            else if (E.IsReady() && Harass["Eh"].Cast<CheckBox>().CurrentValue && target.IsValidTarget(E.Range) && target.HasBuffOfType(BuffType.Poison))
             {
                 E.Cast(target);
             }
@@ -161,7 +204,6 @@ namespace Cassiopeia_Beta_Fixed
         private static void ByLane()
         {
             var minion1 = EntityManager.MinionsAndMonsters.GetLaneMinions().Where(m => m.IsValidTarget(E.Range)).OrderBy(m => !(m.Health <= Logics.GetMinionTarget(m, SpellSlot.E))).ThenBy(m => !m.HasBuffOfType(BuffType.Poison)).ThenBy(m => m.Health).FirstOrDefault();
-            var minion2 = EntityManager.MinionsAndMonsters.GetLaneMinions().FirstOrDefault(m => m.IsValidTarget(E.Range) && m.HasBuffOfType(BuffType.Poison));
             var minion3 = EntityManager.MinionsAndMonsters.GetLaneMinions().Where(m => m.IsValidTarget(W.Range)).ToArray();
             if (minion3.Length == 0) return;
 
@@ -198,13 +240,41 @@ namespace Cassiopeia_Beta_Fixed
             if (Farm["Ef"].Cast<CheckBox>().CurrentValue && E.IsReady() && Cassio.ManaPercent >= Farm["Manal"].Cast<Slider>().CurrentValue && minion1.IsValidTarget(E.Range))
             {
 
-                E.Cast(minion2);
+                E.Cast(minion1);
             }
         }
 
         private static void ByJungle()
         {
-            throw new NotImplementedException();
+            var monster = EntityManager.MinionsAndMonsters.GetJungleMonsters().Where(m => m.IsValidTarget(E.Range)).OrderBy(m => !(m.Health <= Logics.GetMinionTarget(m, SpellSlot.E))).ThenBy(m => !m.HasBuffOfType(BuffType.Poison)).ThenBy(m => m.Health).FirstOrDefault();
+            var monster2 = EntityManager.MinionsAndMonsters.GetJungleMonsters().Where(m => m.IsValidTarget(W.Range)).ToArray();
+            if (monster2.Length == 0) return;
+            var monsterlocation = Prediction.Position.PredictCircularMissileAoe(monster2, W.Range, W.Width, W.CastDelay, W.Speed).OrderByDescending(r => r.GetCollisionObjects<Obj_AI_Minion>().Length).FirstOrDefault();
+
+            if (Farm["Ej"].Cast<CheckBox>().CurrentValue && !Farm["AAw"].Cast<CheckBox>().CurrentValue && E.IsReady() && Cassio.ManaPercent >= Farm["Manaj"].Cast<Slider>().CurrentValue && monster.IsValidTarget(E.Range))
+            {
+
+                E.Cast(monster);
+            }
+            if (Farm["Ej"].Cast<CheckBox>().CurrentValue && Farm["AAw"].Cast<CheckBox>().CurrentValue && !Orbwalker.IsAutoAttacking && E.IsReady() && Cassio.ManaPercent >= Farm["Manaj"].Cast<Slider>().CurrentValue && monster.IsValidTarget(E.Range))
+            {
+
+                E.Cast(monster);
+            }
+            if (Farm["Qj"].Cast<CheckBox>().CurrentValue && Q.IsReady() && _Player.ManaPercent >= Farm["Manaj"].Cast<Slider>().CurrentValue)
+            {
+                {
+                    Q.Cast(monsterlocation.CastPosition);
+                }
+            }
+
+            if (Farm["Wj"].Cast<CheckBox>().CurrentValue && W.IsReady() && _Player.ManaPercent >= Farm["Manaj"].Cast<Slider>().CurrentValue)
+            {
+                {
+                    W.Cast(monsterlocation.CastPosition);
+
+                }
+            }
         }
 
         private static void AutoHara()
@@ -216,8 +286,7 @@ namespace Cassiopeia_Beta_Fixed
 
             if (Hara["AutoQ"].Cast<CheckBox>().CurrentValue)
             {
-                var prediction = Q.GetPrediction(target);
-                if (target.IsValidTarget(Q.Range) && prediction.HitChance >= HitChance.High)
+                if (target.IsValidTarget(Q.Range) && Q.GetPrediction(target).HitChance >= HitChance.High)
                 {
                     if (Player.Instance.ManaPercent > Hara["mana"].Cast<Slider>().CurrentValue)
                     {
@@ -227,10 +296,6 @@ namespace Cassiopeia_Beta_Fixed
             }
         }
 
-        private static void AutoR()
-        {
-            throw new NotImplementedException();
-        }
 
         private static void Killteal()
         {
@@ -262,8 +327,7 @@ namespace Cassiopeia_Beta_Fixed
                 if (ksW && Player.Instance.IsInRange(enemy, W.Range + W.Radius) && enemy.Killable(SpellSlot.W))
                 {
                     var prediction = W.GetPrediction(enemy);
-
-                    if (prediction.HitChance >= HitChance.High)
+                    if (prediction.HitChance >= HitChance.Low)
                     {
                         W.Cast(prediction.CastPosition);
                         return;
@@ -273,8 +337,7 @@ namespace Cassiopeia_Beta_Fixed
                 if (ksQ && Player.Instance.IsInRange(enemy, Q.Range) && enemy.Killable(SpellSlot.Q))
                 {
                     var prediction = Q.GetPrediction(enemy);
-
-                    if (prediction.HitChance >= HitChance.High)
+                    if (prediction.HitChance >= HitChance.Low)
                     {
                         Q.Cast(prediction.CastPosition);
                         return;
@@ -284,8 +347,7 @@ namespace Cassiopeia_Beta_Fixed
                 if (ksR && Player.Instance.IsInRange(enemy, R.Range) && enemy.Killable(SpellSlot.R))
                 {
                     var prediction = R.GetPrediction(enemy);
-
-                    if (prediction.HitChance >= HitChance.High)
+                    if (prediction.HitChance >= HitChance.Medium)
                     {
                         R.Cast(prediction.CastPosition);
                         return;
@@ -328,16 +390,14 @@ namespace Cassiopeia_Beta_Fixed
 
         private static void OnInterrupter(Obj_AI_Base sender, Interrupter.InterruptableSpellEventArgs e)
         {
-            if (!sender.IsValidTarget()) return;
-            if (Misc["Int"].Cast<CheckBox>().CurrentValue)
+            if (Misc["Int"].Cast<CheckBox>().CurrentValue && sender.IsValidTarget(R.Range))
             {
                 R.Cast(sender);
             }
         }
         private static void OnGapcloser(AIHeroClient sender, Gapcloser.GapcloserEventArgs e)
         {
-            if (!sender.IsValidTarget()) return;
-            if (Misc["Gap"].Cast<CheckBox>().CurrentValue)
+            if (Misc["Gap"].Cast<CheckBox>().CurrentValue && sender.IsValidTarget(W.Range))
             {
                 W.Cast(sender);
             }
