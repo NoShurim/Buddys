@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using EloBuddy;
 using EloBuddy.SDK;
-using EloBuddy.SDK.Enumerations;
 using EloBuddy.SDK.Events;
-using EloBuddy.SDK.Menu;
-using EloBuddy.SDK.Menu.Values;
 using EloBuddy.SDK.Rendering;
+using static Ashe_Beta_Fixed.SpellManager;
 using SharpDX;
 using Settings = Ashe_Beta_Fixed.MenusSetting.Misc;
-using Ashe_Beta_Fixed;
+using EloBuddy.SDK.Enumerations;
 
 namespace Ashe_Beta_Fixed
 {
@@ -41,7 +38,58 @@ namespace Ashe_Beta_Fixed
 
             Drawing.OnDraw += OnDraw;
             Obj_AI_Base.OnLevelUp += Modes.ActiveCast.autoLevelSkills;
-            
+            Gapcloser.OnGapcloser += Gapcloser_OnGapCloser;
+            Interrupter.OnInterruptableSpell += Interupt;
+            Orbwalker.OnPostAttack += ResetAttack;
+            GameObject.OnCreate += GameObject_OnCreate;
+        }
+
+        private static void Gapcloser_OnGapCloser(AIHeroClient sender, Gapcloser.GapcloserEventArgs e)
+        {
+            if (sender.IsEnemy && e.Sender.Distance(Ashe) <= 350)
+            {
+                W.Cast(e.Sender);
+            }
+        }
+
+
+        private static void Interupt(Obj_AI_Base sender, Interrupter.InterruptableSpellEventArgs e)
+        {
+            if (!sender.IsEnemy || !(sender is AIHeroClient) || Player.Instance.IsRecalling())
+            {
+                return;
+            }
+
+            if (R.IsReady() && e.DangerLevel == DangerLevel.High && Ashe.Distance(sender) <= 1500)
+            {
+                R.Cast(sender);
+            }
+        }
+
+        private static void ResetAttack(AttackableUnit target, EventArgs args)
+        {
+            throw new NotImplementedException();
+        }
+
+        private static void GameObject_OnCreate(GameObject sender, EventArgs args)
+        {
+            var khazix = EntityManager.Heroes.Enemies.Find(e => e.ChampionName.Equals("Khazix"));
+            var rengar = EntityManager.Heroes.Enemies.Find(e => e.ChampionName.Equals("Rengar"));
+            if (rengar != null)
+            {
+                if (sender.Name == ("Rengar_LeapSound.troy") && R.IsReady() && sender.Position.Distance(Ashe) <= 300)
+                {
+                    R.Cast(rengar);
+                }
+            }
+
+            if (khazix != null)
+            {
+                if (sender.Name == ("Khazix_Base_E_Tar.troy") && R.IsReady() && sender.Position.Distance(Ashe) <= 300)
+                {
+                    R.Cast(khazix);
+                }
+            }
         }
 
         private static void OnDraw(EventArgs args)
