@@ -24,9 +24,6 @@ namespace Jhin_Beta_Fixed
         public static Spell.Skillshot E;
         public static Spell.Skillshot R;
         public static Spell.Skillshot R1;
-        static Item Healthpot;
-        public static DamageIndicator Indicator;
-        public static readonly string[] JungleMobsList = { "SRU_Red", "SRU_Blue", "SRU_Dragon", "SRU_Baron", "SRU_Gromp", "SRU_Murkwolf", "SRU_Razorbeak", "SRU_Krug", "Sru_Crab" };
         public static Menu Menu, ComboSettings, HarassSettings, ClearSettings, AutoSettings, DrawMenu, Items, Skin;
         public static AIHeroClient _Player
         {
@@ -41,8 +38,6 @@ namespace Jhin_Beta_Fixed
         {
             if (Jhin.Hero != Champion.Jhin) return;
 
-            Indicator = new DamageIndicator();
-            Healthpot = new Item(2003, 0);
             Q = new Spell.Targeted(SpellSlot.Q, 550);
             W = new Spell.Skillshot(SpellSlot.W, 3000, SkillShotType.Linear, 250, 1200, 60)
             {
@@ -156,12 +151,6 @@ namespace Jhin_Beta_Fixed
                 E.Cast(sender);
             }
         }
-        //Recall Tracker Start
-        private static string FormatTime(double time)
-        {
-            var t = TimeSpan.FromSeconds(time);
-            return string.Format("{0:D2}:{1:D2}", t.Minutes, t.Seconds);
-        }
 
         private static void Game_OnTick(EventArgs args)
         {
@@ -198,13 +187,6 @@ namespace Jhin_Beta_Fixed
             Auto();
             KS();
             AutoW();
-            if (HPpot && _Player.HealthPercent < HPv)
-            {
-                if (Item.HasItem(Healthpot.Id) && Item.CanUseItem(Healthpot.Id) && !_Player.HasBuff("RegenerationPotion"))
-                {
-                    Healthpot.Cast();
-                }
-            }
         }
 
         private static void UltiActive()
@@ -241,7 +223,7 @@ namespace Jhin_Beta_Fixed
         }
 
         public static void Auto()
-        {//AUTO SETTİNGS START
+        {
             var useQSS = Items["useQSS"].Cast<CheckBox>().CurrentValue;
             var EonCC = AutoSettings["CCE"].Cast<CheckBox>().CurrentValue;
             if (EonCC)
@@ -270,9 +252,9 @@ namespace Jhin_Beta_Fixed
                 if (useQSS && Item.HasItem(3139) && Item.CanUseItem(3139))
                     Item.UseItem(3139);
             }
-        }//AUTO SETTİNGS END
+        }
         public static void AutoW()
-        {//AUTO W and AUTO Q START
+        {
             var targetQ = TargetSelector.GetTarget(Q.Range, DamageType.Physical);
             var qcount = HarassSettings["HarassQEnemyCount"].Cast<Slider>().CurrentValue;
             var targetW = TargetSelector.GetTarget(W.Range, DamageType.Physical);
@@ -292,9 +274,9 @@ namespace Jhin_Beta_Fixed
             {
                 W.Cast(targetW);
             }
-        }//AUTO W and AUTO Q END
+        }
         public static void LastHit()
-        {//LASTHİT START
+        {
             var useq = ClearSettings["useQLastHit"].Cast<CheckBox>().CurrentValue;
             var qcount = ClearSettings["LastHitQCount"].Cast<Slider>().CurrentValue;
             var autopassive = AutoSettings["UsePassive"].Cast<CheckBox>().CurrentValue;
@@ -396,7 +378,7 @@ namespace Jhin_Beta_Fixed
 
             if (targetW != null)
             {
-                // W out of range
+ 
                 if (HarassSettings["useWHarass"].Cast<CheckBox>().CurrentValue && W.IsReady() &&
                     targetW.Distance(_Player) > _Player.AttackRange &&
                     targetW.IsValidTarget(W.Range) && _Player.ManaPercent > Wmana)
@@ -555,27 +537,6 @@ namespace Jhin_Beta_Fixed
                  0.35 * (_Player.TotalAttackDamage)));
 
 
-        }
-
-        private static void JungleSteal()
-        {
-            var rRange = ClearSettings["RJungleSteal"].Cast<Slider>().CurrentValue;
-            var jungleMob =
-                EntityManager.MinionsAndMonsters.Monsters.FirstOrDefault(
-                    u =>
-                    u.IsVisible && JungleMobsList.Contains(u.BaseSkinName)
-                    && WDamage(u) >= u.Health);
-
-            if (jungleMob == null)
-            {
-                return;
-            }
-
-            if (!ClearSettings[jungleMob.BaseSkinName].Cast<CheckBox>().CurrentValue)
-            {
-                return;
-            }
-            W.Cast(jungleMob);
         }
 
         private static void Drawing_OnDraw(EventArgs args)
