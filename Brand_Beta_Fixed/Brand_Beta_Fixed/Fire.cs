@@ -8,6 +8,7 @@ using EloBuddy.SDK.Menu.Values;
 using System;
 using EloBuddy.SDK;
 using System.Linq;
+using EloBuddy.SDK.Enumerations;
 
 namespace Brand_Beta_Fixed
 {
@@ -63,8 +64,8 @@ namespace Brand_Beta_Fixed
             }
             if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.LaneClear))
             {
-                ByLane();
-            }
+                    ByLane();
+            }           
             if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.JungleClear))
             {
                 ByJungle();
@@ -74,110 +75,96 @@ namespace Brand_Beta_Fixed
             Killteal();
 
         }
+        static float TargetFuncions()
+        {
+            float r = 0;
+            if (Q.IsReady() | W.IsReady())
+            {
+                r = 1100;
+            }
+            else
+            {
+                r = R.Range;
+            }
+            return r;
+        }
+        static bool buffed(Obj_AI_Base e) => e.HasBuffOfType(BuffType.Slow)
+           || e.HasBuffOfType(BuffType.Snare)
+           || e.HasBuffOfType(BuffType.Stun)
+           || e.HasBuffOfType(BuffType.Taunt)
+           || e.HasBuffOfType(BuffType.Polymorph)
+           || e.HasBuffOfType(BuffType.Fear)
+           || e.HasBuffOfType(BuffType.Charm);
 
         private static void ByCombo()
         {
 
-            const int range = 1100;
-            const float aoeratio = 0.2f;
+            var UseQ = Comb["Qc"].Cast<CheckBox>().CurrentValue;
+            var QMode = Comb["mode"].Cast<ComboBox>().CurrentValue;
+            var UseW = Comb["Wc"].Cast<CheckBox>().CurrentValue;
+            var UseE = Comb["Ec"].Cast<CheckBox>().CurrentValue;
+            var UseR = Comb["Rc"].Cast<CheckBox>().CurrentValue;
+            var Kil = KillSteal["KsR"].Cast<CheckBox>().CurrentValue;
+            var enemys = Comb["En"].Cast<Slider>().CurrentValue;
 
-            var enemies = EntityManager.Heroes.Enemies.Where(n => n.IsValidTarget(range));
-            var selectedTarget = TargetSelector.GetTarget(range, DamageType.Magical);
-            var allTargets = new[] { selectedTarget }.Concat(enemies.Where(n => n.Index != selectedTarget.Index).OrderByDescending(n => Logics.TotalDamage(SpellSlot.Q, n) / n.Health)).Where(n => n.IsValidTarget() && !n.WillDie());
-
-            if (selectedTarget == null && !enemies.Any())
+            var e = TargetSelector.GetTarget(TargetFuncions(), DamageType.Magical);
+            if (e != null && e.IsValidTarget(TargetFuncions()))
             {
-                return;
-            }
-
-            var useQ = Comb["Qc"].Cast<CheckBox>().CurrentValue &&
-                       Player.CanUseSpell(SpellSlot.Q) == SpellState.Ready;
-            var useW = Comb["Wc"].Cast<CheckBox>().CurrentValue &&
-                       Player.CanUseSpell(SpellSlot.W) == SpellState.Ready;
-            var useE = Comb["Ec"].Cast<CheckBox>().CurrentValue &&
-                       Player.CanUseSpell(SpellSlot.E) == SpellState.Ready;
-            var useR = Comb["Rc"].Cast<CheckBox>().CurrentValue &&
-                       Player.CanUseSpell(SpellSlot.R) == SpellState.Ready;
-
-            if (enemies.Count() > 1)
-            {
-                if (useW)
+                if (E.IsReady() && UseE)
                 {
-                    var aoePrediction = Prediction.Position.PredictCircularMissileAoe(enemies.Cast<Obj_AI_Base>().ToArray(), W.Range, W.Radius, W.CastDelay, W.Speed).OrderByDescending(r => r.GetCollisionObjects<Obj_AI_Minion>().Length).FirstOrDefault();
-                    if (aoePrediction != null)
+                    E.Cast(e);
+                }
+                if (Q.IsReady() && UseQ)
+                {
+                    var p = Q.GetPrediction(e);
+                    if (p.HitChance >= HitChance.High)
                     {
-                        var predictedHeroes = aoePrediction.GetCollisionObjects<AIHeroClient>();
-
-                        if (predictedHeroes.Length > 1 && (float)predictedHeroes.Length / enemies.Count() >= aoeratio)
+                        switch (QMode)
                         {
-                            W.Cast(aoePrediction.CastPosition);
-                            return;
+                            case 0:
+                                Q.Cast(p.UnitPosition);
+                                break;
+                            case 1:
+                                if (IsBlazed(e))
+                                {
+                                    Q.Cast(p.CastPosition);
+                                }
+                                break;
+                        }
+                        if (!W.IsReady() && !E.IsReady())
+                        {
+                            Q.Cast(p.UnitPosition);
                         }
                     }
                 }
-
-                if (useE)
+                if (W.IsReady() && UseW)
                 {
-                    var enemyE =
-                        enemies.Where(n => n.IsValidTarget(E.Range) && n.IsBlazed())
-                            .OrderByDescending(n => n.CountEnemiesInRange(LoigcRanges))
-                            .FirstOrDefault();
-
-                    if (enemyE != null && enemyE.CountEnemiesInRange(LoigcRanges) > 1)
+                    var p = W.GetPrediction(e);
+                    if (p.HitChance >= HitChance.High)
                     {
-                        E.Cast(enemyE);
-                        return;
+                        switch (buffed(e))
+                        {
+                            case true:
+                                W.Cast(p.CastPosition);
+                                break;
+                            case false:
+                                W.Cast(p.UnitPosition);
+                                break;
+                        }
                     }
                 }
-            }
-
-            if (useE)
-            {
-                var targets = allTargets.Where(n => Player.Instance.IsInRange(n, E.Range));
-
-                foreach (var target in targets)
+                if (R.IsReady() && UseR)
                 {
-                    E.Cast(target);
-                    return;
-                }
-            }
-
-            if (useW)
-            {
-                foreach (var target in allTargets)
-                {
-                    if (W.Cast(target))
+                    if (Kil)
                     {
-                        return;
+                        if (HPrediction(e, R.CastDelay) < DamageBySlot(e, SpellSlot.R))
+                        {
+                            R.Cast(e);
+                        }
                     }
-                }
-            }
-
-            if (useQ)
-            {
-                foreach (var target in allTargets.Where(n => n.IsBlazed()))
-                {
-                    if (Q.Cast(target))
+                    if (e.CountEnemiesInRange(400) >= enemys && e.HealthPercent < 95)
                     {
-                        return;
-                    }
-                }
-            }
-
-            if (useR)
-            {
-                var bestTarget =
-                    allTargets.Where(n => Player.Instance.IsInRange(n, R.Range))
-                        .OrderByDescending(n => n.CountEnemiesInRange(LogicRange))
-                        .FirstOrDefault();
-
-                if (bestTarget != null &&
-                    bestTarget.CountEnemiesInRange(LogicRange) >=
-                    Comb["En"].Cast<Slider>().CurrentValue)
-                {
-                    if ((!useW && !useE || !bestTarget.IsBlazed()))
-                    {
-                        R.Cast(bestTarget);
+                        R.Cast(e);
                     }
                 }
             }
@@ -185,36 +172,60 @@ namespace Brand_Beta_Fixed
 
         private static void ByLane()
         {
-            var useW = Lane["Wl"].Cast<CheckBox>().CurrentValue && Player.Instance.ManaPercent >= Lane["manal"].Cast<Slider>().CurrentValue && Player.CanUseSpell(SpellSlot.W) == SpellState.Ready;
-            var useE = Lane["El"].Cast<CheckBox>().CurrentValue && Player.Instance.ManaPercent >= Lane["manal"].Cast<Slider>().CurrentValue && Player.CanUseSpell(SpellSlot.E) == SpellState.Ready;
-
-            if (useW)
+            var UseQ = Lane["Ql"].Cast<CheckBox>().CurrentValue;
+            var UseW = Lane["Wl"].Cast<CheckBox>().CurrentValue;
+            var Mana = Lane["manal"].Cast<Slider>().CurrentValue;
+            var UseE = Lane["El"].Cast<CheckBox>().CurrentValue;
+            var PercentW = Lane["Wmin"].Cast<Slider>().CurrentValue;
+            var PercentE = Lane["Wmin"].Cast<Slider>().CurrentValue;
+            if (Player.Instance.ManaPercent > Mana)
             {
-                var minions = EntityManager.MinionsAndMonsters.GetLaneMinions(EntityManager.UnitTeam.Enemy, Player.Instance.Position, 1500, false);
-                var predict = Prediction.Position.PredictCircularMissileAoe(minions.Cast<Obj_AI_Base>().ToArray(), W.Range, W.Radius, W.CastDelay, W.Speed).OrderByDescending(r => r.GetCollisionObjects<Obj_AI_Minion>().Length).FirstOrDefault();
-
-                if (predict != null && predict.CollisionObjects.Length >= Lane["Wmin"].Cast<Slider>().CurrentValue)
+                if (UseQ)
                 {
-                    W.Cast(predict.CastPosition);
-                    return;
+                    var m0 = EntityManager.MinionsAndMonsters.GetLaneMinions().Where(x => x.IsValidTarget(TargetFuncions()));
+                    if (m0 != null)
+                    {
+                        if (Q.IsReady())
+                        {
+                            var p = Q.GetBestLinearCastPosition(m0);
+                            if (p.HitNumber == 1)
+                            {
+                                Q.Cast(p.CastPosition);
+                            }
+                        }
+                    }
                 }
-            }
-
-            if (useE)
-            {
-                var minions = EntityManager.MinionsAndMonsters.GetLaneMinions(EntityManager.UnitTeam.Enemy, Player.Instance.Position, E.Range + 20, false).Where(m => m.IsBlazed());
-
-                var group = GroupObjects(minions, LoigcRanges).FirstOrDefault();
-
-                if (group != null && group.Item1.Length >= Lane["Wmin"].Cast<Slider>().CurrentValue)
+                if (UseE)
                 {
-                    var minion = group.Item1.OrderByDescending(m => m.Distance(group.Item2, true)).Last();
-
-                    E.Cast(minion);
+                    var m1 = EntityManager.MinionsAndMonsters.GetLaneMinions().Where(x => x.IsValidTarget(TargetFuncions()) && IsBlazed(x)).FirstOrDefault();
+                    if (m1 != null)
+                    {
+                        if (E.IsReady())
+                        {
+                            if (m1.CountEnemyMinionsInRange(300) >= PercentE)
+                            {
+                                E.Cast(m1);
+                            }
+                        }
+                    }
+                }
+                if (UseW)
+                {
+                    var m2 = EntityManager.MinionsAndMonsters.GetLaneMinions().Where(x => x.IsValidTarget(TargetFuncions())).OrderBy(o => o.Health);
+                    if (m2 != null)
+                    {
+                        if (W.IsReady())
+                        {
+                            var p = W.GetBestCircularCastPosition(m2);
+                            if (p.HitNumber >= PercentW)
+                            {
+                                W.Cast(p.CastPosition);
+                            }
+                        }
+                    }
                 }
             }
         }
-
         private static void ByJungle()
         {
             if (Jungle["Wj"].Cast<CheckBox>().CurrentValue && W.IsReady() && Player.Instance.ManaPercent > Jungle["manaj"].Cast<Slider>().CurrentValue)
@@ -368,6 +379,8 @@ namespace Brand_Beta_Fixed
             //
             Comb = Br.AddSubMenu("Combo");
             Comb.Add("Qc", new CheckBox("Use [Q]"));
+            Comb.AddLabel("Mode [Q]");
+            Comb.Add("mode", new ComboBox("Mode [Q]", 1, "Normal", "Stun"));
             Comb.Add("Wc", new CheckBox("Use [W]"));
             Comb.Add("Ec", new CheckBox("Use [E]"));
             Comb.AddSeparator();
@@ -394,7 +407,7 @@ namespace Brand_Beta_Fixed
             Lane.Add("manal", new Slider("Mana Percent > %", 50, 1));
             Lane.AddSeparator();
             Lane.AddLabel("Minion Percent");
-            Lane.Add("Wmin", new Slider("Minion Percent > %", 3, 1, 6));
+            Lane.Add("Wmin", new Slider("Minion Percent > %", 2, 1, 6));
             //
             Jungle = Br.AddSubMenu("JungleClear");
             Jungle.Add("Qj", new CheckBox("Use [Q]"));

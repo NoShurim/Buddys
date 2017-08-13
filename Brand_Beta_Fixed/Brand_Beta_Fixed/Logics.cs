@@ -2,6 +2,7 @@
 using EloBuddy.SDK;
 using System;
 using System.Collections.Generic;
+using static Brand_Beta_Fixed.SpellsManager;
 
 namespace Brand_Beta_Fixed
 {
@@ -9,6 +10,37 @@ namespace Brand_Beta_Fixed
     {
         private static readonly Dictionary<SpellSlot, int[]> BaseDamage = new Dictionary<SpellSlot, int[]>();
         private static readonly Dictionary<SpellSlot, float[]> BonusDamage = new Dictionary<SpellSlot, float[]>();
+
+      public static float DamageBySlot(Obj_AI_Base enemy, SpellSlot slot)
+        {
+            var Damage = 0f;
+            if (slot == SpellSlot.Q)
+            {
+                if (Q.IsReady())
+                    Damage += new float[] { 80, 110, 140, 170, 200 }[Player.GetSpell(slot).Level - 1] +
+                              0.55f * Player.Instance.FlatMagicDamageMod;
+            }
+            else if (slot == SpellSlot.W)
+            {
+                if (W.IsReady())
+                    Damage += new float[] { 75, 120, 165, 210, 255 }[Player.GetSpell(slot).Level - 1] +
+                              0.6f * Player.Instance.FlatMagicDamageMod;
+            }
+            else if (slot == SpellSlot.E)
+            {
+                if (E.IsReady())
+                    Damage += new float[] { 70, 90, 110, 130, 150 }[Player.GetSpell(slot).Level - 1] +
+                              0.35f * Player.Instance.FlatMagicDamageMod;
+            }
+            else if (slot == SpellSlot.R)
+            {
+                if (R.IsReady())
+                    Damage += new float[] { 100, 200, 300 }[Player.GetSpell(slot).Level - 1] +
+                              0.25f * Player.Instance.FlatMagicDamageMod;
+            }
+            return Player.Instance.CalculateDamageOnUnit(enemy, DamageType.Magical, Damage);
+        }
+        public static float HPrediction(Obj_AI_Base e, int d) => Prediction.Health.GetPrediction(e, d);
 
         internal static void Execute()
         {
