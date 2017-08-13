@@ -12,6 +12,3 @@ c:\users\edcarlos\documents\visual studio 2017\Projects\Cassiopeia_Beta_Fixed\Ca
 c:\users\edcarlos\documents\visual studio 2017\Projects\Cassiopeia_Beta_Fixed\Cassiopeia_Beta_Fixed\obj\Debug\Cassiopeia_Beta_Fixed.csproj.Cassiopeia_Beta_Fixed.exe.config
 c:\users\edcarlos\documents\visual studio 2017\Projects\Cassiopeia_Beta_Fixed\Cassiopeia_Beta_Fixed\obj\Debug\Cassiopeia_Beta_Fixed.exe
 c:\users\edcarlos\documents\visual studio 2017\Projects\Cassiopeia_Beta_Fixed\Cassiopeia_Beta_Fixed\obj\Debug\Cassiopeia_Beta_Fixed.pdb
-C:\Users\yorik\Desktop\EB\Cassiopeia_Beta_Fixed\Cassiopeia_Beta_Fixed\bin\Debug\Cassiopeia_Beta_Fixed.exe.config
-C:\Users\yorik\Desktop\EB\Cassiopeia_Beta_Fixed\Cassiopeia_Beta_Fixed\obj\Debug\Cassiopeia_Beta_Fixed.exe
-C:\Users\yorik\Desktop\EB\Cassiopeia_Beta_Fixed\Cassiopeia_Beta_Fixed\obj\Debug\Cassiopeia_Beta_Fixed.pdb
