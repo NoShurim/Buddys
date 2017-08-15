@@ -45,7 +45,7 @@ namespace Cassiopeia_Beta_Fixed
         private static void PreAtack(AttackableUnit target, Orbwalker.PreAttackArgs args)
         {
             var Target = target as AIHeroClient;
-            if ((Misc["AAoff"].Cast<CheckBox>().CurrentValue && ((E.IsReady() || E.IsOnCooldown) && ((target as Obj_AI_Base).IsMonster || (target as Obj_AI_Base).IsMinion || target is AIHeroClient))) || (Combo["DisAA"].Cast<CheckBox>().CurrentValue && Combo["Qc"].Cast<CheckBox>().CurrentValue && Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo) && Target != null && Target.HasBuffOfType(BuffType.Poison) && (E.IsReady() || E.IsOnCooldown)))
+            if ((Misc["AAoff"].Cast<CheckBox>().CurrentValue && ((E.IsReady() || E.IsOnCooldown) && ((target as Obj_AI_Base).IsMonster || (target as Obj_AI_Base).IsMinion || target is AIHeroClient) && Target != null)) || (Combo["DisAA"].Cast<CheckBox>().CurrentValue && Combo["Qc"].Cast<CheckBox>().CurrentValue && Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo) && Target != null && Target.HasBuffOfType(BuffType.Poison) && (E.IsReady() || E.IsOnCooldown)))
                 args.Process = false;
         }
 
