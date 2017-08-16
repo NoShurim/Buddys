@@ -128,7 +128,7 @@ namespace Cassiopeia_Beta_Fixed
             var PositionEnemys = EntityManager.Heroes.Enemies.Find(e => e.IsValidTarget(E.Range) && e.HasBuffOfType(BuffType.Poison));
             var PositionEnemysAlt = EntityManager.Heroes.Enemies.Find(e => e.IsValidTarget(E.Range));
 
-            if (R.IsReady() && Combo["Rc"].Cast<CheckBox>().CurrentValue && !target.IsDead && target.IsValidTarget(R.Range) && (target.IsFacing(_Player) && Combo["Re"].Cast<Slider>().CurrentValue <= 1) || (Combo["Rb"].Cast<CheckBox>().CurrentValue && target.IsFacing(_Player) && EntityManager.Heroes.Enemies.Where(x => x.IsInRange(_Player.Position, R.Range)).Count() >= Combo["Re"].Cast<Slider>().CurrentValue && Combo["Re"].Cast<Slider>().CurrentValue >= 2) || (!Combo["Rb"].Cast<CheckBox>().CurrentValue && EntityManager.Heroes.Enemies.Where(x => x.IsInRange(_Player.Position, R.Range)).Count() >= Combo["Re"].Cast<Slider>().CurrentValue && Combo["Re"].Cast<Slider>().CurrentValue >= 2))
+            if (R.IsReady() && Combo["Rc"].Cast<CheckBox>().CurrentValue && !target.IsDead && target.IsValidTarget(R.Range + Combo["Raim"].Cast<Slider>().CurrentValue) && (target.IsFacing(_Player) && Combo["Re"].Cast<Slider>().CurrentValue <= 1) || (Combo["Rb"].Cast<CheckBox>().CurrentValue && target.IsFacing(_Player) && EntityManager.Heroes.Enemies.Where(x => x.IsInRange(_Player.Position, R.Range)).Count() >= Combo["Re"].Cast<Slider>().CurrentValue && Combo["Re"].Cast<Slider>().CurrentValue >= 2) || (!Combo["Rb"].Cast<CheckBox>().CurrentValue && EntityManager.Heroes.Enemies.Where(x => x.IsInRange(_Player.Position, R.Range)).Count() >= Combo["Re"].Cast<Slider>().CurrentValue && Combo["Re"].Cast<Slider>().CurrentValue >= 2))
             {
                 R.Cast(target.Position);
             }
@@ -205,18 +205,10 @@ namespace Cassiopeia_Beta_Fixed
         {
             var minion1 = EntityManager.MinionsAndMonsters.GetLaneMinions().Where(m => m.IsValidTarget(E.Range)).OrderBy(m => !(m.Health <= Logics.GetMinionTarget(m, SpellSlot.E))).ThenBy(m => !m.HasBuffOfType(BuffType.Poison)).ThenBy(m => m.Health).FirstOrDefault();
             var minion3 = EntityManager.MinionsAndMonsters.GetLaneMinions().Where(m => m.IsValidTarget(W.Range)).ToArray();
-            if (minion3.Length == 0) return;
+            if (minion3.Length == 0) return;    
 
             var minionlocation = Prediction.Position.PredictCircularMissileAoe(minion3, W.Range, W.Width, W.CastDelay, W.Speed).OrderByDescending(r => r.GetCollisionObjects<Obj_AI_Minion>().Length).FirstOrDefault();
 
-            if (Farm["Qf"].Cast<CheckBox>().CurrentValue && Q.IsReady())
-            {
-                var predictedMinion = minionlocation.GetCollisionObjects<Obj_AI_Minion>();
-                if (predictedMinion.Length >= Farm["Qq"].Cast<Slider>().CurrentValue)
-                {
-                    Q.Cast(minionlocation.CastPosition);
-                }
-            }
 
             if (Farm["Qf"].Cast<CheckBox>().CurrentValue && Q.IsReady() && _Player.ManaPercent >= Farm["Manal"].Cast<Slider>().CurrentValue)
             {
@@ -390,14 +382,14 @@ namespace Cassiopeia_Beta_Fixed
 
         private static void OnInterrupter(Obj_AI_Base sender, Interrupter.InterruptableSpellEventArgs e)
         {
-            if (Misc["Int"].Cast<CheckBox>().CurrentValue && sender.IsValidTarget(R.Range))
+            if (Misc["Int"].Cast<CheckBox>().CurrentValue && sender.IsValidTarget(R.Range) && sender.IsEnemy && sender.IsFacing(_Player))
             {
                 R.Cast(sender);
             }
         }
         private static void OnGapcloser(AIHeroClient sender, Gapcloser.GapcloserEventArgs e)
         {
-            if (Misc["Gap"].Cast<CheckBox>().CurrentValue && sender.IsValidTarget(W.Range))
+            if (Misc["Gap"].Cast<CheckBox>().CurrentValue && sender.IsValidTarget(W.Range) && sender.IsEnemy)
             {
                 W.Cast(sender);
             }

@@ -32,6 +32,7 @@ namespace Cassiopeia_Beta_Fixed
             Combo.AddLabel("Percent Enemys [R]");
             Combo.Add("Re", new Slider("Min enemies to ult", 2, 1, 5));
             Combo.Add("Rb", new CheckBox("Only ult if main target is stunnable"));
+            Combo.Add("Raim", new Slider("R hitbox modifier", -20, -825, 0));
             //
             Harass = casio.AddSubMenu("Harass");
             Harass.Add("Qh", new CheckBox("[Q]"));
