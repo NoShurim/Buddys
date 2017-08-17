@@ -53,6 +53,7 @@ namespace LeBlanc_Beta_Fixed
             Menus.StartMenu();
             Lib.W.AllowedCollisionCount = int.MaxValue;
             Game.OnTick += Game_OnUpdate;
+            //Evade
             Drawing.OnDraw += OnDraws;
             Gapcloser.OnGapcloser += AntiGapcloser_Execute;
             GameObject.OnCreate += ObjectOnCreate;
@@ -66,12 +67,12 @@ namespace LeBlanc_Beta_Fixed
 
             if (CastCheckbox(Menus.AntiGapcloser, "E"))
             {
-                if (Lib.E.IsReady())
+                if (E.IsReady())
                 {
                     var epred = Lib.E.GetPrediction(sender);
                     if (epred.HitChance >= HitChance.Medium)
                     {
-                        Lib.E.Cast(epred.CastPosition);
+                        E.Cast(epred.CastPosition);
                     }
                 }
             }
@@ -90,6 +91,48 @@ namespace LeBlanc_Beta_Fixed
             if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo))
             {
                 ByCombo();
+            }
+            KillSteal();
+        }
+
+        private static void KillSteal()
+        {
+            foreach (var hptarget in EntityManager.Enemies.Where(a => a.IsValidTarget(1200) && !a.IsDead))
+            {
+                if (!hptarget.IsValid || hptarget.IsDead || hptarget == null)
+                {
+                    return;
+                }
+                var Health = hptarget.Health;
+                var dmgE = LeBlanc.GetSpellDamage(hptarget, SpellSlot.E);
+                if (LeBlanc.Distance(hptarget) < E.Range && Health < dmgE)
+                {
+                    CastE(hptarget);
+                }
+                var dmgQ = LeBlanc.GetSpellDamage(hptarget, SpellSlot.Q);
+                if (LeBlanc.Distance(hptarget) < Q.Range && Health < dmgQ)
+                {
+                    CastQ(hptarget);
+                }
+                var dmgW = LeBlanc.GetSpellDamage(hptarget, SpellSlot.W);
+                if (LeBlanc.Distance(hptarget) < W.Range && Health < dmgW)
+                {
+                    W.Cast(hptarget);
+                }
+                var dmgR = LeBlanc.GetSpellDamage(hptarget, SpellSlot.Q);
+                if (LeBlanc.Distance(hptarget) < Q.Range && Health < dmgR)
+                {
+                    CastR("RQ", hptarget);
+                }
+                if (Ignite.IsReady())
+                {
+                    var dmgI = (50 + ((LeBlanc.Level) * 20));
+                    if (LeBlanc.Distance(hptarget) < Q.Range && Health < dmgI)
+
+                    {
+                        Ignite.Cast(hptarget);
+                    }
+                }
             }
         }
 

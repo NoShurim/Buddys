@@ -13,6 +13,7 @@ namespace LeBlanc_Beta_Fixed
         public static Spell.Targeted Q;
         public static Spell.Skillshot W, E;
         public static Spell.Active RActive, WAc;
+        public static Spell.Targeted Ignite;
 
 
         static Lib()
@@ -32,8 +33,9 @@ namespace LeBlanc_Beta_Fixed
             RActive = new Spell.Active(SpellSlot.R);
             WAc = new Spell.Active(SpellSlot.W);
 
-        }
+            Ignite = new Spell.Targeted(SpellSlot.Summoner1, 600);
 
+        }
         public static void CastQ(Obj_AI_Base unit)
         {
             if (!Q.IsReady())
