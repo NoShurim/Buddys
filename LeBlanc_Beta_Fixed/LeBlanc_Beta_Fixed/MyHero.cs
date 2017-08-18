@@ -20,6 +20,7 @@ namespace LeBlanc_Beta_Fixed
         public static bool IsW2 => LeBlanc.Spellbook.GetSpell(SpellSlot.W).Name.ToLower() != "leblancw";
         public static bool IsR1 => LeBlanc.Spellbook.GetSpell(SpellSlot.R).Name.ToLower() == "leblancrtoggle";
         public static bool IsR2 => LeBlanc.Spellbook.GetSpell(SpellSlot.R).Name.ToLower() != "leblancrtoggle";
+
         public static bool IsPassive(Obj_AI_Base hero)
         {
             return hero.HasBuff("LeblancPMark") && Game.Time - hero.GetBuff("LeblancPMark").StartTime > 1;
@@ -104,26 +105,6 @@ namespace LeBlanc_Beta_Fixed
                     return;
                 }
                 var Health = hptarget.Health;
-                var dmgE = LeBlanc.GetSpellDamage(hptarget, SpellSlot.E);
-                if (LeBlanc.Distance(hptarget) < E.Range && Health < dmgE)
-                {
-                    CastE(hptarget);
-                }
-                var dmgQ = LeBlanc.GetSpellDamage(hptarget, SpellSlot.Q);
-                if (LeBlanc.Distance(hptarget) < Q.Range && Health < dmgQ)
-                {
-                    CastQ(hptarget);
-                }
-                var dmgW = LeBlanc.GetSpellDamage(hptarget, SpellSlot.W);
-                if (LeBlanc.Distance(hptarget) < W.Range && Health < dmgW)
-                {
-                    W.Cast(hptarget);
-                }
-                var dmgR = LeBlanc.GetSpellDamage(hptarget, SpellSlot.Q);
-                if (LeBlanc.Distance(hptarget) < Q.Range && Health < dmgR)
-                {
-                    CastR("RQ", hptarget);
-                }
                 if (Ignite.IsReady())
                 {
                     var dmgI = (50 + ((LeBlanc.Level) * 20));
@@ -141,29 +122,31 @@ namespace LeBlanc_Beta_Fixed
             var useLQ = CastCheckbox(Menus.Lane, "Q");
             var useLW = CastCheckbox(Menus.Lane, "W");
             var Mana = CastSlider(Menus.Lane, "Mana");
+            var mini = CastSlider(Menus.Lane, "WMin");
 
-            var minions = EntityManager.MinionsAndMonsters.EnemyMinions.Where(min => min.IsEnemy && !min.IsDead && min.IsValid && !min.IsInvulnerable && min.IsInRange(LeBlanc.Position, Q.Range));
             var minion = EntityManager.MinionsAndMonsters.Get(EntityManager.MinionsAndMonsters.EntityType.Minion, EntityManager.UnitTeam.Enemy, Player.Instance.ServerPosition, Q.Range);
             if (useLQ && useLW && LeBlanc.ManaPercent > Mana)
             {
-                foreach (var mayminoon in minions)
+                foreach (var mayminoon in minion)
                 {
-                    if (W.GetPrediction(mayminoon).CollisionObjects.Where(may => may.IsEnemy && !may.IsDead && may.IsValid && !may.IsInvulnerable).Count() >= 3)
+                    if (minion != null)
                     {
-                        W.Cast(mayminoon);
-                    }
-                    else if (W.IsReady() && Player.Instance.Spellbook.GetSpell(SpellSlot.W).Name.ToLower() == "leblancwreturn")
-                    {
-                        WAc.Cast();
-                    }
-                    else if (IsPassiveM(mayminoon))
-                    {
-                        Q.Cast(mayminoon);
+                        if (W.GetPrediction(mayminoon).CollisionObjects.Where(may => may.IsEnemy && !may.IsDead && may.IsValid && !may.IsInvulnerable).Count() >= mini)
+                        {
+                            W.Cast(mayminoon);
+                        }
+                        else if (W.IsReady() && Player.Instance.Spellbook.GetSpell(SpellSlot.W).Name.ToLower() == "leblancwreturn")
+                        {
+                            WAc.Cast();
+                        }
+                        else if (IsPassiveM(mayminoon))
+                        {
+                            Q.Cast(mayminoon);
+                        }
                     }
                 }
             }
         }
-
         private static void ByJungle()
         {
             throw new NotImplementedException();
@@ -206,11 +189,11 @@ namespace LeBlanc_Beta_Fixed
                 {
                     CastE(target);
                 }
-                if (useQ && !E.IsReady())
+                if (IsPassive(target) && useQ && !E.IsReady())
                 {
                     CastQ(target);
                 }
-                if (UseRQ && !Q.IsReady())
+                if (UseRQ && IsPassive(target) && !Q.IsReady())
                 {
                     CastR("RQ", target);
                 }
@@ -273,7 +256,7 @@ namespace LeBlanc_Beta_Fixed
                         {
                             CastR("RW", target);
                         }
-                        if (useW && IsW1 && !RActive.IsReady())
+                        if (UseRW && IsW1 && !RActive.IsReady())
                         {
                             CastW(target.ServerPosition);
                         }

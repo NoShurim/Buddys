@@ -6,7 +6,7 @@ namespace LeBlanc_Beta_Fixed
 {
     class Menus
     {
-        public static Menu Menu, Comb, Lane, KillStea, AntiGapcloser, Haras, Draws, Flwe, Misc;
+        public static Menu Menu, Comb, Lane, KillStea, AntiGapcloser, Draws, Flwe;
         public static void StartMenu()
         {
             Menu = MainMenu.AddMenu("LeBlanc", "LeBlanc");
