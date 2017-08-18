@@ -34,11 +34,16 @@ namespace LeBlanc_Beta_Fixed
         {
             return obj[value].Cast<CheckBox>().CurrentValue;
         }
+
         public static int CastSlider(Menu obj, string value)
         {
             return obj[value].Cast<Slider>().CurrentValue;
         }
 
+        public static bool CastKey(Menu obj, string value)
+        {
+            return obj[value].Cast<KeyBind>().CurrentValue;
+        }
 
         static void Main(string[] args)
         {
@@ -57,9 +62,7 @@ namespace LeBlanc_Beta_Fixed
             //Evade
             Drawing.OnDraw += OnDraws;
             Gapcloser.OnGapcloser += AntiGapcloser_Execute;
-            GameObject.OnCreate += ObjectOnCreate;
-            GameObject.OnDelete += ObjectOnDelete;
-            Obj_AI_Base.OnProcessSpellCast += OnProcessSpellCast;
+
         }
 
         private static void AntiGapcloser_Execute(AIHeroClient sender, Gapcloser.GapcloserEventArgs e)
@@ -94,6 +97,78 @@ namespace LeBlanc_Beta_Fixed
                 ByCombo();
             }
             KillSteal();
+        }
+
+        private static void Combo2()
+        {
+            var target = TargetSelector.GetTarget(925, DamageType.Magical);
+            var useQ = CastCheckbox(Menus.Comb, "Q");
+            var useW = CastCheckbox(Menus.Comb, "W");
+            var useE = CastCheckbox(Menus.Comb, "E");
+            var useR = CastCheckbox(Menus.Comb, "R");
+            var UseRQ = CastCheckbox(Menus.Comb, "RQ");
+            var UseRW = CastCheckbox(Menus.Comb, "RW");
+            var UseRE = CastCheckbox(Menus.Comb, "RE");
+
+            if (LeBlanc.Distance(target) < W.Range)  //wQRE
+            {
+                if (useW && IsW1)
+                {
+                    CastW(W.GetPrediction(target).CastPosition);
+                }
+                if (useQ && IsPassive(target))
+                {
+                    CastQ(target);
+                }
+                if (UseRQ && IsR1)
+                {
+                    CastR("RQ", target);
+                }
+                if (useE)
+                {
+                    CastE(target);
+                }
+            }
+            else if (LeBlanc.Distance(target) < E.Range)//REQEW
+            {
+                if (UseRE && IsR1)
+                {
+                    CastR("RE", target);
+                }
+                if (useQ && IsPassive(target))
+                {
+                    CastQ(target);
+                }
+                if (useE)
+                {
+                    CastE(target);
+                }
+                if (useW && IsW1)
+                {
+                    CastW(W.GetPrediction(target).CastPosition);
+                }
+
+            }
+            else if (target.IsValidTarget(W.Range + Q.Range))//gapclose combo W-R(E)-E-Q
+            {
+                var wpos = Player.Instance.Position.Extend(target, Lib.W.Range).To3D();
+                if (IsW1 && useW)
+                {
+                    CastW(wpos);
+                }
+                if (UseRE && IsR1)
+                {
+                    CastR("RE", target);
+                }
+                if (useQ && IsPassive(target))
+                {
+                    CastQ(target);
+                }
+                if (useE)
+                {
+                    CastE(target);
+                }
+            }
         }
 
         private static void KillSteal()
@@ -149,9 +224,34 @@ namespace LeBlanc_Beta_Fixed
         }
         private static void ByJungle()
         {
-            throw new NotImplementedException();
-        }
+            var useLQ = CastCheckbox(Menus.Lane, "Q");
+            var useLW = CastCheckbox(Menus.Lane, "W");
+            var Mana = CastSlider(Menus.Lane, "Mana");
+            var mini = CastSlider(Menus.Lane, "WMin");
 
+            var minion = EntityManager.MinionsAndMonsters.GetJungleMonsters(LeBlanc.Position, Q.Range).Where(my => !my.IsDead && my.IsValid && !my.IsInvulnerable);
+            if (useLQ && useLW && LeBlanc.ManaPercent > Mana)
+            {
+                foreach (var mayminoon in minion)
+                {
+                    if (minion != null)
+                    {
+                        if (W.GetPrediction(mayminoon).CollisionObjects.Where(may => may.IsEnemy && !may.IsDead && may.IsValid && !may.IsInvulnerable).Count() >= mini)
+                        {
+                            W.Cast(mayminoon);
+                        }
+                        else if (W.IsReady() && Player.Instance.Spellbook.GetSpell(SpellSlot.W).Name.ToLower() == "leblancwreturn")
+                        {
+                            WAc.Cast();
+                        }
+                        else if (IsPassiveM(mayminoon))
+                        {
+                            Q.Cast(mayminoon);
+                        }
+                    }
+                }
+            }
+        }
         private static void ByCombo()
         {
             var target = TargetSelector.GetTarget(925, DamageType.Magical);
@@ -263,20 +363,6 @@ namespace LeBlanc_Beta_Fixed
                     }
                 }
             }
-        }
-        private static void ObjectOnCreate(GameObject sender, EventArgs args)
-        {
-
-        }
-
-        private static void ObjectOnDelete(GameObject sender, EventArgs args)
-        {
-
-        }
-
-        private static void OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
-        {
-
         }
 
         private static void OnDraws(EventArgs args)

@@ -12,3 +12,4 @@ c:\users\edcarlos\documents\visual studio 2017\Projects\LeBlanc_Beta_Fixed\LeBla
 c:\users\edcarlos\documents\visual studio 2017\Projects\LeBlanc_Beta_Fixed\LeBlanc_Beta_Fixed\bin\Debug\SharpDX.XInput.dll
 c:\users\edcarlos\documents\visual studio 2017\Projects\LeBlanc_Beta_Fixed\LeBlanc_Beta_Fixed\obj\Debug\LeBlanc_Beta_Fixed.exe
 c:\users\edcarlos\documents\visual studio 2017\Projects\LeBlanc_Beta_Fixed\LeBlanc_Beta_Fixed\obj\Debug\LeBlanc_Beta_Fixed.pdb
+C:\Users\Edcarlos\documents\visual studio 2017\Projects\LeBlanc_Beta_Fixed\LeBlanc_Beta_Fixed\obj\Debug\LeBlanc_Beta_Fixed.csproj.CoreCompileInputs.cache
