@@ -74,7 +74,7 @@ namespace LeBlanc_Beta_Fixed
         {
             if (LeBlanc.Hero != Champion.Leblanc) return;
             Chat.Print("[Addon] [Champion] [LeBlanc]", System.Drawing.Color.AliceBlue);
-            Chat.Print("[Version [1.0] => Update ]", System.Drawing.Color.OrangeRed);
+            Chat.Print("[Version 1.0 => Update ]", System.Drawing.Color.OrangeRed);
 
             Menus.StartMenu();
             Lib.W.AllowedCollisionCount = int.MaxValue;
@@ -204,115 +204,80 @@ namespace LeBlanc_Beta_Fixed
 
         private static void ByCombo()
         {
-            var target = TargetSelector.GetTarget(925, DamageType.Magical);
+            var target = TargetSelector.GetTarget(1600, DamageType.Magical);
             var useQ = CastCheckbox(Menus.Comb, "Q");
             var useW = CastCheckbox(Menus.Comb, "W");
             var useE = CastCheckbox(Menus.Comb, "E");
             var useR = CastCheckbox(Menus.Comb, "R");
-            var UseRQ = CastCheckbox(Menus.Comb, "RQ");
-            var UseRW = CastCheckbox(Menus.Comb, "RW");
-            var UseRE = CastCheckbox(Menus.Comb, "RE");
+            var useRQ = CastCheckbox(Menus.Comb, "RQ");
+            var useRW = CastCheckbox(Menus.Comb, "RW");
+            var useRE = CastCheckbox(Menus.Comb, "RE");
             var wpos = Player.Instance.Position.Extend(target, Lib.W.Range).To3D();
 
-            if (LeBlanc.Distance(target) < Q.Range)
+            if (LeBlanc.Distance(target) < W.Range)  //wQRE
             {
-                if (useQ)
+                if (useW && IsW1())
                 {
-                    CastQ(target);
+                    CastW(W.GetPrediction(target).CastPosition);
                 }
-                if (useE && IsPassive(target) && !Q.IsReady())
-                {
-                    CastE(target);
-                }
-                if (UseRQ && IsPassive(target))
-                {
-                    CastR("RQ", target);
-                }
-                if (useW && IsPassive(target) && IsW1() && !RActive.IsReady())
-                {
-                    CastW(target.ServerPosition);
-                }
-            }
-            else if (LeBlanc.Distance(target) < E.Range)
-            {
-                if (useE)
-                {
-                    CastE(target);
-                }
-                if (IsPassive(target) && useQ && !E.IsReady())
-                {
-                    CastQ(target);
-                }
-                if (UseRQ && IsPassive(target) && !Q.IsReady())
-                {
-                    CastR("RQ", target);
-                }
-                if (useW && IsW1() && !RActive.IsReady())
-                {
-                    CastW(target.ServerPosition);
-                }
-            }
-            else if (LeBlanc.Distance(target) < Q.Range)
-            {
-                if (useQ)
-                {
-                    CastQ(target);
-                }
-                if (useE && !Q.IsReady())
-                {
-                    CastE(target);
-                }
-                if (UseRE)
-                {
-                    CastR("RE", target);
-                }
-                if (useW && IsW1() && !RActive.IsReady())
-                {
-                    CastW(target.ServerPosition);
-                }
-            }
-            else if (LeBlanc.Distance(target) < E.Range)
-            {
-                if (useE && IsPassive(target))
-                {
-                    CastE(target);
-                }
-
                 if (useQ && IsPassive(target))
                 {
                     CastQ(target);
                 }
-                if (UseRE)
+                if (useRQ && IsR1())
+                {
+                    CastR("RQ", target);
+                }
+                if (useE)
+                {
+                    CastE(target);
+                }
+                if (useQ)
+                {
+                    CastQ(target);
+                }
+            }
+            else if (LeBlanc.Distance(target) < E.Range)//REQEW
+            {
+                if (useRE && IsR1())
                 {
                     CastR("RE", target);
                 }
-                if (useW && IsW1() && !RActive.IsReady())
+                if (useQ && IsPassive(target))
                 {
-                    CastW(target.ServerPosition);
+                    CastQ(target);
                 }
-                else
+                if (useE)
                 {
-                    if (LeBlanc.Distance(target) < W.Range)
-                    {
-                        if (useQ)
-                        {
-                            CastQ(target);
-                        }
-                        if (useE && !Q.IsReady())
-                        {
-                            CastE(target);
-                        }
-                        if (UseRW)
-                        {
-                            CastR("RW", target);
-                        }
-                        if (UseRW && IsW1() && !RActive.IsReady())
-                        {
-                            CastW(target.ServerPosition);
-                        }
-                    }
+                    CastE(target);
+                }
+                if (useW && IsW1())
+                {
+                    CastW(W.GetPrediction(target).CastPosition);
+                }
+
+            }
+            else if (target.IsValidTarget(W.Range + Q.Range))//gapclose combo W-R(E)-E-Q
+            {
+                var pos = LeBlanc.ServerPosition.Extend(target.ServerPosition, W.Range);
+                if (IsW1() && useW)
+                {
+                    CastW(wpos);
+                }
+                if (useR && IsR1())
+                {
+                    CastR("RE", target);
+                }
+                if (useQ && IsPassive(target))
+                {
+                    CastQ(target);
+                }
+                if (useE)
+                {
+                    CastE(target);
                 }
             }
+
         }
 
         private static void OnDraws(EventArgs args)
