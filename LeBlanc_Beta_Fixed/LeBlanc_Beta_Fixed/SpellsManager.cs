@@ -8,7 +8,7 @@ namespace LeBlanc_Beta_Fixed
     class Lib
     {
 
-    
+
 
         public static Spell.Targeted Q;
         public static Spell.Skillshot W, E;
@@ -92,7 +92,7 @@ namespace LeBlanc_Beta_Fixed
                 case "D":
                     if (MyHero.LeBlanc.Spellbook.GetSpell(SpellSlot.R).Name.ToLower() == "leblancrtoggle")
                     {
-                       RActive.Cast();
+                        RActive.Cast();
                     }
                     else
                     {
@@ -132,7 +132,5 @@ namespace LeBlanc_Beta_Fixed
                     break;
             }
         }
-
-
     }
 }

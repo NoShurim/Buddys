@@ -15,7 +15,6 @@ namespace LeBlanc_Beta_Fixed
     class MyHero
     {
         public static AIHeroClient LeBlanc => Player.Instance;
-
         public static bool IsW1()
         {
             return LeBlanc.Spellbook.GetSpell(SpellSlot.W).Name.ToLower() == "leblancw";
@@ -75,7 +74,7 @@ namespace LeBlanc_Beta_Fixed
         {
             if (LeBlanc.Hero != Champion.Leblanc) return;
             Chat.Print("[Addon] [Champion] [LeBlanc]", System.Drawing.Color.AliceBlue);
-            Chat.Print("[Verdion 1.v]", System.Drawing.Color.Blue);
+            Chat.Print("[Version [1.0] => Update ]", System.Drawing.Color.OrangeRed);
 
             Menus.StartMenu();
             Lib.W.AllowedCollisionCount = int.MaxValue;
@@ -116,246 +115,8 @@ namespace LeBlanc_Beta_Fixed
             if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo))
             {
                 ByCombo();
-                Combo2();
-                DystonCombo();
             }
             KillSteal();
-        }
-
-        private static void DystonCombo()
-        {
-            var target = TargetSelector.GetTarget(925, DamageType.Magical);
-            var useQ = CastCheckbox(Menus.Comb, "Q");
-            var useW = CastCheckbox(Menus.Comb, "W");
-            var useE = CastCheckbox(Menus.Comb, "E");
-            var useR = CastCheckbox(Menus.Comb, "R");
-            var UseRQ = CastCheckbox(Menus.Comb, "RQ");
-            var UseRW = CastCheckbox(Menus.Comb, "RW");
-            var UseRE = CastCheckbox(Menus.Comb, "RE");
-            if (Menus.Comb["modes"].Cast<ComboBox>().CurrentValue == 3)
-            {
-                return;
-            }
-            switch (Menus.Comb["m2"].Cast<ComboBox>().CurrentValue)
-            {
-                case 0:
-                    if (useQ)
-                    {
-                        CastQ(target);
-                    }
-                    if (useW)
-                    {
-                        CastW(W.GetPrediction(target).CastPosition);
-                    }
-                    if (useE)
-                    {
-                        CastE(target);
-                    }
-                    if (UseRW && IsR1())
-                    {
-                        CastR("RW", target);
-                    }
-                    break;
-                case 1:
-                    if (useQ)
-                    {
-                        CastQ(target);
-                    }
-                    if (UseRQ && IsPassive(target))
-                    {
-                        CastR("RQ", target);
-                    }
-                    if (useE)
-                    {
-                        CastE(target);
-                    }
-                    if (useW)
-                    {
-                        CastW(W.GetPrediction(target).CastPosition);
-                    }
-                    break;
-                case 2:
-                    if (useE)
-                    {
-                        CastE(target);
-                    }
-                    if (useQ && IsPassive(target))
-                    {
-                        CastQ(target);
-                    }
-                    if (useW && IsW1())
-                    {
-                        CastW(W.GetPrediction(target).CastPosition);
-                    }
-                    if (IsR1() && UseRW)
-                    {
-                        CastR("RW", target);
-                    }
-                    break;
-                case 3:
-                    if (useE)
-                    {
-                        CastE(target);
-                    }
-                    if (useW && IsW1())
-                    {
-                        CastW(W.GetPrediction(target).CastPosition);
-                    }
-                    if (useQ && IsPassive(target))
-                    {
-                        CastQ(target);
-                    }
-                    if (UseRQ)
-                    {
-                        CastR("RQ", target);
-                    }
-                    break;
-                case 4:
-                    if (useW && IsW1())
-                    {
-                        CastW(W.GetPrediction(target).CastPosition);
-                    }
-                    if (UseRW)
-                    {
-                        CastR("RW", target);
-                    }
-                    if (useQ && IsPassive(target))
-                    {
-                        CastQ(target);
-                    }
-                    if (useE)
-                    {
-                        CastE(target);
-                    }
-                    break;
-                case 5:
-                    if (useW && IsW1())
-                    {
-                        CastW(W.GetPrediction(target).CastPosition);
-                    }
-                    if (useQ && IsPassive(target))
-                    {
-                        CastQ(target);
-                    }
-                    if (UseRQ && IsR1())
-                    {
-                        CastR("RQ", target);
-                    }
-                    if (useE)
-                    {
-                        CastE(target);
-                    }
-                    break;
-                case 6:
-                    if (useQ)
-                    {
-                        CastQ(target);
-                    }
-                    if (UseRQ && IsR1())
-                    {
-                        CastR("RQ", target);
-                    }
-                    if (useW && IsW1())
-                    {
-                        CastW(W.GetPrediction(target).CastPosition);
-                    }
-                    if (useE)
-                    {
-                        CastE(target);
-                    }
-                    break;
-            }
-        }
-
-        private static void Modes()
-        {
-            switch (Menus.Comb["modes"].Cast<ComboBox>().SelectedIndex)
-            {
-
-                case 0:
-                    ByCombo();
-                    break;
-
-                case 1:
-                    Combo2();
-                    break;
-
-                case 2:
-                    DystonCombo();
-                    break;
-            }
-        }
-
-        private static void Combo2()
-        {
-            var target = TargetSelector.GetTarget(925, DamageType.Magical);
-            var useQ = CastCheckbox(Menus.Comb, "Q");
-            var useW = CastCheckbox(Menus.Comb, "W");
-            var useE = CastCheckbox(Menus.Comb, "E");
-            var useR = CastCheckbox(Menus.Comb, "R");
-            var UseRQ = CastCheckbox(Menus.Comb, "RQ");
-            var UseRW = CastCheckbox(Menus.Comb, "RW");
-            var UseRE = CastCheckbox(Menus.Comb, "RE");
-
-            if (LeBlanc.Distance(target) < W.Range)  //wQRE
-            {
-                if (useW && IsW1())
-                {
-                    CastW(W.GetPrediction(target).CastPosition);
-                }
-                if (useQ && IsPassive(target))
-                {
-                    CastQ(target);
-                }
-                if (UseRQ && IsR1())
-                {
-                    CastR("RQ", target);
-                }
-                if (useE)
-                {
-                    CastE(target);
-                }
-            }
-            else if (LeBlanc.Distance(target) < E.Range)//REQEW
-            {
-                if (UseRE && IsR1())
-                {
-                    CastR("RE", target);
-                }
-                if (useQ && IsPassive(target))
-                {
-                    CastQ(target);
-                }
-                if (useE)
-                {
-                    CastE(target);
-                }
-                if (useW && IsW1())
-                {
-                    CastW(W.GetPrediction(target).CastPosition);
-                }
-
-            }
-            else if (target.IsValidTarget(W.Range + Q.Range))//gapclose combo W-R(E)-E-Q
-            {
-                var wpos = Player.Instance.Position.Extend(target, Lib.W.Range).To3D();
-                if (IsW1() && useW)
-                {
-                    CastW(wpos);
-                }
-                if (UseRE && IsR1())
-                {
-                    CastR("RE", target);
-                }
-                if (useQ && IsPassive(target))
-                {
-                    CastQ(target);
-                }
-                if (useE)
-                {
-                    CastE(target);
-                }
-            }
         }
 
         private static void KillSteal()
@@ -424,7 +185,7 @@ namespace LeBlanc_Beta_Fixed
                 {
                     if (monters != null)
                     {
-                        if (W.GetPrediction(monstros).CollisionObjects.Where(may => may.IsEnemy && !may.IsDead && may.IsValid && !may.IsInvulnerable).Count() >= mini)
+                        if (W.GetPrediction(monstros).CollisionObjects.Where(may => may.IsEnemy && !may.IsDead && may.IsValid && !may.IsInvulnerable).Count() > 1)
                         {
                             W.Cast(monstros);
                         }
@@ -463,7 +224,7 @@ namespace LeBlanc_Beta_Fixed
                 {
                     CastE(target);
                 }
-                if (useR && IsPassive(target))
+                if (UseRQ && IsPassive(target))
                 {
                     CastR("RQ", target);
                 }

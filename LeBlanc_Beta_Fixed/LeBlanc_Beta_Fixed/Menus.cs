@@ -33,12 +33,6 @@ namespace LeBlanc_Beta_Fixed
         private static void ComboMenu()
         {
             Comb = Menu.AddSubMenu("Combo");
-            Comb.AddLabel("[Modes Combo]");
-            Comb.Add("modes", new ComboBox("Mode Combo", 1, "Combo Shild", "Combo Normal", "Manuel"));
-            Comb.AddSeparator();
-            Comb.AddLabel("[Manuel Combo]");
-            Comb.Add("m2", new ComboBox("Mode Manuel", 1, "Q > E > W > R", "Q > R > E > W", "E > Q > W > R", "E > W > Q > R", "W > R > Q > E", "W > Q > R > E", "Q > R > W > E", "Double Stun"));
-            Comb.AddSeparator();
             Comb.Add("Q", new CheckBox("Use Q"));
             Comb.Add("W", new CheckBox("Use W"));
             Comb.Add("E", new CheckBox("Use E"));
