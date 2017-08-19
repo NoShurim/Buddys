@@ -108,8 +108,6 @@ namespace LeBlanc_Beta_Fixed
             if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.LaneClear))
             {
                 ByLane();
-                Combo2();
-                DystonCombo();
             }
             if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.JungleClear))
             {
@@ -118,6 +116,8 @@ namespace LeBlanc_Beta_Fixed
             if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo))
             {
                 ByCombo();
+                Combo2();
+                DystonCombo();
             }
             KillSteal();
         }
