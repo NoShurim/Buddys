@@ -25,10 +25,12 @@ namespace LeBlanc_Beta_Fixed
         {
             return LeBlanc.Spellbook.GetSpell(SpellSlot.W).Name.ToLower() != "leblancw";
         }
+
         public static bool IsR1()
         {
             return LeBlanc.Spellbook.GetSpell(SpellSlot.R).Name.ToLower() == "leblancrtoggle";
         }
+
         public static bool IsR2()
         {
             return LeBlanc.Spellbook.GetSpell(SpellSlot.R).Name.ToLower() != "leblancrtoggle";
@@ -159,7 +161,7 @@ namespace LeBlanc_Beta_Fixed
                     {
                         CastQ(target);
                     }
-                    if (UseRQ  && IsPassive(target))
+                    if (UseRQ && IsPassive(target))
                     {
                         CastR("RQ", target);
                     }
@@ -265,12 +267,11 @@ namespace LeBlanc_Beta_Fixed
             }
         }
 
-               
-            private static void Modes()
+        private static void Modes()
         {
             switch (Menus.Comb["modes"].Cast<ComboBox>().SelectedIndex)
             {
- 
+
                 case 0:
                     ByCombo();
                     break;
@@ -357,7 +358,6 @@ namespace LeBlanc_Beta_Fixed
             }
         }
 
-
         private static void KillSteal()
         {
             foreach (var hptarget in EntityManager.Enemies.Where(a => a.IsValidTarget(1200) && !a.IsDead))
@@ -409,6 +409,7 @@ namespace LeBlanc_Beta_Fixed
                 }
             }
         }
+
         private static void ByJungle()
         {
             var useLQ = CastCheckbox(Menus.Lane, "Q");
@@ -509,7 +510,6 @@ namespace LeBlanc_Beta_Fixed
                     CastW(target.ServerPosition);
                 }
             }
-
             else if (LeBlanc.Distance(target) < E.Range)
             {
                 if (useE && IsPassive(target))
