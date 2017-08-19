@@ -16,18 +16,37 @@ namespace LeBlanc_Beta_Fixed
     {
         public static AIHeroClient LeBlanc => Player.Instance;
 
-        public static bool IsW1 => LeBlanc.Spellbook.GetSpell(SpellSlot.W).Name.ToLower() == "leblancw";
-        public static bool IsW2 => LeBlanc.Spellbook.GetSpell(SpellSlot.W).Name.ToLower() != "leblancw";
-        public static bool IsR1 => LeBlanc.Spellbook.GetSpell(SpellSlot.R).Name.ToLower() == "leblancrtoggle";
-        public static bool IsR2 => LeBlanc.Spellbook.GetSpell(SpellSlot.R).Name.ToLower() != "leblancrtoggle";
+        public static bool IsW1()
+        {
+            return LeBlanc.Spellbook.GetSpell(SpellSlot.W).Name.ToLower() == "leblancw";
+        }
+
+        public static bool IsW2()
+        {
+            return LeBlanc.Spellbook.GetSpell(SpellSlot.W).Name.ToLower() != "leblancw";
+        }
+        public static bool IsR1()
+        {
+            return LeBlanc.Spellbook.GetSpell(SpellSlot.R).Name.ToLower() == "leblancrtoggle";
+        }
+        public static bool IsR2()
+        {
+            return LeBlanc.Spellbook.GetSpell(SpellSlot.R).Name.ToLower() != "leblancrtoggle";
+        }
 
         public static bool IsPassive(Obj_AI_Base hero)
         {
             return hero.HasBuff("LeblancPMark") && Game.Time - hero.GetBuff("LeblancPMark").StartTime > 1;
         }
+
         public static bool IsPassiveM(Obj_AI_Base hero)
         {
             return hero.HasBuff("leblancpminion") && Game.Time - hero.GetBuff("leblancpminion").StartTime > 1;
+        }
+
+        public static bool IsPassiveJ(Obj_AI_Base hero)
+        {
+            return hero.HasBuff("leblancpomonsters") && Game.Time - hero.GetBuff("leblancpomonsters").StartTime > 1;
         }
 
         public static bool CastCheckbox(Menu obj, string value)
@@ -40,9 +59,9 @@ namespace LeBlanc_Beta_Fixed
             return obj[value].Cast<Slider>().CurrentValue;
         }
 
-        public static bool CastKey(Menu obj, string value)
+        public static int CastBox(Menu obj, string value)
         {
-            return obj[value].Cast<KeyBind>().CurrentValue;
+            return obj[value].Cast<ComboBox>().CurrentValue;
         }
 
         static void Main(string[] args)
@@ -87,6 +106,8 @@ namespace LeBlanc_Beta_Fixed
             if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.LaneClear))
             {
                 ByLane();
+                Combo2();
+                DystonCombo();
             }
             if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.JungleClear))
             {
@@ -97,6 +118,171 @@ namespace LeBlanc_Beta_Fixed
                 ByCombo();
             }
             KillSteal();
+        }
+
+        private static void DystonCombo()
+        {
+            var target = TargetSelector.GetTarget(925, DamageType.Magical);
+            var useQ = CastCheckbox(Menus.Comb, "Q");
+            var useW = CastCheckbox(Menus.Comb, "W");
+            var useE = CastCheckbox(Menus.Comb, "E");
+            var useR = CastCheckbox(Menus.Comb, "R");
+            var UseRQ = CastCheckbox(Menus.Comb, "RQ");
+            var UseRW = CastCheckbox(Menus.Comb, "RW");
+            var UseRE = CastCheckbox(Menus.Comb, "RE");
+            if (Menus.Comb["modes"].Cast<ComboBox>().CurrentValue == 3)
+            {
+                return;
+            }
+            switch (Menus.Comb["m2"].Cast<ComboBox>().CurrentValue)
+            {
+                case 0:
+                    if (useQ)
+                    {
+                        CastQ(target);
+                    }
+                    if (useW)
+                    {
+                        CastW(W.GetPrediction(target).CastPosition);
+                    }
+                    if (useE)
+                    {
+                        CastE(target);
+                    }
+                    if (UseRW && IsR1())
+                    {
+                        CastR("RW", target);
+                    }
+                    break;
+                case 1:
+                    if (useQ)
+                    {
+                        CastQ(target);
+                    }
+                    if (UseRQ  && IsPassive(target))
+                    {
+                        CastR("RQ", target);
+                    }
+                    if (useE)
+                    {
+                        CastE(target);
+                    }
+                    if (useW)
+                    {
+                        CastW(W.GetPrediction(target).CastPosition);
+                    }
+                    break;
+                case 2:
+                    if (useE)
+                    {
+                        CastE(target);
+                    }
+                    if (useQ && IsPassive(target))
+                    {
+                        CastQ(target);
+                    }
+                    if (useW && IsW1())
+                    {
+                        CastW(W.GetPrediction(target).CastPosition);
+                    }
+                    if (IsR1() && UseRW)
+                    {
+                        CastR("RW", target);
+                    }
+                    break;
+                case 3:
+                    if (useE)
+                    {
+                        CastE(target);
+                    }
+                    if (useW && IsW1())
+                    {
+                        CastW(W.GetPrediction(target).CastPosition);
+                    }
+                    if (useQ && IsPassive(target))
+                    {
+                        CastQ(target);
+                    }
+                    if (UseRQ)
+                    {
+                        CastR("RQ", target);
+                    }
+                    break;
+                case 4:
+                    if (useW && IsW1())
+                    {
+                        CastW(W.GetPrediction(target).CastPosition);
+                    }
+                    if (UseRW)
+                    {
+                        CastR("RW", target);
+                    }
+                    if (useQ && IsPassive(target))
+                    {
+                        CastQ(target);
+                    }
+                    if (useE)
+                    {
+                        CastE(target);
+                    }
+                    break;
+                case 5:
+                    if (useW && IsW1())
+                    {
+                        CastW(W.GetPrediction(target).CastPosition);
+                    }
+                    if (useQ && IsPassive(target))
+                    {
+                        CastQ(target);
+                    }
+                    if (UseRQ && IsR1())
+                    {
+                        CastR("RQ", target);
+                    }
+                    if (useE)
+                    {
+                        CastE(target);
+                    }
+                    break;
+                case 6:
+                    if (useQ)
+                    {
+                        CastQ(target);
+                    }
+                    if (UseRQ && IsR1())
+                    {
+                        CastR("RQ", target);
+                    }
+                    if (useW && IsW1())
+                    {
+                        CastW(W.GetPrediction(target).CastPosition);
+                    }
+                    if (useE)
+                    {
+                        CastE(target);
+                    }
+                    break;
+            }
+        }
+
+               
+            private static void Modes()
+        {
+            switch (Menus.Comb["modes"].Cast<ComboBox>().SelectedIndex)
+            {
+ 
+                case 0:
+                    ByCombo();
+                    break;
+
+                case 1:
+                    Combo2();
+                    break;
+
+                case 2:
+                    DystonCombo();
+                    break;
+            }
         }
 
         private static void Combo2()
@@ -112,7 +298,7 @@ namespace LeBlanc_Beta_Fixed
 
             if (LeBlanc.Distance(target) < W.Range)  //wQRE
             {
-                if (useW && IsW1)
+                if (useW && IsW1())
                 {
                     CastW(W.GetPrediction(target).CastPosition);
                 }
@@ -120,7 +306,7 @@ namespace LeBlanc_Beta_Fixed
                 {
                     CastQ(target);
                 }
-                if (UseRQ && IsR1)
+                if (UseRQ && IsR1())
                 {
                     CastR("RQ", target);
                 }
@@ -131,7 +317,7 @@ namespace LeBlanc_Beta_Fixed
             }
             else if (LeBlanc.Distance(target) < E.Range)//REQEW
             {
-                if (UseRE && IsR1)
+                if (UseRE && IsR1())
                 {
                     CastR("RE", target);
                 }
@@ -143,7 +329,7 @@ namespace LeBlanc_Beta_Fixed
                 {
                     CastE(target);
                 }
-                if (useW && IsW1)
+                if (useW && IsW1())
                 {
                     CastW(W.GetPrediction(target).CastPosition);
                 }
@@ -152,11 +338,11 @@ namespace LeBlanc_Beta_Fixed
             else if (target.IsValidTarget(W.Range + Q.Range))//gapclose combo W-R(E)-E-Q
             {
                 var wpos = Player.Instance.Position.Extend(target, Lib.W.Range).To3D();
-                if (IsW1 && useW)
+                if (IsW1() && useW)
                 {
                     CastW(wpos);
                 }
-                if (UseRE && IsR1)
+                if (UseRE && IsR1())
                 {
                     CastR("RE", target);
                 }
@@ -170,6 +356,7 @@ namespace LeBlanc_Beta_Fixed
                 }
             }
         }
+
 
         private static void KillSteal()
         {
@@ -229,29 +416,30 @@ namespace LeBlanc_Beta_Fixed
             var Mana = CastSlider(Menus.Lane, "Mana");
             var mini = CastSlider(Menus.Lane, "WMin");
 
-            var minion = EntityManager.MinionsAndMonsters.GetJungleMonsters(LeBlanc.Position, Q.Range).Where(my => !my.IsDead && my.IsValid && !my.IsInvulnerable);
+            var monters = EntityManager.MinionsAndMonsters.GetJungleMonsters(LeBlanc.Position, Q.Range).Where(my => !my.IsDead && my.IsValid && !my.IsInvulnerable);
             if (useLQ && useLW && LeBlanc.ManaPercent > Mana)
             {
-                foreach (var mayminoon in minion)
+                foreach (var monstros in monters)
                 {
-                    if (minion != null)
+                    if (monters != null)
                     {
-                        if (W.GetPrediction(mayminoon).CollisionObjects.Where(may => may.IsEnemy && !may.IsDead && may.IsValid && !may.IsInvulnerable).Count() >= mini)
+                        if (W.GetPrediction(monstros).CollisionObjects.Where(may => may.IsEnemy && !may.IsDead && may.IsValid && !may.IsInvulnerable).Count() >= mini)
                         {
-                            W.Cast(mayminoon);
+                            W.Cast(monstros);
                         }
                         else if (W.IsReady() && Player.Instance.Spellbook.GetSpell(SpellSlot.W).Name.ToLower() == "leblancwreturn")
                         {
                             WAc.Cast();
                         }
-                        else if (IsPassiveM(mayminoon))
+                        else if (IsPassiveJ(monstros))
                         {
-                            Q.Cast(mayminoon);
+                            Q.Cast(monstros);
                         }
                     }
                 }
             }
         }
+
         private static void ByCombo()
         {
             var target = TargetSelector.GetTarget(925, DamageType.Magical);
@@ -278,7 +466,7 @@ namespace LeBlanc_Beta_Fixed
                 {
                     CastR("RQ", target);
                 }
-                if (useW && IsPassive(target) && IsW1 && !RActive.IsReady())
+                if (useW && IsPassive(target) && IsW1() && !RActive.IsReady())
                 {
                     CastW(target.ServerPosition);
                 }
@@ -297,7 +485,7 @@ namespace LeBlanc_Beta_Fixed
                 {
                     CastR("RQ", target);
                 }
-                if (useW && IsW1 && !RActive.IsReady())
+                if (useW && IsW1() && !RActive.IsReady())
                 {
                     CastW(target.ServerPosition);
                 }
@@ -316,11 +504,12 @@ namespace LeBlanc_Beta_Fixed
                 {
                     CastR("RE", target);
                 }
-                if (useW && IsW1 && !RActive.IsReady())
+                if (useW && IsW1() && !RActive.IsReady())
                 {
                     CastW(target.ServerPosition);
                 }
             }
+
             else if (LeBlanc.Distance(target) < E.Range)
             {
                 if (useE && IsPassive(target))
@@ -336,7 +525,7 @@ namespace LeBlanc_Beta_Fixed
                 {
                     CastR("RE", target);
                 }
-                if (useW && IsW1 && !RActive.IsReady())
+                if (useW && IsW1() && !RActive.IsReady())
                 {
                     CastW(target.ServerPosition);
                 }
@@ -356,7 +545,7 @@ namespace LeBlanc_Beta_Fixed
                         {
                             CastR("RW", target);
                         }
-                        if (UseRW && IsW1 && !RActive.IsReady())
+                        if (UseRW && IsW1() && !RActive.IsReady())
                         {
                             CastW(target.ServerPosition);
                         }
