@@ -87,7 +87,7 @@ namespace Blitz_Beta_Fixed
 
         private static void OnGapcloser(AIHeroClient sender, Gapcloser.GapcloserEventArgs e)
         {
-            if(sender.IsValidTarget(W.Range) && sender.IsEnemy)
+            if(sender.IsValidTarget(R.Range) && sender.IsEnemy)
             {
                 R.Cast(sender);
             }
