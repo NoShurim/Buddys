@@ -87,10 +87,7 @@ namespace Blitz_Beta_Fixed
 
         private static void OnGapcloser(AIHeroClient sender, Gapcloser.GapcloserEventArgs e)
         {
-            if(sender.IsValidTarget(R.Range) && sender.IsEnemy)
-            {
-                R.Cast(sender);
-            }
+            //Desenvolvimento 
         }
         
         private static void IntPorecsse(Obj_AI_Base sender, Interrupter.InterruptableSpellEventArgs e)
