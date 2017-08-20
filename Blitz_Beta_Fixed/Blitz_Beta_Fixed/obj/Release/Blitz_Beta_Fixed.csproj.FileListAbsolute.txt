@@ -1,0 +1,13 @@
+C:\Users\Edcarlos\Documents\Visual Studio 2017\Projects\Blitz_Beta_Fixed\Blitz_Beta_Fixed\bin\Release\Blitz_Beta_Fixed.exe.config
+C:\Users\Edcarlos\Documents\Visual Studio 2017\Projects\Blitz_Beta_Fixed\Blitz_Beta_Fixed\bin\Release\Blitz_Beta_Fixed.exe
+C:\Users\Edcarlos\Documents\Visual Studio 2017\Projects\Blitz_Beta_Fixed\Blitz_Beta_Fixed\bin\Release\Blitz_Beta_Fixed.pdb
+C:\Users\Edcarlos\Documents\Visual Studio 2017\Projects\Blitz_Beta_Fixed\Blitz_Beta_Fixed\bin\Release\EloBuddy.dll
+C:\Users\Edcarlos\Documents\Visual Studio 2017\Projects\Blitz_Beta_Fixed\Blitz_Beta_Fixed\bin\Release\EloBuddy.Sandbox.dll
+C:\Users\Edcarlos\Documents\Visual Studio 2017\Projects\Blitz_Beta_Fixed\Blitz_Beta_Fixed\bin\Release\EloBuddy.SDK.dll
+C:\Users\Edcarlos\Documents\Visual Studio 2017\Projects\Blitz_Beta_Fixed\Blitz_Beta_Fixed\bin\Release\Newtonsoft.Json.dll
+C:\Users\Edcarlos\Documents\Visual Studio 2017\Projects\Blitz_Beta_Fixed\Blitz_Beta_Fixed\bin\Release\SharpDX.Direct3D9.dll
+C:\Users\Edcarlos\Documents\Visual Studio 2017\Projects\Blitz_Beta_Fixed\Blitz_Beta_Fixed\bin\Release\SharpDX.dll
+C:\Users\Edcarlos\Documents\Visual Studio 2017\Projects\Blitz_Beta_Fixed\Blitz_Beta_Fixed\bin\Release\SharpDX.XInput.dll
+C:\Users\Edcarlos\Documents\Visual Studio 2017\Projects\Blitz_Beta_Fixed\Blitz_Beta_Fixed\obj\Release\Blitz_Beta_Fixed.csprojResolveAssemblyReference.cache
+C:\Users\Edcarlos\Documents\Visual Studio 2017\Projects\Blitz_Beta_Fixed\Blitz_Beta_Fixed\obj\Release\Blitz_Beta_Fixed.exe
+C:\Users\Edcarlos\Documents\Visual Studio 2017\Projects\Blitz_Beta_Fixed\Blitz_Beta_Fixed\obj\Release\Blitz_Beta_Fixed.pdb
