@@ -15,6 +15,11 @@ namespace LeBlanc_Beta_Fixed
     class MyHero
     {
         public static AIHeroClient LeBlanc => Player.Instance;
+        public static Vector3 WPosition { get; set; }
+        public static Vector3 WEnd { get; set; }
+        public static GameObject ObjetBaseLeblanc { get; set; }
+        public static Vector3 Update { get; set; }
+
         public static bool IsW1()
         {
             return LeBlanc.Spellbook.GetSpell(SpellSlot.W).Name.ToLower() == "leblancw";
@@ -45,10 +50,29 @@ namespace LeBlanc_Beta_Fixed
             return hero.HasBuff("leblancpminion") && Game.Time - hero.GetBuff("leblancpminion").StartTime > 1;
         }
 
-        public static bool IsPassiveJ(Obj_AI_Base hero)
+        public static string GetComboName()
         {
-            return hero.HasBuff("leblancpomonsters") && Game.Time - hero.GetBuff("leblancpomonsters").StartTime > 1;
+            var target = TargetSelector.GetTarget(1600, DamageType.Magical);
+
+            if (target == null || !target.IsValid)
+            {
+                return "DF";
+            }
+            if (LeBlanc.Distance(target) < W.Range)
+            {
+                return "W";
+            }
+            else if (LeBlanc.Distance(target) < E.Range)
+            {
+                return "RE";
+            }
+            else if (target.IsValidTarget(W.Range + Q.Range))
+            {
+                return "Gap";
+            }
+            return "DF";
         }
+
 
         public static bool CastCheckbox(Menu obj, string value)
         {
@@ -74,7 +98,7 @@ namespace LeBlanc_Beta_Fixed
         {
             if (LeBlanc.Hero != Champion.Leblanc) return;
             Chat.Print("[Addon] [Champion] [LeBlanc]", System.Drawing.Color.AliceBlue);
-            Chat.Print("[Version 1.0 => Update ]", System.Drawing.Color.OrangeRed);
+            Chat.Print("[Version 1.1v]", System.Drawing.Color.OrangeRed);
 
             Menus.StartMenu();
             Lib.W.AllowedCollisionCount = int.MaxValue;
@@ -82,7 +106,49 @@ namespace LeBlanc_Beta_Fixed
             //Evade
             Drawing.OnDraw += OnDraws;
             Gapcloser.OnGapcloser += AntiGapcloser_Execute;
+            GameObject.OnCreate += Object_OnCreate;
+            GameObject.OnDelete += Object_OnDelete;
+            Obj_AI_Base.OnProcessSpellCast += OnProcessSpellCast;
+            Obj_AI_Base.OnNewPath += OnNewPath;
+        }
 
+        private static void Object_OnCreate(GameObject sender, EventArgs args)
+        {
+            if (sender.Name == Player.Instance.Name)
+            {
+                ObjetBaseLeblanc = sender;
+            }
+        }
+
+        private static void OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+        {
+            if (!sender.IsMe) return;
+
+            if (args.SData.Name.ToLower() == "leblancw")
+            {
+                {
+                    WPosition = args.Start;
+                    WEnd = args.End;
+                }
+            }
+        }
+
+        private static void OnNewPath(Obj_AI_Base sender, GameObjectNewPathEventArgs args)
+        {
+            if (sender.IsMe)
+            {
+                var path = Player.Instance.Position.Extend(args.Path[0], 1000);
+                var extendedPath = new Vector3(path, NavMesh.GetHeightForPosition(path.X, path.Y));
+                Update = extendedPath;
+            }
+        }
+
+        private static void Object_OnDelete(GameObject sender, EventArgs args)
+        {
+            if (sender.Name == Player.Instance.Name)
+            {
+                ObjetBaseLeblanc = null;
+            }
         }
 
         private static void AntiGapcloser_Execute(AIHeroClient sender, Gapcloser.GapcloserEventArgs e)
@@ -193,7 +259,7 @@ namespace LeBlanc_Beta_Fixed
                         {
                             WAc.Cast();
                         }
-                        else if (IsPassiveJ(monstros))
+                        else if (IsPassiveM(monstros))
                         {
                             Q.Cast(monstros);
                         }
