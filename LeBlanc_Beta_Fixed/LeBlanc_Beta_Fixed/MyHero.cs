@@ -282,7 +282,7 @@ namespace LeBlanc_Beta_Fixed
 
             if (LeBlanc.Distance(target) < W.Range)  //wQRE
             {
-                if (useW && IsW1())
+                if (useW && IsW1() && IsPassive(target))
                 {
                     CastW(W.GetPrediction(target).CastPosition);
                 }
@@ -290,9 +290,21 @@ namespace LeBlanc_Beta_Fixed
                 {
                     CastQ(target);
                 }
-                if (useRQ && IsR1())
+                if (useRQ &&  IsR1() && IsPassive(target))
                 {
                     CastR("RQ", target);
+                }
+                if (useE && IsPassive(target)) 
+                {
+                    CastE(target);
+                }
+                if (useW && IsW1() && IsPassive(target))
+                {
+                    CastW(W.GetPrediction(target).CastPosition);
+                }
+                if (useW && IsW1())
+                {
+                    CastW(W.GetPrediction(target).CastPosition);
                 }
                 if (useE)
                 {
@@ -305,7 +317,7 @@ namespace LeBlanc_Beta_Fixed
             }
             else if (LeBlanc.Distance(target) < E.Range)//REQEW
             {
-                if (useRE && IsR1())
+                if (useRE && IsR1() && IsPassive(target))
                 {
                     CastR("RE", target);
                 }
@@ -313,11 +325,11 @@ namespace LeBlanc_Beta_Fixed
                 {
                     CastQ(target);
                 }
-                if (useE)
+                if (useE && IsPassive(target))
                 {
                     CastE(target);
                 }
-                if (useW && IsW1())
+                if (useW && IsW1() && IsPassive(target))
                 {
                     CastW(W.GetPrediction(target).CastPosition);
                 }
@@ -330,7 +342,7 @@ namespace LeBlanc_Beta_Fixed
                 {
                     CastW(wpos);
                 }
-                if (useR && IsR1())
+                if (useRE && IsR1())
                 {
                     CastR("RE", target);
                 }

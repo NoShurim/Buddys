@@ -60,7 +60,7 @@ namespace LeBlanc_Beta_Fixed
             }
         }
 
-        public void CastW2()
+        public static void CastW2()
         {
             if (!W.IsReady() || MyHero.LeBlanc.Spellbook.GetSpell(SpellSlot.W).Name.ToLower() != "leblancwreturn")
             {
