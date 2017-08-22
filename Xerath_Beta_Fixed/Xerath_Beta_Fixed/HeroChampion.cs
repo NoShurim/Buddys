@@ -51,6 +51,8 @@ namespace Xerath_Beta_Fixed
             Drawing.OnDraw += DrawsOnDraws;
             Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
             Obj_AI_Base.OnNewPath += Obj_AI_Base_OnNewPath;
+            Gapcloser.OnGapcloser += OnGapcloser;
+            Interrupter.OnInterruptableSpell += OnInterruptableSpell;
             Game.OnTick += Game_OnUpdate;
 
             Xe = MainMenu.AddMenu("Xerath", "Xerath");
@@ -107,6 +109,22 @@ namespace Xerath_Beta_Fixed
             Draws.Add("De", new CheckBox("Use [E] Draw"));
             Draws.Add("Dr", new CheckBox("Use [R] Draw"));
 
+        }
+
+        private static void OnGapcloser(AIHeroClient sender, Gapcloser.GapcloserEventArgs e)
+        {
+            if (sender.IsEnemy && SpellManager.E.IsReady() && SpellManager.E.IsInRange(e.End))
+            {
+                SpellManager.E.Cast(sender);
+            }
+        }
+
+        private static void OnInterruptableSpell(Obj_AI_Base sender, Interrupter.InterruptableSpellEventArgs e)
+        {
+            if (sender.IsEnemy && e.DangerLevel == DangerLevel.High && SpellManager.E.IsReady() && SpellManager.E.IsInRange(sender))
+            {
+                SpellManager.E.Cast(sender);
+            }
         }
 
         private static void Game_OnUpdate(EventArgs args)
