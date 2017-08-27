@@ -12,3 +12,4 @@ c:\users\edcarlos\documents\visual studio 2017\Projects\Zed_Beta_Fixed\Zed_Beta_
 c:\users\edcarlos\documents\visual studio 2017\Projects\Zed_Beta_Fixed\Zed_Beta_Fixed\obj\Debug\Zed_Beta_Fixed.csproj.Zed_Beta_Fixed.exe.config
 c:\users\edcarlos\documents\visual studio 2017\Projects\Zed_Beta_Fixed\Zed_Beta_Fixed\obj\Debug\Zed_Beta_Fixed.exe
 c:\users\edcarlos\documents\visual studio 2017\Projects\Zed_Beta_Fixed\Zed_Beta_Fixed\obj\Debug\Zed_Beta_Fixed.pdb
+C:\Users\Edcarlos\documents\visual studio 2017\Projects\Zed_Beta_Fixed\Zed_Beta_Fixed\obj\Debug\Zed_Beta_Fixed.csproj.CoreCompileInputs.cache

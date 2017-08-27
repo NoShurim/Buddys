@@ -45,7 +45,6 @@ namespace Zed_Beta_Fixed
         public static bool Rdmgcheck = false;
         public static bool Rdmgp = false;
         public const int W2Range = 700;
-        public static Obj_AI_Base target = TargetSelector.GetTarget(925, DamageType.Physical);
         public static GameObject Object;
         public static Obj_AI_Minion RSombra;
         public static Obj_AI_Minion Wm;
@@ -515,6 +514,8 @@ namespace Zed_Beta_Fixed
         }
         public static void CastE()
         {
+            var target = TargetSelector.GetTarget(925, DamageType.Physical);
+
             if (!E.IsReady())
             {
                 return;
