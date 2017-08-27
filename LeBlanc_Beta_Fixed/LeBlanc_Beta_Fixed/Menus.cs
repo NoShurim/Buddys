@@ -43,7 +43,7 @@ namespace LeBlanc_Beta_Fixed
             Comb.Add("RW", new CheckBox("Use R (W)", false));
             Comb.Add("RE", new CheckBox("Use R (E)"));
             Comb.AddLabel("Combos");
-            Comb.Add("Key1", new KeyBind("Combo [2]", false, KeyBind.BindTypes.HoldActive, 'T'));
+            Comb.Add("Key1", new KeyBind("Combo [2]", false, KeyBind.BindTypes.HoldActive, 'G'));
 
         }
         private static void LaneClearMenu()

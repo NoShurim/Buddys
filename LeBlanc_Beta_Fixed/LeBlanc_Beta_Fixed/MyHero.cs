@@ -182,11 +182,39 @@ namespace LeBlanc_Beta_Fixed
             {
                 ByCombo();
             }
+            if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Flee))
+            {
+                ByFlee();
+            }
             if (Menus.Comb["Key1"].Cast<KeyBind>().CurrentValue)
             {
                 Combo2();
             }
             KillSteal();
+        }
+
+        private static void ByFlee()
+        {
+            var target = TargetSelector.GetTarget(Lib.E.Range, DamageType.Magical);
+            if (target != null)
+            {
+                if (CastCheckbox(Menus.Flwe, "E"))
+                {
+                    var epred = Lib.E.GetPrediction(target);
+                    if (epred.HitChance >= HitChance.Medium)
+                    {
+                        Lib.E.Cast(epred.CastPosition);
+                    }
+                }
+            }
+            if (CastCheckbox(Menus.Flwe, "W"))
+            {
+                var wpos = LeBlanc.Position.Extend(Game.CursorPos, Lib.W.Range).To3D();
+                if (Lib.W.IsReady())
+                {
+                    Lib.CastW(wpos);
+                }
+            }
         }
 
         private static void Combo2()
@@ -348,11 +376,11 @@ namespace LeBlanc_Beta_Fixed
                 {
                     CastQ(target);
                 }
-                if (useRQ &&  IsR1() && IsPassive(target))
+                if (useRQ && IsR1() && IsPassive(target))
                 {
                     CastR("RQ", target);
                 }
-                if (useE && IsPassive(target)) 
+                if (useE && IsPassive(target))
                 {
                     CastE(target);
                 }
