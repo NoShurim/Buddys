@@ -23,7 +23,21 @@ namespace Katarina_Beta_Fixed
         public static Spell.Active W;
         public static Spell.Skillshot E;
         public static Spell.Active R;
+        public static Spell.Targeted Ignite;
+        public static Item Hextech = new Item(ItemId.Hextech_Gunblade, 700);
 
+        public static List<Item> ItemList = new List<Item>
+        {
+            Hextech
+        };
+
+        public static void CastItems(AIHeroClient target)
+        {
+            foreach (var item in ItemList.Where(i => i.IsReady() && target.IsValidTarget(i.Range)))
+            {
+                item.Cast(target);
+            }
+        }
 
         public static Menu Kat, Combo, Harass, Farming, Draws;
 
@@ -51,6 +65,7 @@ namespace Katarina_Beta_Fixed
             W = new Spell.Active(SpellSlot.W, 150, DamageType.Magical);
             E = new Spell.Skillshot(SpellSlot.E, 700, SkillShotType.Circular, 7, null, 150, DamageType.Magical);
             R = new Spell.Active(SpellSlot.R, 550, DamageType.Magical);
+            Ignite = new Spell.Targeted(SpellSlot.Summoner1, 600);
 
             Kat = MainMenu.AddMenu("Katarina", "Katarina");
             //Combo
@@ -99,9 +114,20 @@ namespace Katarina_Beta_Fixed
 
             Drawing.OnDraw += Drawwings;
             Game.OnUpdate += Game_OnUpdate;
+            Game.OnTick += Game_UpdateGame;
             Obj_AI_Base.OnProcessSpellCast += OnCastSpell;
             Obj_AI_Base.OnBuffGain += OnBuffGain;
             Obj_AI_Base.OnBuffLose += OnBuffLose;
+        }
+
+        private static void Game_UpdateGame(EventArgs args)
+        {
+            var target = TargetSelector.GetTarget(Q.Range, DamageType.Physical);
+
+            if (meowmeowRthing != true)
+            {
+                CastItems(target);
+            }
         }
 
         private static void OnBuffGain(Obj_AI_Base sender, Obj_AI_BaseBuffGainEventArgs args)
@@ -110,6 +136,7 @@ namespace Katarina_Beta_Fixed
             {
                 Orbwalker.DisableAttacking = true;
                 Orbwalker.DisableMovement = true;
+                meowmeowRthing = true;
             }
         }
 
@@ -119,6 +146,7 @@ namespace Katarina_Beta_Fixed
             {
                 Orbwalker.DisableAttacking = false;
                 Orbwalker.DisableMovement = false;
+                meowmeowRthing = false;
             }
         }
 
@@ -252,7 +280,7 @@ namespace Katarina_Beta_Fixed
         }
 
         private static float timeW;
-        private static bool meowmeowRthing = false;
+        private static bool meowmeowRthing;
         private static float meowwwwwwwwwww;
 
 
@@ -269,6 +297,28 @@ namespace Katarina_Beta_Fixed
             if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Harass))
             {
                 OnHarass();
+            }
+            KillSteal();
+        }
+
+        private static void KillSteal()
+        {
+            foreach (var hptarget in EntityManager.Enemies.Where(a => a.IsValidTarget(1200) && !a.IsDead))
+            {
+                if (!hptarget.IsValid || hptarget.IsDead || hptarget == null)
+                {
+                    return;
+                }
+                var Health = hptarget.Health;
+                if (Ignite.IsReady())
+                {
+                    var dmgI = (50 + ((Katarina.Level) * 20));
+                    if (Katarina.Distance(hptarget) < Q.Range && Health < dmgI)
+
+                    {
+                        Ignite.Cast(hptarget);
+                    }
+                }
             }
         }
 
@@ -293,7 +343,7 @@ namespace Katarina_Beta_Fixed
                 {
                     if (Katarina.CountEnemyChampionsInRange(R.Range) == 0)
                     {
-                        //Katarina.(MoveTo, Game.CursorPos);
+                        //Player.(MoveTo, Game.CursorPos);
                     }
                 }
             }
@@ -1109,13 +1159,11 @@ namespace Katarina_Beta_Fixed
             var hitE = CastSlider(Farming, "hite");
             var dagger = GetDaggers();
             var d = GetClosestDagger();
-            var minion = EntityManager.MinionsAndMonsters.Get(EntityManager.MinionsAndMonsters.EntityType.Minion, EntityManager.UnitTeam.Enemy, Player.Instance.ServerPosition, Q.Range);
+            var minion = EntityManager.MinionsAndMonsters.Get(EntityManager.MinionsAndMonsters.EntityType.Minion, EntityManager.UnitTeam.Enemy, Player.Instance.ServerPosition, E.Range);
             if (useQ)
             {
                 foreach (var minionn in minion)
                 {
-
-
                     if (minionn.IsValidTarget(Q.Range) && minionn != null)
                     {
                         Q.Cast(minionn);
