@@ -182,7 +182,65 @@ namespace LeBlanc_Beta_Fixed
             {
                 ByCombo();
             }
+            if (Menus.Comb["Key1"].Cast<KeyBind>().CurrentValue)
+            {
+                Combo2();
+            }
             KillSteal();
+        }
+
+        private static void Combo2()
+        {
+            var target = TargetSelector.GetTarget(1600, DamageType.Magical);
+            var useQ = CastCheckbox(Menus.Comb, "Q");
+            var useW = CastCheckbox(Menus.Comb, "W");
+            var useE = CastCheckbox(Menus.Comb, "E");
+            var useR = CastCheckbox(Menus.Comb, "R");
+            var useRQ = CastCheckbox(Menus.Comb, "RQ");
+            var useRW = CastCheckbox(Menus.Comb, "RW");
+            var useRE = CastCheckbox(Menus.Comb, "RE");
+            var wpos = Player.Instance.Position.Extend(target, Lib.W.Range).To3D();
+
+            if (LeBlanc.Distance(target) < E.Range)
+            {
+                if (useE)
+                {
+                    CastE(target);
+                }
+
+                if (useQ && IsPassive(target))
+                {
+                    CastQ(target);
+                }
+                if (useR)
+                {
+                    CastR("RE", target);
+                }
+                if (useW && IsW1() && !RActive.IsReady())
+                {
+                    CastW(target.ServerPosition);
+                }
+            }
+
+            else if (LeBlanc.Distance(target) < W.Range)
+            {
+                if (useQ)
+                {
+                    CastQ(target);
+                }
+                if (useE && !Q.IsReady())
+                {
+                    CastE(target);
+                }
+                if (useR)
+                {
+                    CastR("RW", target);
+                }
+                if (useW && IsW1() && !RActive.IsReady())
+                {
+                    CastW(target.ServerPosition);
+                }
+            }
         }
 
         private static void KillSteal()

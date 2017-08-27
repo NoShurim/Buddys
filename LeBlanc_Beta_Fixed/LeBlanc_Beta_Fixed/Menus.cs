@@ -42,6 +42,8 @@ namespace LeBlanc_Beta_Fixed
             Comb.Add("RQ", new CheckBox("Use R (Q)"));
             Comb.Add("RW", new CheckBox("Use R (W)", false));
             Comb.Add("RE", new CheckBox("Use R (E)"));
+            Comb.AddLabel("Combos");
+            Comb.Add("Key1", new KeyBind("Combo [2]", false, KeyBind.BindTypes.HoldActive, 'T'));
 
         }
         private static void LaneClearMenu()
