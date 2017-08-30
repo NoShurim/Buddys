@@ -53,10 +53,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extetions.cs" />
     <Compile Include="Menus.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SpellDamage.cs" />
+    <Compile Include="SpellManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

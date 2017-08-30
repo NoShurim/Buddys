@@ -1,6 +1,6 @@
 ﻿using EloBuddy;
 using EloBuddy.SDK;
-using static Kayn_BETA_Fixed.Program;
+using static Kayn_BETA_Fixed.SpellManager;
 
 namespace Kayn_BETA_Fixed
 {
@@ -11,7 +11,7 @@ namespace Kayn_BETA_Fixed
             float damage = 0;
             if (target != null)
             {
-                if (Q.IsReady())
+                if (Qk.IsReady())
                 {
                     damage += Player.Instance.GetSpellDamage(target, SpellSlot.Q);
                     damage += Player.Instance.GetAutoAttackDamage(target);
@@ -34,12 +34,12 @@ namespace Kayn_BETA_Fixed
         public static float Qmage(Obj_AI_Base target)
         {
             return Player.Instance.CalculateDamageOnUnit(target, DamageType.Physical,
-                (float)(new[] { 0, 55, 75, 95, 115, 135 }[Q.Level] + 1.1f * Player.Instance.FlatPhysicalDamageMod + 0.4f * Player.Instance.FlatMagicDamageMod));
+                (float)(new[] { 0, 55, 75, 95, 115, 135 }[Qk.Level] + 1.1f * Player.Instance.FlatPhysicalDamageMod + 0.4f * Player.Instance.FlatMagicDamageMod));
         }
         public static float Emage(Obj_AI_Base target)
         {
             return Player.Instance.CalculateDamageOnUnit(target, DamageType.Physical,
-                (float)(new[] { 0, 0, 0, 0 }[Q.Level] + 1.1f * Player.Instance.FlatPhysicalDamageMod + 0.4f * Player.Instance.FlatMagicDamageMod));
+                (float)(new[] { 0, 0, 0, 0 }[Qk.Level] + 1.1f * Player.Instance.FlatPhysicalDamageMod + 0.4f * Player.Instance.FlatMagicDamageMod));
         }
         public static float Wmage(Obj_AI_Base target)
         {
@@ -49,7 +49,7 @@ namespace Kayn_BETA_Fixed
         public static float Rmage(Obj_AI_Base target)
         {
             return Player.Instance.CalculateDamageOnUnit(target, DamageType.Physical,
-                (float)(new[] { 0, 150, 250, 350 }[R.Level] + 1f * Player.Instance.FlatPhysicalDamageMod + 1f * Player.Instance.FlatMagicDamageMod));
+                (float)(new[] { 0, 250, 350, 450, 550 }[R.Level] + 1f * Player.Instance.FlatPhysicalDamageMod + 1f * Player.Instance.FlatMagicDamageMod));
         }
     }
 }

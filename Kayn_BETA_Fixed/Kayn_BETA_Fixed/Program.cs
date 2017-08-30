@@ -3,29 +3,34 @@ using EloBuddy.SDK;
 using EloBuddy.SDK.Enumerations;
 using EloBuddy.SDK.Events;
 using EloBuddy.SDK.Menu.Values;
-using SharpDX;
+using static Kayn_BETA_Fixed.SpellManager;
 using System;
 using System.Linq;
 using static Kayn_BETA_Fixed.Menus;
+using Kayn_BETA_Fixed;
+using EloBuddy.SDK.Menu;
+using EloBuddy.SDK.Rendering;
+using SharpDX;
 
 namespace Kayn_BETA_Fixed
 {
     class Program
     {
-        public static Spell.Skillshot Q;
-        public static Spell.Skillshot W;
-        public static Spell.Skillshot Flash;
-        public static Spell.Active E;
-        public static Spell.Targeted R;
-        private static AIHeroClient Kayn => Player.Instance;
-        private static Vector3 MousePos
-        {
-            get { return Game.CursorPos; }
-        }
-        public static AIHeroClient _Player
-        {
-            get { return ObjectManager.Player; }
+        public static AIHeroClient Kayn => Player.Instance;
 
+        public static bool CastCheckbox(Menu obj, string value)
+        {
+            return obj[value].Cast<CheckBox>().CurrentValue;
+        }
+
+        public static bool CastKey(Menu obj, string value)
+        {
+            return obj[value].Cast<KeyBind>().CurrentValue;
+        }
+
+        public static int CastSlider(Menu obj, string value)
+        {
+            return obj[value].Cast<Slider>().CurrentValue;
         }
 
         static void Main(string[] args)
@@ -35,49 +40,19 @@ namespace Kayn_BETA_Fixed
 
         private static void Loading_On(EventArgs args)
         {
+            if (Kayn.Hero != Champion.Kayn) return;
+
             Chat.Print("[Addon] [Champion] [Kayn]", System.Drawing.Color.LightBlue);
-            Chat.Print("[Version] [1.2.1.6]", System.Drawing.Color.Red);
-            Chat.Print("[Combo]", System.Drawing.Color.LightBlue);
-            Chat.Print("[Haras]", System.Drawing.Color.LightBlue);
-            Chat.Print("[LaneClear]", System.Drawing.Color.LightBlue);
-            Chat.Print("[JungleClear]", System.Drawing.Color.LightBlue);
-            Chat.Print("[Mics]", System.Drawing.Color.LightBlue);
+            Chat.Print("[Addon] [Version 7.17]", System.Drawing.Color.LightBlue);
 
             CreateMenu();
-            InitializeSpells();
+            SpellManager.Execute();
             Drawing.OnDraw += OnDraw;
-            Game.OnTick += OnTick;
+            Game.OnUpdate += Game_OnUpdate;
         }
 
-        private static void OnDraw(EventArgs args)
+        private static void Game_OnUpdate(EventArgs args)
         {
-            if (Draws["DQ"].Cast<CheckBox>().CurrentValue && Q.IsReady())
-            {
-                Q.DrawRange(System.Drawing.Color.LightBlue);
-            }
-            if (Draws["DW"].Cast<CheckBox>().CurrentValue && W.IsReady())
-            {
-                W.DrawRange(System.Drawing.Color.Crimson);
-            }
-            if (Draws["DE"].Cast<CheckBox>().CurrentValue && E.IsReady())
-            {
-                E.DrawRange(System.Drawing.Color.Crimson);
-            }
-            if (Draws["DR"].Cast<CheckBox>().CurrentValue && R.IsReady())
-            {
-                R.DrawRange(System.Drawing.Color.LawnGreen);
-            }
-            if (Draws["DF"].Cast<CheckBox>().CurrentValue && R.IsReady())
-            {
-                Flash.DrawRange(System.Drawing.Color.Red);
-            }
-        }
-        private static void OnTick(EventArgs args)
-        {
-            if (Orbwalker.ActiveModesFlags.Equals(Orbwalker.ActiveModes.Combo))
-            {
-                byCombo();
-            }
             if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.LaneClear))
             {
                 ByLane();
@@ -86,149 +61,159 @@ namespace Kayn_BETA_Fixed
             {
                 ByJungle();
             }
-            Kill();
-            Bacck();
-            FlashR();
-            FlashW();
-            AutoHarass();
+            if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo))
+            {
+                ByCombo();
+            }
 
-        }
-        private static void AutoHarass()
-        {
-            var targetW = TargetSelector.GetTarget(W.Range, DamageType.Physical);
-            if (AutoHara["AutoW"].Cast<CheckBox>().CurrentValue)
+            if (Combo["UE"].Cast<KeyBind>().CurrentValue)
             {
-                if (targetW.Distance(ObjectManager.Player) <= W.Range && W.IsReady())
-                {
-                    if (Player.Instance.ManaPercent > AutoHara["Mn"].Cast<Slider>().CurrentValue)
-                    {
-                        W.Cast(W.GetPrediction(targetW).CastPosition);
-                    }
-                }
+                UseE();
             }
-        }
-        private static void FlashW()
-        {
-            var flashtarget = TargetSelector.GetTarget(850, DamageType.Physical);
-            if (flashtarget == null) return;
-            var xpos = flashtarget.Position.Extend(flashtarget, 850);
-            var target = TargetSelector.GetTarget(W.Range, DamageType.Physical);
-            var doF = W.GetPrediction(flashtarget).CastPosition;
-            if (Misc["FW"].Cast<KeyBind>().CurrentValue)
-            {
-                if (W.IsReady() && Flash.IsReady())
-                    if (flashtarget.IsValidTarget(850) && target.Health < SpellDamage.Wmage(target))
-                    {
-                        Flash.Cast((Vector3)xpos);
-                        W.Cast(doF);
-                    }
-            }
-        }
-        private static void FlashR()
-        {
-            var flashtarget = TargetSelector.GetTarget(850 + 425, DamageType.Physical);
-            if (flashtarget == null) return;
-            var xpos = flashtarget.Position.Extend(flashtarget, 850);
-            var target = TargetSelector.GetTarget(R.Range, DamageType.Physical);
-            if (R.IsReady() && Flash.IsReady())
-                if (flashtarget.IsValidTarget(850 + 425) && target.Health < SpellDamage.Rmage(target))
-                {
-                    Flash.Cast((Vector3)xpos);
-                    R.Cast(target);
-                }
-        }
-        private static void Bacck()
-        {
-            var useR = Combo["ultR"].Cast<CheckBox>().CurrentValue;
-            var evadeR = Combo["MR"].Cast<Slider>().CurrentValue;
-            var target = TargetSelector.GetTarget(R.Range, DamageType.Physical);
-            if (target.Distance(ObjectManager.Player) <= R.Range)
-            {
-                if (useR && !target.IsInRange(_Player, R.Range) && R.IsReady() && Kayn.HealthPercent <= evadeR)
-                {
-                    R.Cast(target);
-                }
-            }
+            Escape();
         }
 
-        private static void Kill()
+        private static void Escape()
         {
-            var target = TargetSelector.GetTarget(R.Range, DamageType.Physical); //By BestSNA
-            if (Misc["KSR"].Cast<CheckBox>().CurrentValue)
+            var target = R.GetTarget();
+            if (target != null && Kayn.Health < 45)
             {
-                if (target != null && target.Health < SpellDamage.Rmage(target))
+                if (!target.IsInRange(Kayn, R.Range) && R.IsReady())
                 {
-                    if (!target.IsInRange(_Player, R.Range) && R.IsReady())
-                    {
-                        return;
-                    }
-                    {
-                        R.Cast(target);
-                    }
+                    return;
                 }
-            }
-        }
-        private static void byCombo()
-        {
-            var targete = TargetSelector.GetTarget(E.Range, DamageType.Physical);
-            if (Combo["E"].Cast<CheckBox>().CurrentValue)
-            {
-                if (targete.Distance(ObjectManager.Player) <= E.Range && E.IsReady())
-                {
-                    E.Cast(targete);
-                }
-            }
-            var target = TargetSelector.GetTarget(W.Range, DamageType.Physical);
-            if (Combo["W"].Cast<CheckBox>().CurrentValue)
-            {
-                if (target.Distance(ObjectManager.Player) <= W.Range && W.IsReady())
-                {
-                    W.Cast(W.GetPrediction(target).CastPosition);
-                }
-            }
-            var targetw = TargetSelector.GetTarget(Q.Range, DamageType.Physical);
-            if (Combo["Q"].Cast<CheckBox>().CurrentValue)
-            {
-                if (target.Distance(ObjectManager.Player) <= Q.Range && Q.IsReady())
-                {
-                    Q.Cast(Q.GetPrediction(target).CastPosition);
-                }
-            }
-            var targetr = TargetSelector.GetTarget(R.Range, DamageType.Physical);
-            if (Combo["R"].Cast<CheckBox>().CurrentValue)
-            {
-                if (target.Distance(ObjectManager.Player) <= R.Range && R.IsReady())
                 {
                     R.Cast(target);
                 }
             }
         }
+    
+        private static void ByCombo()
+        {
+
+            if (Player.Instance.IsKayn())
+            {
+                // Q usage
+                if (Qk.IsBackRange(Orbwalker.ActiveModes.Combo) && !Kayn.IsAboutToTransform())
+                {
+                    var target = Qk.GetTarget();
+                    if (target != null)
+                    {
+                        var prediction = Qk.GetPrediction(target);
+
+                        switch (prediction.HitChance)
+                        {
+                            case HitChance.High:
+                            case HitChance.Immobile:
+
+                                // Regular Q cast
+                                if (Qk.Cast(prediction.CastPosition))
+                                {
+                                    return;
+                                }
+                                break;
+
+                            case HitChance.Collision:
+
+                                // Special case for colliding enemies
+                                var colliding = prediction.CollisionObjects.OrderBy(o => o.Distance(Kayn, true)).ToList();
+                                if (colliding.Count > 0)
+                                {
+                                    // First colliding target is < 100 units away from our main target
+                                    if (colliding[0].IsInRange(target, 100))
+                                    {
+                                        if (Qk.Cast(prediction.CastPosition))
+                                        {
+                                            return;
+                                        }
+                                    }
+                                }
+                                break;
+                        }
+                    }
+                }
+                if (Wk.IsBackRange(Orbwalker.ActiveModes.Combo) && !Kayn.IsAboutToTransform())
+                {
+                    var target = Wk.GetTarget();
+                    if (target != null)
+                    {
+                        var prediction = Wk.GetPrediction(target);
+
+                        switch (prediction.HitChance)
+                        {
+                            case HitChance.High:
+                            case HitChance.Immobile:
+
+                                // Regular W cast
+                                if (Wk.Cast(prediction.CastPosition))
+                                {
+                                    return;
+                                }
+                                break;
+
+                            case HitChance.Collision:
+
+                                // Special case for colliding enemies
+                                var colliding = prediction.CollisionObjects.OrderBy(o => o.Distance(Kayn, true)).ToList();
+                                if (colliding.Count > 0)
+                                {
+                                    // First colliding target is < 100 units away from our main target
+                                    if (colliding[0].IsInRange(target, 100))
+                                    {
+                                        if (Wk.Cast(prediction.CastPosition))
+                                        {
+                                            return;
+                                        }
+                                    }
+                                }
+                                break;
+                        }
+                    }
+                }
+
+                if (R.IsBackRange(Orbwalker.ActiveModes.Combo))
+                {
+                    var target = R.GetTarget();
+                    if (target != null && target.HealthPercent < Menus.Combo["Rs"].Cast<Slider>().CurrentValue)
+                    {
+                        if (!target.IsInRange(Kayn, R.Range) && R.IsReady())
+                        {
+                            return;
+                        }
+                        {
+                            R.Cast(target);
+                        }
+                    }
+                }
+            }
+        }
+
         private static void ByLane()
         {
             var minions = EntityManager.MinionsAndMonsters.GetLaneMinions(EntityManager.UnitTeam.Enemy, Kayn.Position, W.Range).ToArray();
             var mana = Lane["mana"].Cast<Slider>().CurrentValue;
-            if (_Player.ManaPercent < mana) return;
+            if (Kayn.ManaPercent < mana) return;
             if (minions != null)
             {
-                var wpred = EntityManager.MinionsAndMonsters.GetLineFarmLocation(minions, W.Width, (int)W.Range);
-                if (Lane["Qlane"].Cast<CheckBox>().CurrentValue && Q.IsLearned && Q.IsReady())
+                var wpred = EntityManager.MinionsAndMonsters.GetLineFarmLocation(minions, Qk.Width, (int)W.Range);
+                if (Lane["Ql"].Cast<CheckBox>().CurrentValue && Qk.IsLearned && Qk.IsReady())
                 {
                     foreach (var minion in minions.Where(x => x.IsValid() && !x.IsDead && x.Health > 15))
                     {
                         if (Lane["Qmode"].Cast<ComboBox>().CurrentValue == 0 &&
-                            Prediction.Position.PredictUnitPosition(minion, Q.CastDelay).Distance(Kayn.Position) <= (Q.Range - 50))
+                            Prediction.Position.PredictUnitPosition(minion, Qk.CastDelay).Distance(Kayn.Position) <= (Qk.Range - 50))
                         {
-                            Q.Cast(minion.Position);
+                            Qk.Cast(minion.Position);
                         }
 
-                        else { Q.Cast(minion.Position); }
+                        else { Qk.Cast(minion.Position); }
 
                     }
                 }
-                if (Lane["WLane"].Cast<CheckBox>().CurrentValue && W.IsLearned && W.IsReady())
+                if (Lane["Wl"].Cast<CheckBox>().CurrentValue && W.IsLearned && W.IsReady())
                 {
                     if (wpred.HitNumber >= Lane["Min"].Cast<Slider>().CurrentValue) W.Cast(wpred.CastPosition);
-                {
+                    {
                         foreach (var minion in minions.Where(x => x.IsValid() && !x.IsDead && x.Health > 15))
                         {
                             if (Lane["Wmode"].Cast<ComboBox>().CurrentValue == 0 &&
@@ -243,34 +228,54 @@ namespace Kayn_BETA_Fixed
                 }
             }
         }
+
         private static void ByJungle()
         {
             var Monsters = EntityManager.MinionsAndMonsters.GetJungleMonsters(Kayn.Position, 1800f);
             var mana = Jungle["jmana"].Cast<Slider>().CurrentValue;
-            if (_Player.ManaPercent < mana) return;
-            var WPred = EntityManager.MinionsAndMonsters.GetLineFarmLocation(Monsters, W.Width, (int) W.Range);
+            if (Kayn.ManaPercent < mana) return;
+            var WPred = EntityManager.MinionsAndMonsters.GetLineFarmLocation(Monsters, Wk.Width, (int)W.Range);
 
-            if (Jungle["Qjungle"].Cast<CheckBox>().CurrentValue && Q.IsLearned && Q.IsReady())
+            if (Jungle["Qj"].Cast<CheckBox>().CurrentValue && Qk.IsLearned && Qk.IsReady())
             {
-                foreach (var monster in Monsters.Where(x => !x.IsDead && x.IsValidTarget(Q.Range) && x.Health > 100))
+                foreach (var monster in Monsters.Where(x => !x.IsDead && x.IsValidTarget(Qk.Range) && x.Health > 100))
                 {
-                   Q.Cast(monster.Position);
+                    Qk.Cast(monster.Position);
                 }
             }
 
-            if (Jungle["Wjungle"].Cast<CheckBox>().CurrentValue && W.IsLearned && W.IsReady())
+            if (Jungle["Wj"].Cast<CheckBox>().CurrentValue && W.IsLearned && W.IsReady())
             {
                 if (WPred.HitNumber >= Jungle["J"].Cast<Slider>().CurrentValue) W.Cast(WPred.CastPosition);
             }
         }
-        private static void InitializeSpells()
+
+        private static void UseE()
         {
-            Q = new Spell.Skillshot(SpellSlot.Q, 550, EloBuddy.SDK.Enumerations.SkillShotType.Circular);
-            W = new Spell.Skillshot(SpellSlot.W, 700, EloBuddy.SDK.Enumerations.SkillShotType.Linear);
-            E = new Spell.Active(SpellSlot.E, 2000);
-            R = new Spell.Targeted(SpellSlot.R, 550);
-            var FlashSlot = Kayn.GetSpellSlotFromName("summonerflash");
-            Flash = new Spell.Skillshot(FlashSlot, 950, SkillShotType.Linear);
+            if (Ek.IsReady())
+            {
+                Ek.Cast();
+            }
+        }
+
+        private static void OnDraw(EventArgs args)
+        {
+            if (Draws["DQ"].Cast<CheckBox>().CurrentValue && Qk.IsReady())
+            {
+                Qk.DrawRange(System.Drawing.Color.LightBlue);
+            }
+            if (Draws["DW"].Cast<CheckBox>().CurrentValue && W.IsReady())
+            {
+                W.DrawRange(System.Drawing.Color.Crimson);
+            }
+            if (Draws["DE"].Cast<CheckBox>().CurrentValue && Ek.IsReady())
+            {
+                Ek.DrawRange(System.Drawing.Color.Crimson);
+            }
+            if (Draws["DR"].Cast<CheckBox>().CurrentValue && R.IsReady())
+            {
+                R.DrawRange(System.Drawing.Color.LawnGreen);
+            }
         }
     }
 }
